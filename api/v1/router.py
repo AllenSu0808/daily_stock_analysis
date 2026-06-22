@@ -4,9 +4,9 @@
 API v1 路由聚合
 ===================================
 
-职责：
+職責：
 1. 聚合 v1 版本的所有 endpoint 路由
-2. 统一添加 /api/v1 前缀
+2. 統一添加 /api/v1 前綴
 """
 
 from fastapi import APIRouter
@@ -28,8 +28,8 @@ from api.v1.endpoints import (
     usage,
 )
 
-# 创建 v1 版本主路由。
-# /api/v1 前缀在 api.app 挂载，避免新版 FastAPI 误判子路由 "" 为 empty path。
+# 創建 v1 版本主路由。
+# /api/v1 前綴在 api.app 掛載，避免新版 FastAPI 誤判子路由 "" 爲 empty path。
 router = APIRouter()
 
 router.include_router(

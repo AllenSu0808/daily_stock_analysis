@@ -46,11 +46,11 @@ def _validate_analysis_date_range(
     "/run",
     response_model=BacktestRunResponse,
     responses={
-        200: {"description": "回测执行完成"},
-        500: {"description": "服务器错误", "model": ErrorResponse},
+        200: {"description": "回測執行完成"},
+        500: {"description": "服務器錯誤", "model": ErrorResponse},
     },
-    summary="触发回测",
-    description="对历史分析记录进行回测评估，并写入 backtest_results/backtest_summaries",
+    summary="觸發回測",
+    description="對歷史分析記錄進行回測評估，並寫入 backtest_results/backtest_summaries",
 )
 def run_backtest(
     request: BacktestRunRequest,
@@ -67,10 +67,10 @@ def run_backtest(
         )
         return BacktestRunResponse(**stats)
     except Exception as exc:
-        logger.error(f"回测执行失败: {exc}", exc_info=True)
+        logger.error(f"回測執行失敗: {exc}", exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail={"error": "internal_error", "message": f"回测执行失败: {str(exc)}"},
+            detail={"error": "internal_error", "message": f"回測執行失敗: {str(exc)}"},
         )
 
 
@@ -78,21 +78,21 @@ def run_backtest(
     "/results",
     response_model=BacktestResultsResponse,
     responses={
-        200: {"description": "回测结果列表"},
-        400: {"description": "请求参数错误", "model": ErrorResponse},
-        500: {"description": "服务器错误", "model": ErrorResponse},
+        200: {"description": "回測結果列表"},
+        400: {"description": "請求參數錯誤", "model": ErrorResponse},
+        500: {"description": "服務器錯誤", "model": ErrorResponse},
     },
-    summary="获取回测结果",
-    description="分页获取回测结果，支持按股票代码过滤",
+    summary="獲取回測結果",
+    description="分頁獲取回測結果，支持按股票代碼過濾",
 )
 def get_backtest_results(
-    code: Optional[str] = Query(None, description="股票代码筛选"),
-    eval_window_days: Optional[int] = Query(None, ge=1, le=120, description="评估窗口过滤"),
+    code: Optional[str] = Query(None, description="股票代碼篩選"),
+    eval_window_days: Optional[int] = Query(None, ge=1, le=120, description="評估窗口過濾"),
     analysis_date_from: Optional[date] = Query(None, description="分析日期起始（含）"),
-    analysis_date_to: Optional[date] = Query(None, description="分析日期结束（含）"),
-    analysis_phase: Optional[BacktestAnalysisPhaseQuery] = Query(None, description="分析阶段过滤：premarket/intraday/postmarket/unknown"),
-    page: int = Query(1, ge=1, description="页码"),
-    limit: int = Query(20, ge=1, le=200, description="每页数量"),
+    analysis_date_to: Optional[date] = Query(None, description="分析日期結束（含）"),
+    analysis_phase: Optional[BacktestAnalysisPhaseQuery] = Query(None, description="分析階段過濾：premarket/intraday/postmarket/unknown"),
+    page: int = Query(1, ge=1, description="頁碼"),
+    limit: int = Query(20, ge=1, le=200, description="每頁數量"),
     db_manager: DatabaseManager = Depends(get_database_manager),
 ) -> BacktestResultsResponse:
     try:
@@ -122,10 +122,10 @@ def get_backtest_results(
     except HTTPException:
         raise
     except Exception as exc:
-        logger.error(f"查询回测结果失败: {exc}", exc_info=True)
+        logger.error(f"查詢回測結果失敗: {exc}", exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail={"error": "internal_error", "message": f"查询回测结果失败: {str(exc)}"},
+            detail={"error": "internal_error", "message": f"查詢回測結果失敗: {str(exc)}"},
         )
 
 
@@ -133,18 +133,18 @@ def get_backtest_results(
     "/performance",
     response_model=PerformanceMetrics,
     responses={
-        200: {"description": "整体回测表现"},
-        400: {"description": "请求参数错误", "model": ErrorResponse},
-        404: {"description": "无回测汇总", "model": ErrorResponse},
-        500: {"description": "服务器错误", "model": ErrorResponse},
+        200: {"description": "整體回測表現"},
+        400: {"description": "請求參數錯誤", "model": ErrorResponse},
+        404: {"description": "無回測匯總", "model": ErrorResponse},
+        500: {"description": "服務器錯誤", "model": ErrorResponse},
     },
-    summary="获取整体回测表现",
+    summary="獲取整體回測表現",
 )
 def get_overall_performance(
-    eval_window_days: Optional[int] = Query(None, ge=1, le=120, description="评估窗口过滤"),
+    eval_window_days: Optional[int] = Query(None, ge=1, le=120, description="評估窗口過濾"),
     analysis_date_from: Optional[date] = Query(None, description="分析日期起始（含）"),
-    analysis_date_to: Optional[date] = Query(None, description="分析日期结束（含）"),
-    analysis_phase: Optional[BacktestAnalysisPhaseQuery] = Query(None, description="分析阶段过滤：premarket/intraday/postmarket/unknown"),
+    analysis_date_to: Optional[date] = Query(None, description="分析日期結束（含）"),
+    analysis_phase: Optional[BacktestAnalysisPhaseQuery] = Query(None, description="分析階段過濾：premarket/intraday/postmarket/unknown"),
     db_manager: DatabaseManager = Depends(get_database_manager),
 ) -> PerformanceMetrics:
     try:
@@ -161,7 +161,7 @@ def get_overall_performance(
         if summary is None:
             raise HTTPException(
                 status_code=404,
-                detail={"error": "not_found", "message": "未找到整体回测汇总"},
+                detail={"error": "not_found", "message": "未找到整體回測匯總"},
             )
         return PerformanceMetrics(**summary)
     except ValueError as exc:
@@ -172,10 +172,10 @@ def get_overall_performance(
     except HTTPException:
         raise
     except Exception as exc:
-        logger.error(f"查询整体表现失败: {exc}", exc_info=True)
+        logger.error(f"查詢整體表現失敗: {exc}", exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail={"error": "internal_error", "message": f"查询整体表现失败: {str(exc)}"},
+            detail={"error": "internal_error", "message": f"查詢整體表現失敗: {str(exc)}"},
         )
 
 
@@ -183,19 +183,19 @@ def get_overall_performance(
     "/performance/{code}",
     response_model=PerformanceMetrics,
     responses={
-        200: {"description": "单股回测表现"},
-        400: {"description": "请求参数错误", "model": ErrorResponse},
-        404: {"description": "无回测汇总", "model": ErrorResponse},
-        500: {"description": "服务器错误", "model": ErrorResponse},
+        200: {"description": "單股回測表現"},
+        400: {"description": "請求參數錯誤", "model": ErrorResponse},
+        404: {"description": "無回測匯總", "model": ErrorResponse},
+        500: {"description": "服務器錯誤", "model": ErrorResponse},
     },
-    summary="获取单股回测表现",
+    summary="獲取單股回測表現",
 )
 def get_stock_performance(
     code: str,
-    eval_window_days: Optional[int] = Query(None, ge=1, le=120, description="评估窗口过滤"),
+    eval_window_days: Optional[int] = Query(None, ge=1, le=120, description="評估窗口過濾"),
     analysis_date_from: Optional[date] = Query(None, description="分析日期起始（含）"),
-    analysis_date_to: Optional[date] = Query(None, description="分析日期结束（含）"),
-    analysis_phase: Optional[BacktestAnalysisPhaseQuery] = Query(None, description="分析阶段过滤：premarket/intraday/postmarket/unknown"),
+    analysis_date_to: Optional[date] = Query(None, description="分析日期結束（含）"),
+    analysis_phase: Optional[BacktestAnalysisPhaseQuery] = Query(None, description="分析階段過濾：premarket/intraday/postmarket/unknown"),
     db_manager: DatabaseManager = Depends(get_database_manager),
 ) -> PerformanceMetrics:
     try:
@@ -212,7 +212,7 @@ def get_stock_performance(
         if summary is None:
             raise HTTPException(
                 status_code=404,
-                detail={"error": "not_found", "message": f"未找到 {code} 的回测汇总"},
+                detail={"error": "not_found", "message": f"未找到 {code} 的回測匯總"},
             )
         return PerformanceMetrics(**summary)
     except ValueError as exc:
@@ -223,8 +223,8 @@ def get_stock_performance(
     except HTTPException:
         raise
     except Exception as exc:
-        logger.error(f"查询单股表现失败: {exc}", exc_info=True)
+        logger.error(f"查詢單股表現失敗: {exc}", exc_info=True)
         raise HTTPException(
             status_code=500,
-            detail={"error": "internal_error", "message": f"查询单股表现失败: {str(exc)}"},
+            detail={"error": "internal_error", "message": f"查詢單股表現失敗: {str(exc)}"},
         )

@@ -39,7 +39,7 @@ def _section_for(version: str) -> str:
 
 def _highlights(section: str) -> list[str]:
     release_highlights = re.search(
-        r"^### 发布亮点\s*(.*?)(?=^### |\Z)",
+        r"^### 發布亮點\s*(.*?)(?=^### |\Z)",
         section,
         re.MULTILINE | re.DOTALL,
     )

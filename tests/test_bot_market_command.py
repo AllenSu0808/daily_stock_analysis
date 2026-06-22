@@ -237,7 +237,7 @@ class MarketCommandRegionFilterTestCase(unittest.TestCase):
             response = cmd.execute(message, [])
 
         release_market_review_lock.assert_called_once_with(lock_token)
-        self.assertEqual(response.text, "❌ 错误：大盘复盘启动失败，已释放运行锁；请稍后重试")
+        self.assertEqual(response.text, "❌ 錯誤：大盤復盤啓動失敗，已釋放運行鎖；請稍後重試")
 
 
 

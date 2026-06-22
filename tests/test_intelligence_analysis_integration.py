@@ -64,12 +64,12 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
         pipeline.config = self.config
         context = pipeline._load_persisted_intelligence_context(
             code="600519",
-            stock_name="贵州茅台",
+            stock_name="貴州茅臺",
             market="cn",
         )
         self.assertIsNotNone(context)
         assert context is not None
-        self.assertIn("本地资讯证据池", context)
+        self.assertIn("本地資訊證據池", context)
         self.assertIn("Company wins major AI order", context)
         self.assertIn("https://news.example.com/symbol", context)
 
@@ -109,7 +109,7 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
         pipeline.config = self.config
         context = pipeline._load_persisted_intelligence_context(
             code="600519",
-            stock_name="贵州茅台",
+            stock_name="貴州茅臺",
             market="cn",
         )
 
@@ -156,7 +156,7 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
             with self.subTest(code=code):
                 context = pipeline._load_persisted_intelligence_context(
                     code=code,
-                    stock_name="腾讯控股",
+                    stock_name="騰訊控股",
                     market="hk",
                 )
 
@@ -203,7 +203,7 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
                 ],
             ),
             news=merged,
-            report="复盘正文",
+            report="復盤正文",
             market_light_snapshot={"dimensions": {"breadth": {"available": True}}},
         )
         self.assertEqual(payload["news"][0]["url"], "https://news.example.com/market")
@@ -268,7 +268,7 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
                 ],
             ),
             news=merged,
-            report="复盘正文",
+            report="復盤正文",
             market_light_snapshot={"dimensions": {"breadth": {"available": True}}},
         )
         self.assertGreaterEqual(len(payload["news"]), 8)
@@ -339,7 +339,7 @@ class PersistedIntelligenceAnalysisIntegrationTestCase(unittest.TestCase):
         pipeline.config = self.config
         context = pipeline._load_persisted_intelligence_context(
             code="600519",
-            stock_name="贵州茅台",
+            stock_name="貴州茅臺",
             market="cn",
         )
         assert context is not None

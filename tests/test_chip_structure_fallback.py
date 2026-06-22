@@ -48,8 +48,8 @@ class TestIsValuePlaceholder(unittest.TestCase):
         self.assertTrue(_is_value_placeholder("na"))
 
     def test_data_missing_is_placeholder(self) -> None:
-        self.assertTrue(_is_value_placeholder("数据缺失"))
-        self.assertTrue(_is_value_placeholder("数据缺失，无法判断"))
+        self.assertTrue(_is_value_placeholder("數據缺失"))
+        self.assertTrue(_is_value_placeholder("數據缺失，無法判斷"))
         self.assertTrue(_is_value_placeholder("未知"))
 
     def test_valid_values_not_placeholder(self) -> None:
@@ -129,11 +129,11 @@ class TestFillChipStructureIfNeeded(unittest.TestCase):
     def _make_result(self, dashboard: dict = None) -> AnalysisResult:
         return AnalysisResult(
             code="600519",
-            name="贵州茅台",
+            name="貴州茅臺",
             trend_prediction="看多",
             sentiment_score=70,
             operation_advice="持有",
-            analysis_summary="稳健",
+            analysis_summary="穩健",
             decision_type="hold",
             dashboard=dashboard,
         )
@@ -217,7 +217,7 @@ class TestFillChipStructureIfNeeded(unittest.TestCase):
     def test_data_perspective_null_handled(self) -> None:
         """When LLM returns data_perspective: null, fill should still work."""
         result = self._make_result(
-            dashboard={"data_perspective": None, "core_conclusion": {"one_sentence": "观望"}}
+            dashboard={"data_perspective": None, "core_conclusion": {"one_sentence": "觀望"}}
         )
         chip = self._make_chip()
         fill_chip_structure_if_needed(result, chip)
@@ -251,10 +251,10 @@ class TestFillChipStructureIfNeeded(unittest.TestCase):
             dashboard={
                 "data_perspective": {
                     "chip_structure": {
-                        "profit_ratio": "数据缺失，无法判断",
-                        "avg_cost": "数据缺失，无法判断",
-                        "concentration": "数据缺失，无法判断",
-                        "chip_health": "数据缺失，无法判断",
+                        "profit_ratio": "數據缺失，無法判斷",
+                        "avg_cost": "數據缺失，無法判斷",
+                        "concentration": "數據缺失，無法判斷",
+                        "chip_health": "數據缺失，無法判斷",
                     }
                 }
             }
@@ -273,10 +273,10 @@ class TestFillChipStructureIfNeeded(unittest.TestCase):
             dashboard={
                 "data_perspective": {
                     "chip_structure": {
-                        "profit_ratio": "数据缺失，无法判断",
-                        "avg_cost": "数据缺失，无法判断",
-                        "concentration": "数据缺失，无法判断",
-                        "chip_health": "数据缺失，无法判断",
+                        "profit_ratio": "數據缺失，無法判斷",
+                        "avg_cost": "數據缺失，無法判斷",
+                        "concentration": "數據缺失，無法判斷",
+                        "chip_health": "數據缺失，無法判斷",
                     }
                 }
             }
@@ -286,7 +286,7 @@ class TestFillChipStructureIfNeeded(unittest.TestCase):
 
         dp = result.dashboard["data_perspective"]
         self.assertEqual(dp["chip_structure"], {})
-        self.assertEqual(dp["chip_unavailable_reason"], "筹码分布未启用或数据源暂不可用，未纳入筹码判断。")
+        self.assertEqual(dp["chip_unavailable_reason"], "籌碼分布未啓用或數據源暫不可用，未納入籌碼判斷。")
 
     def test_normalize_treats_zero_chip_metrics_as_unavailable(self) -> None:
         result = self._make_result(
@@ -298,7 +298,7 @@ class TestFillChipStructureIfNeeded(unittest.TestCase):
 
         dp = result.dashboard["data_perspective"]
         self.assertEqual(dp["chip_structure"], {})
-        self.assertEqual(dp["chip_unavailable_reason"], "筹码分布未启用或数据源暂不可用，未纳入筹码判断。")
+        self.assertEqual(dp["chip_unavailable_reason"], "籌碼分布未啓用或數據源暫不可用，未納入籌碼判斷。")
 
     def test_normalize_accepts_zero_concentration_when_avg_cost_present(self) -> None:
         result = self._make_result(

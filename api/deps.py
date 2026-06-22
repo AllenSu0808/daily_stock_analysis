@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-API 依赖注入模块
+API 依賴注入模塊
 ===================================
 
-职责：
-1. 提供数据库 Session 依赖
-2. 提供配置依赖
-3. 提供服务层依赖
+職責：
+1. 提供數據庫 Session 依賴
+2. 提供配置依賴
+3. 提供服務層依賴
 """
 
 from typing import Generator
@@ -23,12 +23,12 @@ from src.services.runtime_scheduler import RuntimeSchedulerService
 
 def get_db() -> Generator[Session, None, None]:
     """
-    获取数据库 Session 依赖
+    獲取數據庫 Session 依賴
     
-    使用 FastAPI 依赖注入机制，确保请求结束后自动关闭 Session
+    使用 FastAPI 依賴注入機制，確保請求結束後自動關閉 Session
     
     Yields:
-        Session: SQLAlchemy Session 对象
+        Session: SQLAlchemy Session 對象
         
     Example:
         @router.get("/items")
@@ -45,20 +45,20 @@ def get_db() -> Generator[Session, None, None]:
 
 def get_config_dep() -> Config:
     """
-    获取配置依赖
+    獲取配置依賴
     
     Returns:
-        Config: 配置单例对象
+        Config: 配置單例對象
     """
     return get_config()
 
 
 def get_database_manager() -> DatabaseManager:
     """
-    获取数据库管理器依赖
+    獲取數據庫管理器依賴
     
     Returns:
-        DatabaseManager: 数据库管理器单例对象
+        DatabaseManager: 數據庫管理器單例對象
     """
     return DatabaseManager.get_instance()
 

@@ -79,7 +79,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             news_max_age_days=3,
             news_strategy_profile="medium",  # 7
         )
-        service.search_stock_news("600519", "贵州茅台", max_results=5)
+        service.search_stock_news("600519", "貴州茅臺", max_results=5)
         kwargs = mock_search.call_args[1]
         self.assertEqual(kwargs["days"], 3)
 
@@ -89,7 +89,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             news_max_age_days=30,
             news_strategy_profile="invalid_profile",
         )
-        service.search_stock_news("600519", "贵州茅台", max_results=5)
+        service.search_stock_news("600519", "貴州茅臺", max_results=5)
         kwargs = mock_search.call_args[1]
         self.assertEqual(kwargs["days"], 3)
 
@@ -115,7 +115,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=5)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=5)
         titles = [r.title for r in resp.results]
         self.assertEqual(titles, ["future_1", "fresh"])
         for item in resp.results:
@@ -127,7 +127,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             news_max_age_days=3,
             news_strategy_profile="short",
         )
-        service.search_stock_news("600519", "贵州茅台", max_results=4)
+        service.search_stock_news("600519", "貴州茅臺", max_results=4)
         args, kwargs = mock_search.call_args
         requested = kwargs.get("max_results")
         if requested is None:
@@ -159,7 +159,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         service._providers = [p1, p2]
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=3)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=3)
         self.assertEqual([r.title for r in resp.results], ["fresh"])
         p1.search.assert_called_once()
         p2.search.assert_called_once()
@@ -183,7 +183,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         searxng = SimpleNamespace(
             is_available=True,
             name="SearXNG",
-            search=MagicMock(return_value=_response([_result("贵州茅台 600519 最新公告", fresh)])),
+            search=MagicMock(return_value=_response([_result("貴州茅臺 600519 最新公告", fresh)])),
         )
         service._providers = [tavily, searxng]
 
@@ -195,12 +195,12 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             trigger_source="api",
         )
         try:
-            response = service.search_stock_news("600519", "贵州茅台", max_results=3)
+            response = service.search_stock_news("600519", "貴州茅臺", max_results=3)
             diagnostics = current_diagnostic_snapshot()
         finally:
             reset_run_diagnostic_context(token)
 
-        self.assertEqual([item.title for item in response.results], ["贵州茅台 600519 最新公告"])
+        self.assertEqual([item.title for item in response.results], ["貴州茅臺 600519 最新公告"])
         provider_runs = diagnostics["provider_runs"]
         self.assertEqual([run["data_type"] for run in provider_runs], ["news_search", "news_search"])
         self.assertEqual([run["provider"] for run in provider_runs], ["Tavily", "SearXNG"])
@@ -233,12 +233,12 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         p2 = SimpleNamespace(
             is_available=True,
             name="P2",
-            search=MagicMock(return_value=_response([_result("中文资讯", fresh)])),
+            search=MagicMock(return_value=_response([_result("中文資訊", fresh)])),
         )
         service._providers = [p1, p2]
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=3)
-        self.assertEqual([r.title for r in resp.results], ["中文资讯"])
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=3)
+        self.assertEqual([r.title for r in resp.results], ["中文資訊"])
         p1.search.assert_called_once()
         p2.search.assert_called_once()
 
@@ -259,7 +259,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                 return_value=_response(
                     [
                         _result("English headline", fresh),
-                        _result("中文快讯", fresh),
+                        _result("中文快訊", fresh),
                         _result("Second English headline", fresh),
                     ]
                 )
@@ -267,10 +267,10 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         service._providers = [mixed_provider]
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=3)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=3)
         self.assertEqual(
             [r.title for r in resp.results],
-            ["中文快讯", "English headline", "Second English headline"],
+            ["中文快訊", "English headline", "Second English headline"],
         )
 
     def test_search_stock_news_prioritizes_chinese_before_truncating_results(self) -> None:
@@ -290,7 +290,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                 return_value=_response(
                     [
                         _result("English headline", fresh),
-                        _result("中文快讯", fresh),
+                        _result("中文快訊", fresh),
                     ]
                 )
             ),
@@ -298,12 +298,12 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         p2 = SimpleNamespace(
             is_available=True,
             name="P2",
-            search=MagicMock(return_value=_response([_result("后续中文资讯", fresh)])),
+            search=MagicMock(return_value=_response([_result("後續中文資訊", fresh)])),
         )
         service._providers = [p1, p2]
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=1)
-        self.assertEqual([r.title for r in resp.results], ["中文快讯"])
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=1)
+        self.assertEqual([r.title for r in resp.results], ["中文快訊"])
         p1.search.assert_called_once()
         p2.search.assert_called_once()
 
@@ -329,9 +329,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                             snippet="The company reported an updated share repurchase plan.",
                         ),
                         _result(
-                            "贵州茅台 发布回购公告",
+                            "貴州茅臺 發布回購公告",
                             fresh,
-                            snippet="公司披露回购方案。",
+                            snippet="公司披露回購方案。",
                         ),
                     ]
                 )
@@ -339,9 +339,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         service._providers = [provider]
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=1)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=1)
 
-        self.assertEqual([r.title for r in resp.results], ["贵州茅台 发布回购公告"])
+        self.assertEqual([r.title for r in resp.results], ["貴州茅臺 發布回購公告"])
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
         provider.search.assert_called_once()
 
@@ -378,9 +378,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                 return_value=_response(
                     [
                         _result(
-                            "白酒板块资金回暖",
+                            "白酒板塊資金回暖",
                             fresh,
-                            snippet="消费行业反弹。",
+                            snippet="消費行業反彈。",
                         )
                     ]
                 )
@@ -388,9 +388,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         service._providers = [p1, p2]
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=1)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=1)
 
-        self.assertEqual([r.title for r in resp.results], ["白酒板块资金回暖"])
+        self.assertEqual([r.title for r in resp.results], ["白酒板塊資金回暖"])
         self.assertEqual(resp.results[0].relevance_category, "sector_related_news")
         p1.search.assert_called_once()
         p2.search.assert_called_once()
@@ -413,7 +413,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         p2 = SimpleNamespace(
             is_available=True,
             name="P2",
-            search=MagicMock(return_value=_response([_result("苹果资讯", fresh)])),
+            search=MagicMock(return_value=_response([_result("蘋果資訊", fresh)])),
         )
         service._providers = [p1, p2]
 
@@ -439,9 +439,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                 return_value=_response(
                     [
                         _result(
-                            "白酒行业景气度回暖 多只龙头上涨",
+                            "白酒行業景氣度回暖 多隻龍頭上漲",
                             fresh,
-                            snippet="消费板块获得资金关注。",
+                            snippet="消費板塊獲得資金關注。",
                         )
                     ]
                 )
@@ -453,11 +453,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             search=MagicMock(
                 return_value=_response(
                     [
-                        _result("沪指震荡收涨，市场情绪回暖", fresh),
+                        _result("滬指震蕩收漲，市場情緒回暖", fresh),
                         _result(
-                            "贵州茅台 600519 发布回购公告",
+                            "貴州茅臺 600519 發布回購公告",
                             fresh,
-                            snippet="贵州茅台披露公司公告，董事会审议通过回购方案。",
+                            snippet="貴州茅臺披露公司公告，董事會審議通過回購方案。",
                             source="cninfo",
                         ),
                     ]
@@ -466,11 +466,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         service._providers = [p1, p2]
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=2)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=2)
 
-        self.assertEqual(resp.results[0].title, "贵州茅台 600519 发布回购公告")
+        self.assertEqual(resp.results[0].title, "貴州茅臺 600519 發布回購公告")
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
-        self.assertIn("股票代码", "；".join(resp.results[0].relevance_reasons or []))
+        self.assertIn("股票代碼", "；".join(resp.results[0].relevance_reasons or []))
         p1.search.assert_called_once()
         p2.search.assert_called_once()
 
@@ -490,30 +490,30 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                 return_value=_response(
                     [
                         _result(
-                            "腾讯控股 00700 极速版安装包下载",
+                            "騰訊控股 00700 極速版安裝包下載",
                             fresh,
-                            snippet="当前版本 686.38MB，84%好评，适合下载安装到手机。",
+                            snippet="當前版本 686.38MB，84%好評，適合下載安裝到手機。",
                             url="https://download.example.invalid/apps/douyang",
                             source="download.example.invalid",
                         ),
                         _result(
-                            "1000+ 宜昌小姐上门特殊服务",
+                            "1000+ 宜昌小姐上門特殊服務",
                             fresh,
-                            snippet="小姐预约 yue2345，同城约炮、保健按摩、推油套餐。",
+                            snippet="小姐預約 yue2345，同城約炮、保健按摩、推油套餐。",
                             url="https://spam.example.invalid/local/yue2345",
                             source="spam.example.invalid",
                         ),
                         _result(
-                            "美国调整关税，社群讨论升温",
+                            "美國調整關稅，社羣討論升溫",
                             fresh,
-                            snippet="社群用户分享生活话题，与目标股票没有直接关系。",
+                            snippet="社羣用戶分享生活話題，與目標股票沒有直接關係。",
                             url="https://news.example.invalid/lifestyle/123",
                             source="news.example.invalid",
                         ),
                         _result(
-                            "腾讯控股 00700 早盘走强",
+                            "騰訊控股 00700 早盤走強",
                             fresh,
-                            snippet="腾讯控股成交活跃，港股科技板块反弹。",
+                            snippet="騰訊控股成交活躍，港股科技板塊反彈。",
                             url="https://finance.example.invalid/00700",
                             source="finance.example.invalid",
                         ),
@@ -523,9 +523,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         service._providers = [provider]
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=3)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=3)
 
-        self.assertEqual([item.title for item in resp.results], ["腾讯控股 00700 早盘走强"])
+        self.assertEqual([item.title for item in resp.results], ["騰訊控股 00700 早盤走強"])
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
     def test_download_like_news_without_size_or_url_hints_is_filtered(self) -> None:
@@ -537,25 +537,25 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 官方版客户端安卓版下载",
+                        "騰訊控股 00700 官方版客戶端安卓版下載",
                         fresh,
-                        snippet="点此获取最新版安卓版客户端，支持一键下载安装包。",
+                        snippet="點此獲取最新版安卓版客戶端，支持一鍵下載安裝包。",
                         url="https://finance.example.invalid/tencent/stock/00700",
                         source="finance.example.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 发布回购公告",
+                        "騰訊控股 00700 發布回購公告",
                         fresh,
-                        snippet="腾讯控股披露股份回购公告。",
+                        snippet="騰訊控股披露股份回購公告。",
                         source="hkexnews",
                     ),
                 ]
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=2)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=2)
 
-        self.assertEqual([item.title for item in resp.results], ["腾讯控股 00700 发布回购公告"])
+        self.assertEqual([item.title for item in resp.results], ["騰訊控股 00700 發布回購公告"])
 
     def test_package_security_news_does_not_trigger_download_filter(self) -> None:
         """Bare package wording in product/security news should not look like a download page."""
@@ -566,9 +566,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "金山办公 688111 WPS 安装包被曝漏洞",
+                        "金山辦公 688111 WPS 安裝包被曝漏洞",
                         fresh,
-                        snippet="公司回应 WPS 安装包安全漏洞并发布修复计划。",
+                        snippet="公司回應 WPS 安裝包安全漏洞並發布修復計劃。",
                         url="https://finance.example.invalid/news/688111-security",
                         source="finance.example.invalid",
                     )
@@ -576,11 +576,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("688111", "金山办公", max_results=1)
+        resp = service.search_stock_news("688111", "金山辦公", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["金山办公 688111 WPS 安装包被曝漏洞"],
+            ["金山辦公 688111 WPS 安裝包被曝漏洞"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -593,24 +593,24 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "证券时报客户端讯，贵州茅台 600519 发布回购公告",
+                        "證券時報客戶端訊，貴州茅臺 600519 發布回購公告",
                         fresh,
-                        snippet="贵茅披露股票回购公告。",
+                        snippet="貴茅披露股票回購公告。",
                         source="finance.example.invalid",
                     ),
                 ]
             ),
         )
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=1)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["证券时报客户端讯，贵州茅台 600519 发布回购公告"],
+            ["證券時報客戶端訊，貴州茅臺 600519 發布回購公告"],
         )
 
     def test_outer_market_phrase_is_not_filtered_as_adult_spam(self) -> None:
-        """`外围市场` market-context headlines should not be treated as adult spam."""
+        """`外圍市場` market-context headlines should not be treated as adult spam."""
         fresh = datetime.now().date().isoformat()
         service, _ = self._create_service_with_mock_provider(
             news_max_age_days=3,
@@ -618,20 +618,20 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "外围市场走弱拖累科技股",
+                        "外圍市場走弱拖累科技股",
                         fresh,
-                        snippet="外围市场情绪走弱，带动科技股阶段性回撤。",
+                        snippet="外圍市場情緒走弱，帶動科技股階段性回撤。",
                         source="finance.example.invalid",
                     ),
                 ]
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["外围市场走弱拖累科技股"],
+            ["外圍市場走弱拖累科技股"],
         )
 
     def test_url_only_app_route_does_not_drop_direct_stock_news(self) -> None:
@@ -643,9 +643,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 发布回购公告",
+                        "騰訊控股 00700 發布回購公告",
                         fresh,
-                        snippet="腾讯控股披露股份回购公告，成交维持活跃。",
+                        snippet="騰訊控股披露股份回購公告，成交維持活躍。",
                         url="https://app.finance.example.invalid/apps/markets/00700",
                         source="app.finance.example.invalid",
                     )
@@ -653,9 +653,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
-        self.assertEqual([item.title for item in resp.results], ["腾讯控股 00700 发布回购公告"])
+        self.assertEqual([item.title for item in resp.results], ["騰訊控股 00700 發布回購公告"])
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
     def test_apple_rating_phrase_does_not_trigger_app_download_filter(self) -> None:
@@ -724,9 +724,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 新游上线获玩家评分 9.0",
+                        "騰訊控股 00700 新遊上線獲玩家評分 9.0",
                         fresh,
-                        snippet="腾讯游戏新品上线首周表现强劲，玩家评分 9.0。",
+                        snippet="騰訊遊戲新品上線首周表現強勁，玩家評分 9.0。",
                         url="https://finance.example.invalid/app/news/00700-game-rating",
                         source="finance.example.invalid",
                     )
@@ -734,11 +734,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["腾讯控股 00700 新游上线获玩家评分 9.0"],
+            ["騰訊控股 00700 新遊上線獲玩家評分 9.0"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -751,9 +751,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "拼多多 PDD Temu 应用下载量增长",
+                        "拼多多 PDD Temu 應用下載量增長",
                         fresh,
-                        snippet="Temu 应用安装量同比提升，带动跨境业务收入改善。",
+                        snippet="Temu 應用安裝量同比提升，帶動跨境業務收入改善。",
                         url="https://finance.example.invalid/app/news/pdd-temu-downloads",
                         source="finance.example.invalid",
                     )
@@ -765,7 +765,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["拼多多 PDD Temu 应用下载量增长"],
+            ["拼多多 PDD Temu 應用下載量增長"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -778,9 +778,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "拼多多 PDD Temu 应用下载量达1亿",
+                        "拼多多 PDD Temu 應用下載量達1億",
                         fresh,
-                        snippet="Temu 应用下载量达1亿，市场关注跨境业务获客效率。",
+                        snippet="Temu 應用下載量達1億，市場關注跨境業務獲客效率。",
                         url="https://finance.example.invalid/app/news/pdd-temu-downloads",
                         source="finance.example.invalid",
                     )
@@ -792,7 +792,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["拼多多 PDD Temu 应用下载量达1亿"],
+            ["拼多多 PDD Temu 應用下載量達1億"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -805,9 +805,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "拼多多 PDD Temu 应用下载同比增长",
+                        "拼多多 PDD Temu 應用下載同比增長",
                         fresh,
-                        snippet="Temu 应用安装同比提升，推动跨境业务增长。",
+                        snippet="Temu 應用安裝同比提升，推動跨境業務增長。",
                         url="https://finance.example.invalid/app/news/pdd-temu-install-growth",
                         source="finance.example.invalid",
                     )
@@ -819,7 +819,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["拼多多 PDD Temu 应用下载同比增长"],
+            ["拼多多 PDD Temu 應用下載同比增長"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -859,9 +859,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "拼多多 PDD Temu 应用下载量下降",
+                        "拼多多 PDD Temu 應用下載量下降",
                         fresh,
-                        snippet="Temu 应用安装量下滑，市场关注获客效率。",
+                        snippet="Temu 應用安裝量下滑，市場關注獲客效率。",
                         url="https://finance.example.invalid/app/news/pdd-downloads-fall",
                         source="finance.example.invalid",
                     ),
@@ -881,7 +881,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         self.assertEqual(
             [item.title for item in resp.results],
             [
-                "拼多多 PDD Temu 应用下载量下降",
+                "拼多多 PDD Temu 應用下載量下降",
                 "PDD app installs fell after campaign pullback",
             ],
         )
@@ -896,16 +896,16 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 app store rating",
+                        "騰訊控股 00700 app store rating",
                         fresh,
                         snippet="4.8 stars, 10M downloads, version 12.8 for mobile app users.",
                         url="https://apps.example.invalid/tencent/00700",
                         source="apps.example.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 发布回购公告",
+                        "騰訊控股 00700 發布回購公告",
                         fresh,
-                        snippet="腾讯控股披露股份回购公告。",
+                        snippet="騰訊控股披露股份回購公告。",
                         url="https://finance.example.invalid/news/00700-buyback",
                         source="finance.example.invalid",
                     ),
@@ -913,9 +913,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
-        self.assertEqual([item.title for item in resp.results], ["腾讯控股 00700 发布回购公告"])
+        self.assertEqual([item.title for item in resp.results], ["騰訊控股 00700 發布回購公告"])
 
     def test_app_listing_metric_with_version_rating_still_filtered(self) -> None:
         """Business metric wording should not rescue obvious app listing pages."""
@@ -926,16 +926,16 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 下载量突破1000万",
+                        "騰訊控股 00700 下載量突破1000萬",
                         fresh,
-                        snippet="应用版本 12.8，评分 4.9，安装包 256MB，下载量突破1000万。",
+                        snippet="應用版本 12.8，評分 4.9，安裝包 256MB，下載量突破1000萬。",
                         url="https://apps.example.invalid/tencent/00700/download",
                         source="apps.example.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 发布业绩公告",
+                        "騰訊控股 00700 發布業績公告",
                         fresh,
-                        snippet="腾讯控股披露季度业绩，收入与利润保持增长。",
+                        snippet="騰訊控股披露季度業績，收入與利潤保持增長。",
                         url="https://finance.example.invalid/news/00700-earnings",
                         source="finance.example.invalid",
                     ),
@@ -943,12 +943,12 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
-        self.assertEqual([item.title for item in resp.results], ["腾讯控股 00700 发布业绩公告"])
+        self.assertEqual([item.title for item in resp.results], ["騰訊控股 00700 發布業績公告"])
 
     def test_finance_client_boilerplate_does_not_trigger_download_filter(self) -> None:
-        """Finance media boilerplate such as 客户端讯 should not look like an app page."""
+        """Finance media boilerplate such as 客戶端訊 should not look like an app page."""
         fresh = datetime.now().date().isoformat()
         service, _ = self._create_service_with_mock_provider(
             news_max_age_days=3,
@@ -956,23 +956,23 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "贵州茅台 600519 发布回购公告",
+                        "貴州茅臺 600519 發布回購公告",
                         fresh,
-                        snippet="证券时报客户端讯，贵州茅台披露股份回购公告。",
+                        snippet="證券時報客戶端訊，貴州茅臺披露股份回購公告。",
                         url="https://finance.example.invalid/news/600519-buyback",
-                        source="证券时报",
+                        source="證券時報",
                     )
                 ]
             ),
         )
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=1)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=1)
 
-        self.assertEqual([item.title for item in resp.results], ["贵州茅台 600519 发布回购公告"])
+        self.assertEqual([item.title for item in resp.results], ["貴州茅臺 600519 發布回購公告"])
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
     def test_market_peripheral_phrase_does_not_trigger_adult_spam_filter(self) -> None:
-        """Finance usage of 外围市场 should not be treated as adult-service spam."""
+        """Finance usage of 外圍市場 should not be treated as adult-service spam."""
         fresh = datetime.now().date().isoformat()
         service, _ = self._create_service_with_mock_provider(
             news_max_age_days=3,
@@ -980,9 +980,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 受外围市场走弱拖累",
+                        "騰訊控股 00700 受外圍市場走弱拖累",
                         fresh,
-                        snippet="外围市场走弱拖累港股科技股，腾讯控股成交活跃。",
+                        snippet="外圍市場走弱拖累港股科技股，騰訊控股成交活躍。",
                         url="https://finance.example.invalid/markets/00700",
                         source="finance.example.invalid",
                     )
@@ -990,16 +990,16 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["腾讯控股 00700 受外围市场走弱拖累"],
+            ["騰訊控股 00700 受外圍市場走弱拖累"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
     def test_business_full_service_phrase_does_not_trigger_adult_spam_filter(self) -> None:
-        """Business-safe 全套服务 wording should require adult-service context."""
+        """Business-safe 全套服務 wording should require adult-service context."""
         fresh = datetime.now().date().isoformat()
         service, _ = self._create_service_with_mock_provider(
             news_max_age_days=3,
@@ -1007,9 +1007,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "华能国际 600011 推出全套服务解决方案",
+                        "華能國際 600011 推出全套服務解決方案",
                         fresh,
-                        snippet="公司面向能源客户提供全套服务解决方案，提升运维效率。",
+                        snippet="公司面向能源客戶提供全套服務解決方案，提升運維效率。",
                         url="https://finance.example.invalid/news/600011-service-solution",
                         source="finance.example.invalid",
                     )
@@ -1017,11 +1017,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("600011", "华能国际", max_results=1)
+        resp = service.search_stock_news("600011", "華能國際", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["华能国际 600011 推出全套服务解决方案"],
+            ["華能國際 600011 推出全套服務解決方案"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -1034,9 +1034,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "美的集团 000333 mobile-app 按摩椅业务增长",
+                        "美的集團 000333 mobile-app 按摩椅業務增長",
                         fresh,
-                        snippet="公司 mobile app 渠道带动按摩椅和保健业务销售增长。",
+                        snippet="公司 mobile app 渠道帶動按摩椅和保健業務銷售增長。",
                         url="https://finance.example.invalid/mobile-app/000333-health",
                         source="finance.example.invalid",
                     )
@@ -1044,11 +1044,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("000333", "美的集团", max_results=1)
+        resp = service.search_stock_news("000333", "美的集團", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["美的集团 000333 mobile-app 按摩椅业务增长"],
+            ["美的集團 000333 mobile-app 按摩椅業務增長"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -1061,9 +1061,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "美团 03690 推出按摩足浴会所预约套餐服务",
+                        "美團 03690 推出按摩足浴會所預約套餐服務",
                         fresh,
-                        snippet="美团拓展本地生活服务，新增按摩足浴会所预约套餐。",
+                        snippet="美團拓展本地生活服務，新增按摩足浴會所預約套餐。",
                         url="https://finance.example.invalid/news/03690-local-service",
                         source="finance.example.invalid",
                     )
@@ -1071,11 +1071,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("03690.HK", "美团", max_results=1)
+        resp = service.search_stock_news("03690.HK", "美團", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["美团 03690 推出按摩足浴会所预约套餐服务"],
+            ["美團 03690 推出按摩足浴會所預約套餐服務"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -1088,9 +1088,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "美团 03690 下架涉色情按摩会所商家",
+                        "美團 03690 下架涉色情按摩會所商家",
                         fresh,
-                        snippet="美团开展平台治理，清理涉色情低俗内容商家。",
+                        snippet="美團開展平臺治理，清理涉色情低俗內容商家。",
                         url="https://finance.example.invalid/news/03690-risk-remediation",
                         source="finance.example.invalid",
                     )
@@ -1098,11 +1098,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("03690.HK", "美团", max_results=1)
+        resp = service.search_stock_news("03690.HK", "美團", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["美团 03690 下架涉色情按摩会所商家"],
+            ["美團 03690 下架涉色情按摩會所商家"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -1115,9 +1115,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 QQ2024 开放预约",
+                        "騰訊控股 00700 QQ2024 開放預約",
                         fresh,
-                        snippet="QQ2024 产品升级开放预约，企业通信功能增强。",
+                        snippet="QQ2024 產品升級開放預約，企業通信功能增強。",
                         url="https://finance.example.invalid/products/QQ2024",
                         source="finance.example.invalid",
                     )
@@ -1125,11 +1125,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["腾讯控股 00700 QQ2024 开放预约"],
+            ["騰訊控股 00700 QQ2024 開放預約"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -1142,16 +1142,16 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 小姐上门 QQ：123456",
+                        "騰訊控股 00700 小姐上門 QQ：123456",
                         fresh,
-                        snippet="联系获取详情。",
+                        snippet="聯繫獲取詳情。",
                         url="https://spam.example.invalid/local/qq123456",
                         source="spam.example.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 发布回购公告",
+                        "騰訊控股 00700 發布回購公告",
                         fresh,
-                        snippet="腾讯控股披露股份回购公告。",
+                        snippet="騰訊控股披露股份回購公告。",
                         url="https://finance.example.invalid/news/00700-buyback",
                         source="finance.example.invalid",
                     ),
@@ -1159,9 +1159,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
-        self.assertEqual([item.title for item in resp.results], ["腾讯控股 00700 发布回购公告"])
+        self.assertEqual([item.title for item in resp.results], ["騰訊控股 00700 發布回購公告"])
 
     def test_adult_alphanumeric_contact_handle_is_filtered(self) -> None:
         """Contact handles such as 微信：abc123 should count as adult-service spam signals."""
@@ -1172,16 +1172,16 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 小姐上门 微信：abc123",
+                        "騰訊控股 00700 小姐上門 微信：abc123",
                         fresh,
-                        snippet="联系获取详情。",
+                        snippet="聯繫獲取詳情。",
                         url="https://spam.example.invalid/local/wechat-abc123",
                         source="spam.example.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 发布回购公告",
+                        "騰訊控股 00700 發布回購公告",
                         fresh,
-                        snippet="腾讯控股披露股份回购公告。",
+                        snippet="騰訊控股披露股份回購公告。",
                         url="https://finance.example.invalid/news/00700-buyback",
                         source="finance.example.invalid",
                     ),
@@ -1189,9 +1189,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
-        self.assertEqual([item.title for item in resp.results], ["腾讯控股 00700 发布回购公告"])
+        self.assertEqual([item.title for item in resp.results], ["騰訊控股 00700 發布回購公告"])
 
     def test_adult_phone_contact_is_filtered(self) -> None:
         """Phone contact labels should count as contact signals with adult-service context."""
@@ -1202,16 +1202,16 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 小姐上门 电话13800138000",
+                        "騰訊控股 00700 小姐上門 電話13800138000",
                         fresh,
-                        snippet="联系获取详情。",
+                        snippet="聯繫獲取詳情。",
                         url="https://spam.example.invalid/local/phone-13800138000",
                         source="spam.example.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 发布回购公告",
+                        "騰訊控股 00700 發布回購公告",
                         fresh,
-                        snippet="腾讯控股披露股份回购公告。",
+                        snippet="騰訊控股披露股份回購公告。",
                         url="https://finance.example.invalid/news/00700-buyback",
                         source="finance.example.invalid",
                     ),
@@ -1219,9 +1219,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
-        self.assertEqual([item.title for item in resp.results], ["腾讯控股 00700 发布回购公告"])
+        self.assertEqual([item.title for item in resp.results], ["騰訊控股 00700 發布回購公告"])
 
     def test_healthcare_phone_contact_news_does_not_trigger_adult_spam_filter(self) -> None:
         """Normal phone contacts plus healthcare category wording are not adult-service spam."""
@@ -1232,9 +1232,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "汤臣倍健 300146 保健品业务增长 联系电话02012345678",
+                        "湯臣倍健 300146 保健品業務增長 聯繫電話02012345678",
                         fresh,
-                        snippet="公司保健品业务增长，投资者联系电话02012345678。",
+                        snippet="公司保健品業務增長，投資者聯繫電話02012345678。",
                         url="https://finance.example.invalid/news/300146-healthcare",
                         source="finance.example.invalid",
                     )
@@ -1242,11 +1242,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("300146", "汤臣倍健", max_results=1)
+        resp = service.search_stock_news("300146", "湯臣倍健", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["汤臣倍健 300146 保健品业务增长 联系电话02012345678"],
+            ["湯臣倍健 300146 保健品業務增長 聯繫電話02012345678"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -1259,9 +1259,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 加强色情低俗内容治理",
+                        "騰訊控股 00700 加強色情低俗內容治理",
                         fresh,
-                        snippet="腾讯控股升级内容安全体系，持续治理色情低俗内容风险。",
+                        snippet="騰訊控股升級內容安全體系，持續治理色情低俗內容風險。",
                         url="https://finance.example.invalid/news/00700-content-safety",
                         source="finance.example.invalid",
                     )
@@ -1269,11 +1269,11 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=1)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=1)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["腾讯控股 00700 加强色情低俗内容治理"],
+            ["騰訊控股 00700 加強色情低俗內容治理"],
         )
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
 
@@ -1286,16 +1286,16 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     SearchResult(
-                        title="董事会公告",
-                        snippet="股份回购事项。",
+                        title="董事會公告",
+                        snippet="股份回購事項。",
                         url="",
                         source="hkexnews",
                         published_date=fresh,
                     ),
                     _result(
-                        "腾讯控股 00700 发布回购公告",
+                        "騰訊控股 00700 發布回購公告",
                         fresh,
-                        snippet="腾讯控股披露股份回购公告。",
+                        snippet="騰訊控股披露股份回購公告。",
                         url="https://finance.example.invalid/news/00700-buyback",
                         source="finance.example.invalid",
                     ),
@@ -1303,15 +1303,15 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=2)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=2)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["腾讯控股 00700 发布回购公告", "董事会公告"],
+            ["騰訊控股 00700 發布回購公告", "董事會公告"],
         )
         official_result = resp.results[1]
         self.assertGreater(official_result.relevance_score or 0, 0)
-        self.assertIn("来源接近公告或交易所渠道", official_result.relevance_reasons)
+        self.assertIn("來源接近公告或交易所渠道", official_result.relevance_reasons)
 
     def test_full_chinese_official_source_label_is_honored_without_url(self) -> None:
         """Full Chinese exchange labels without URL should retain official-source treatment."""
@@ -1323,15 +1323,15 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                 [
                     SearchResult(
                         title="上市公司公告",
-                        snippet="股份回购事项。",
+                        snippet="股份回購事項。",
                         url="",
-                        source="上海证券交易所",
+                        source="上海證券交易所",
                         published_date=fresh,
                     ),
                     _result(
-                        "贵州茅台 600519 发布回购公告",
+                        "貴州茅臺 600519 發布回購公告",
                         fresh,
-                        snippet="贵州茅台披露股份回购公告。",
+                        snippet="貴州茅臺披露股份回購公告。",
                         url="https://finance.example.invalid/news/600519-buyback",
                         source="finance.example.invalid",
                     ),
@@ -1339,15 +1339,15 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=2)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=2)
 
         self.assertEqual(
             [item.title for item in resp.results],
-            ["贵州茅台 600519 发布回购公告", "上市公司公告"],
+            ["貴州茅臺 600519 發布回購公告", "上市公司公告"],
         )
         official_result = resp.results[1]
         self.assertGreater(official_result.relevance_score or 0, 0)
-        self.assertIn("来源接近公告或交易所渠道", official_result.relevance_reasons)
+        self.assertIn("來源接近公告或交易所渠道", official_result.relevance_reasons)
 
     def test_spoofed_official_tokens_do_not_bypass_news_admission(self) -> None:
         """Official exemptions should require trusted parsed hosts or exact source labels."""
@@ -1358,37 +1358,37 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 极速版安装包下载",
+                        "騰訊控股 00700 極速版安裝包下載",
                         fresh,
-                        snippet="当前版本 686.38MB，84%好评，适合下载安装到手机。",
+                        snippet="當前版本 686.38MB，84%好評，適合下載安裝到手機。",
                         url="https://spam.example.invalid/sec.gov/apps/douyang",
                         source="spam.example.invalid",
                     ),
                     _result(
-                        "1000+ 宜昌小姐上门特殊服务",
+                        "1000+ 宜昌小姐上門特殊服務",
                         fresh,
-                        snippet="小姐预约 yue2345，同城约炮、保健按摩、推油套餐。",
+                        snippet="小姐預約 yue2345，同城約炮、保健按摩、推油套餐。",
                         url="https://hkexnews.evil.invalid/local/yue2345",
                         source="hkexnews.evil.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 官方app下载链接",
+                        "騰訊控股 00700 官方app下載鏈接",
                         fresh,
-                        snippet="安卓客户端下载，支持极速版下载。",
+                        snippet="安卓客戶端下載，支持極速版下載。",
                         url="https://hkexnews.evil.invalid/guide/officialdownload",
                         source="hkexnews",
                     ),
                     _result(
-                        "腾讯控股 00700 SEC 官方app下载链接",
+                        "騰訊控股 00700 SEC 官方app下載鏈接",
                         fresh,
-                        snippet="安卓客户端下载，支持极速版下载。",
+                        snippet="安卓客戶端下載，支持極速版下載。",
                         url="https://spam.example.invalid/apps/sec-download",
                         source="sec.gov",
                     ),
                     _result(
-                        "腾讯控股 00700 发布回购公告",
+                        "騰訊控股 00700 發布回購公告",
                         fresh,
-                        snippet="腾讯控股披露股份回购公告。",
+                        snippet="騰訊控股披露股份回購公告。",
                         url="https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0613/example.pdf",
                         source="hkexnews",
                     ),
@@ -1396,9 +1396,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             ),
         )
 
-        resp = service.search_stock_news("00700.HK", "腾讯控股", max_results=3)
+        resp = service.search_stock_news("00700.HK", "騰訊控股", max_results=3)
 
-        self.assertEqual([item.title for item in resp.results], ["腾讯控股 00700 发布回购公告"])
+        self.assertEqual([item.title for item in resp.results], ["騰訊控股 00700 發布回購公告"])
 
     def test_comprehensive_intel_filters_fillers_before_prompt_context(self) -> None:
         """Admission filtering should run before per-dimension result limiting."""
@@ -1409,30 +1409,30 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             response=_response(
                 [
                     _result(
-                        "腾讯控股 00700 极速版安装包下载",
+                        "騰訊控股 00700 極速版安裝包下載",
                         fresh,
-                        snippet="当前版本 686.38MB，84%好评，适合下载安装到手机。",
+                        snippet="當前版本 686.38MB，84%好評，適合下載安裝到手機。",
                         url="https://cdn.example.invalid/apps/00700/download",
                         source="cdn.example.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 Android 安装包评分",
+                        "騰訊控股 00700 Android 安裝包評分",
                         fresh,
-                        snippet="应用版本 12.8，评分 4.9，安装后可查看行情。",
+                        snippet="應用版本 12.8，評分 4.9，安裝後可查看行情。",
                         url="https://finance.example.invalid/tencent/00700-rating",
                         source="finance.example.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 iOS 旧版下载",
+                        "騰訊控股 00700 iOS 舊版下載",
                         fresh,
-                        snippet="历史版本安装包 256MB，用户好评率 96%。",
+                        snippet="歷史版本安裝包 256MB，用戶好評率 96%。",
                         url="https://download.example.invalid/ios/00700",
                         source="download.example.invalid",
                     ),
                     _result(
-                        "腾讯控股 00700 发布回购公告",
+                        "騰訊控股 00700 發布回購公告",
                         fresh,
-                        snippet="腾讯控股披露股份回购公告。",
+                        snippet="騰訊控股披露股份回購公告。",
                         source="hkexnews",
                     ),
                 ]
@@ -1442,13 +1442,13 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         with patch("src.search_service.time.sleep"):
             intel = service.search_comprehensive_intel(
                 stock_code="00700.HK",
-                stock_name="腾讯控股",
+                stock_name="騰訊控股",
                 max_searches=1,
             )
 
         self.assertEqual(
             [item.title for item in intel["latest_news"].results],
-            ["腾讯控股 00700 发布回购公告"],
+            ["騰訊控股 00700 發布回購公告"],
         )
         mock_search.assert_called_once()
 
@@ -1484,9 +1484,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                 return_value=_response(
                     [
                         _result(
-                            "贵州茅台 600519 发布回购公告",
+                            "貴州茅臺 600519 發布回購公告",
                             fresh,
-                            snippet="贵州茅台披露公司回购公告。",
+                            snippet="貴州茅臺披露公司回購公告。",
                         )
                     ]
                 )
@@ -1494,9 +1494,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         service._providers = [p1, p2]
 
-        resp = service.search_stock_news("600519", "贵州茅台", max_results=1)
+        resp = service.search_stock_news("600519", "貴州茅臺", max_results=1)
 
-        self.assertEqual(resp.results[0].title, "贵州茅台 600519 发布回购公告")
+        self.assertEqual(resp.results[0].title, "貴州茅臺 600519 發布回購公告")
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
         p1.search.assert_called_once()
         p2.search.assert_called_once()
@@ -1517,14 +1517,14 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                 return_value=_response(
                     [
                         _result(
-                            "腾讯音乐发布新专辑合作计划",
+                            "騰訊音樂發布新專輯合作計劃",
                             fresh,
-                            snippet="腾讯音乐娱乐集团宣布内容合作。",
+                            snippet="騰訊音樂娛樂集團宣布內容合作。",
                         ),
                         _result(
-                            "腾讯控股 00700 公告：回购股份",
+                            "騰訊控股 00700 公告：回購股份",
                             fresh,
-                            snippet="腾讯控股在港交所披露股份回购公告。",
+                            snippet="騰訊控股在港交所披露股份回購公告。",
                             source="hkexnews",
                         ),
                     ]
@@ -1533,9 +1533,9 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         )
         service._providers = [provider]
 
-        resp = service.search_stock_news("hk00700", "腾讯控股", max_results=2)
+        resp = service.search_stock_news("hk00700", "騰訊控股", max_results=2)
 
-        self.assertEqual(resp.results[0].title, "腾讯控股 00700 公告：回购股份")
+        self.assertEqual(resp.results[0].title, "騰訊控股 00700 公告：回購股份")
         self.assertEqual(resp.results[0].relevance_category, "direct_company_news")
         self.assertEqual(len(resp.results), 1)
 
@@ -1543,16 +1543,16 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         """Bare HK short codes should not make index-point headlines direct hits."""
         result = SearchService._score_news_relevance(
             _result(
-                "恒生指数大涨700点 科技股普遍反弹",
+                "恒生指數大漲700點 科技股普遍反彈",
                 datetime.now().date().isoformat(),
-                snippet="港股市场情绪回暖，指数走强。",
+                snippet="港股市場情緒回暖，指數走強。",
             ),
             stock_code="hk00700",
-            stock_name="腾讯控股",
+            stock_name="騰訊控股",
         )
 
         self.assertNotEqual(result.relevance_category, "direct_company_news")
-        self.assertNotIn("股票代码 700", "；".join(result.relevance_reasons or []))
+        self.assertNotIn("股票代碼 700", "；".join(result.relevance_reasons or []))
 
     def test_us_stock_ticker_relevance_beats_ambiguous_company_word(self) -> None:
         """US ticker hits should outrank ambiguous common-word company-name noise."""
@@ -1606,7 +1606,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         self.assertNotEqual(scored.relevance_category, "direct_company_news")
         self.assertFalse(
             any(
-                reason.startswith(("标题命中股票代码", "摘要命中股票代码", "链接命中股票代码"))
+                reason.startswith(("標題命中股票代碼", "摘要命中股票代碼", "鏈接命中股票代碼"))
                 for reason in (scored.relevance_reasons or [])
             )
         )
@@ -1628,7 +1628,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         fresh = datetime.now().date().isoformat()
         cases = (
             ("00700.HK", "HK00700 announces buyback"),
-            ("600519.SH", "600519 发布回购公告"),
+            ("600519.SH", "600519 發布回購公告"),
             ("AAPL.US", "AAPL announces quarterly results"),
         )
         for stock_code, title in cases:
@@ -1643,7 +1643,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
                     stock_name="Unmatched Name",
                 )
                 self.assertEqual(scored.relevance_category, "direct_company_news")
-                self.assertIn("股票代码", "；".join(scored.relevance_reasons or []))
+                self.assertIn("股票代碼", "；".join(scored.relevance_reasons or []))
 
     def test_us_ticker_matches_before_known_dotted_market_suffix(self) -> None:
         """Ticker boundaries should allow explicit market suffixes from news feeds."""
@@ -1676,7 +1676,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
             stock_name="Microsoft",
         )
         self.assertEqual(scored.relevance_category, "direct_company_news")
-        self.assertIn("股票代码", "；".join(scored.relevance_reasons or []))
+        self.assertIn("股票代碼", "；".join(scored.relevance_reasons or []))
 
     def test_one_letter_us_ticker_does_not_match_common_article_words(self) -> None:
         """Bare one-letter US tickers should not make ordinary words direct hits."""
@@ -1824,20 +1824,20 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
 
     def test_relevance_metadata_is_visible_in_news_context(self) -> None:
         result = SearchResult(
-            title="贵州茅台 600519 发布公告",
-            snippet="公司披露董事会决议。",
+            title="貴州茅臺 600519 發布公告",
+            snippet="公司披露董事會決議。",
             url="https://example.com/news",
             source="cninfo",
             published_date=datetime.now().date().isoformat(),
             relevance_score=100,
             relevance_category="direct_company_news",
-            relevance_reasons=["标题命中股票代码 600519", "标题命中公司名 贵州茅台"],
+            relevance_reasons=["標題命中股票代碼 600519", "標題命中公司名 貴州茅臺"],
         )
-        context = SearchResponse(query="贵州茅台", results=[result], provider="Unit").to_context()
+        context = SearchResponse(query="貴州茅臺", results=[result], provider="Unit").to_context()
 
-        self.assertIn("关联度", context)
+        self.assertIn("關聯度", context)
         self.assertIn("direct_company_news", context)
-        self.assertIn("标题命中股票代码 600519", context)
+        self.assertIn("標題命中股票代碼 600519", context)
 
     def test_search_stock_news_brave_locale_matches_market_context(self) -> None:
         """Brave locale should follow Chinese-preferred vs US-stock contexts."""
@@ -1845,7 +1845,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         fresh_iso = fresh_dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         for stock_code, stock_name, expected_lang, expected_country, title, description in (
-            ("600519", "贵州茅台", "zh-hans", "CN", "中文资讯", "中文摘要"),
+            ("600519", "貴州茅臺", "zh-hans", "CN", "中文資訊", "中文摘要"),
             ("AAPL", "Apple", "en", "US", "Apple earnings beat", "English summary"),
         ):
             with self.subTest(stock_code=stock_code):
@@ -1898,7 +1898,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         with patch("src.search_service.time.sleep"):
             intel = service.search_comprehensive_intel(
                 stock_code="600519",
-                stock_name="贵州茅台",
+                stock_name="貴州茅臺",
                 max_searches=2,
             )
 
@@ -1937,7 +1937,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         with patch("src.search_service.time.sleep"):
             intel = service.search_comprehensive_intel(
                 stock_code="600519",
-                stock_name="贵州茅台",
+                stock_name="貴州茅臺",
                 max_searches=5,
             )
 
@@ -1984,7 +1984,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         with patch("src.search_service.time.sleep"):
             intel = service.search_comprehensive_intel(
                 stock_code="600519",
-                stock_name="贵州茅台",
+                stock_name="貴州茅臺",
                 max_searches=5,
             )
 
@@ -2020,7 +2020,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         with patch("src.search_service.time.sleep"):
             intel = service.search_comprehensive_intel(
                 stock_code="510300",
-                stock_name="沪深300ETF",
+                stock_name="滬深300ETF",
                 max_searches=3,
             )
 
@@ -2049,7 +2049,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         with patch("src.search_service.time.sleep"):
             intel = service.search_comprehensive_intel(
                 stock_code="600519",
-                stock_name="贵州茅台",
+                stock_name="貴州茅臺",
                 max_searches=3,
             )
 
@@ -2077,7 +2077,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         with patch("src.search_service.time.sleep"):
             intel = service.search_comprehensive_intel(
                 stock_code="600519",
-                stock_name="贵州茅台",
+                stock_name="貴州茅臺",
                 max_searches=4,
             )
 
@@ -2107,7 +2107,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         with patch("src.search_service.time.sleep"):
             intel = service.search_comprehensive_intel(
                 stock_code="600519",
-                stock_name="贵州茅台",
+                stock_name="貴州茅臺",
                 max_searches=4,
             )
 
@@ -2136,7 +2136,7 @@ class SearchNewsFreshnessTestCase(unittest.TestCase):
         with patch("src.search_service.time.sleep"):
             intel = service.search_comprehensive_intel(
                 stock_code="510300",
-                stock_name="沪深300ETF",
+                stock_name="滬深300ETF",
                 max_searches=4,
             )
 

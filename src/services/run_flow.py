@@ -21,9 +21,9 @@ from src.utils.data_processing import normalize_model_used, parse_json_field
 
 _LANES = [
     {"id": "entry", "label": "入口", "order": 1},
-    {"id": "data_source", "label": "数据来源", "order": 2},
+    {"id": "data_source", "label": "數據來源", "order": 2},
     {"id": "analysis", "label": "分析引擎", "order": 3},
-    {"id": "artifact", "label": "产物", "order": 4},
+    {"id": "artifact", "label": "產物", "order": 4},
 ]
 
 _RUN_STATUS_MAP = {
@@ -38,16 +38,16 @@ _RUN_STATUS_MAP = {
 }
 
 _DATA_TYPE_LABELS = {
-    "realtime_quote": "实时行情",
-    "daily_data": "日线K线",
-    "daily_bars": "日线K线",
-    "technical": "技术指标",
-    "news": "新闻舆情",
-    "news_search": "新闻舆情",
+    "realtime_quote": "實時行情",
+    "daily_data": "日線K線",
+    "daily_bars": "日線K線",
+    "technical": "技術指標",
+    "news": "新聞輿情",
+    "news_search": "新聞輿情",
     "fundamental": "基本面",
     "fundamentals": "基本面",
-    "belong_boards": "所属板块",
-    "chip": "筹码结构",
+    "belong_boards": "所屬板塊",
+    "chip": "籌碼結構",
 }
 
 _DATA_TYPE_TO_BLOCK_KEY = {
@@ -101,12 +101,12 @@ def build_task_run_flow_snapshot(
         "request",
         lane="entry",
         kind="entry",
-        label="用户请求",
+        label="用戶請求",
         status="success" if created_at else "unknown",
         started_at=created_at,
         ended_at=created_at,
         message=_safe_text(getattr(task, "original_query", None), max_length=120)
-        or "任务请求已创建",
+        or "任務請求已創建",
         metadata={
             "selection_source": getattr(task, "selection_source", None),
             "query_source": getattr(task, "query_source", None),
@@ -119,7 +119,7 @@ def build_task_run_flow_snapshot(
         "task_queue",
         lane="entry",
         kind="queue",
-        label="任务队列",
+        label="任務隊列",
         status=flow_status,
         started_at=created_at,
         ended_at=completed_at,
@@ -143,7 +143,7 @@ def build_task_run_flow_snapshot(
             started_at=started_at,
             message=getattr(task, "message", None) or _task_status_message(flow_status),
         )
-        _append_edge(edges, "task_queue", "analysis_pipeline", "control", flow_status, label="调度")
+        _append_edge(edges, "task_queue", "analysis_pipeline", "control", flow_status, label="調度")
     else:
         _put_skeleton_tail(nodes, edges, anchor_node_id="task_queue", status=flow_status)
 
@@ -222,11 +222,11 @@ def build_history_run_flow_snapshot(
         "request",
         lane="entry",
         kind="entry",
-        label="用户请求",
+        label="用戶請求",
         status="success",
         started_at=created_at,
         ended_at=created_at,
-        message="历史分析记录",
+        message="歷史分析記錄",
         metadata={
             "query_id": query_id,
             "trigger_source": diagnostics.get("trigger_source") or overview_metadata.get("trigger_source"),
@@ -238,11 +238,11 @@ def build_history_run_flow_snapshot(
         "task_queue",
         lane="entry",
         kind="queue",
-        label="任务队列",
+        label="任務隊列",
         status="success",
         started_at=created_at,
         ended_at=created_at,
-        message="任务已完成并进入历史记录",
+        message="任務已完成並進入歷史記錄",
     )
     _append_edge(edges, "request", "task_queue", "control", "success", label="提交")
     _append_event(
@@ -251,8 +251,8 @@ def build_history_run_flow_snapshot(
         node_id="task_queue",
         timestamp=created_at,
         severity="success",
-        title="任务完成",
-        message="历史记录已生成",
+        title="任務完成",
+        message="歷史記錄已生成",
     )
 
     provider_success_by_block = _append_provider_runs(
@@ -281,7 +281,7 @@ def build_history_run_flow_snapshot(
     )
     _append_context_blocks(nodes, edges, events, overview, provider_success_by_block)
     if not any(edge["to"] == "context_pack" for edge in edges):
-        _append_edge(edges, "task_queue", "context_pack", "data", context_status, label="输入")
+        _append_edge(edges, "task_queue", "context_pack", "data", context_status, label="輸入")
 
     last_analysis_node = _append_llm_runs(
         nodes,
@@ -299,7 +299,7 @@ def build_history_run_flow_snapshot(
             label="LLM 生成",
             status="unknown",
             provider=normalize_model_used(raw.get("model_used")) if raw else None,
-            message="LLM 未记录诊断信息",
+            message="LLM 未記錄診斷信息",
         )
         _append_edge(edges, "context_pack", "llm", "data", "unknown", label="生成")
         last_analysis_node = "llm"
@@ -318,10 +318,10 @@ def build_history_run_flow_snapshot(
             "history_save",
             lane="artifact",
             kind="artifact",
-            label="保存报告",
+            label="保存報告",
             status="success",
             ended_at=created_at,
-            message="历史记录已存在",
+            message="歷史記錄已存在",
             metadata={"analysis_history_id": getattr(record, "id", None)},
         )
         _append_edge(edges, last_analysis_node, "history_save", "data", "success", label="保存")
@@ -342,7 +342,7 @@ def build_history_run_flow_snapshot(
             kind="notification",
             label="推送通知",
             status="unknown",
-            message="通知结果未记录",
+            message="通知結果未記錄",
         )
         _append_edge(edges, last_artifact_node, "notification", "control", "unknown", label="通知")
 
@@ -438,11 +438,11 @@ def _append_provider_runs(
                 node_id,
                 edge_kind,
                 status,
-                label="降级" if edge_kind == "fallback" else "重试",
+                label="降級" if edge_kind == "fallback" else "重試",
                 message=_safe_text(run.get("fallback_from") or run.get("fallback_to"), max_length=120),
             )
         else:
-            _append_edge(edges, "task_queue", node_id, "control", status, label="调用")
+            _append_edge(edges, "task_queue", node_id, "control", status, label="調用")
 
         if success:
             provider_success_by_block[block_key] = node_id
@@ -454,7 +454,7 @@ def _append_provider_runs(
             node_id=node_id,
             timestamp=timestamp,
             severity=severity,
-            title=f"{label}{'成功' if success else '失败'}",
+            title=f"{label}{'成功' if success else '失敗'}",
             message=message,
             metadata={
                 "provider": provider,
@@ -511,10 +511,10 @@ def _append_context_blocks(
         )
         provider_node_id = provider_success_by_block.get(key)
         if provider_node_id:
-            _append_edge(edges, provider_node_id, node_id, "data", status, label="输入")
+            _append_edge(edges, provider_node_id, node_id, "data", status, label="輸入")
         else:
-            _append_edge(edges, "task_queue", node_id, "data", status, label="输入")
-        _append_edge(edges, node_id, "context_pack", "data", status, label="组装")
+            _append_edge(edges, "task_queue", node_id, "data", status, label="輸入")
+        _append_edge(edges, node_id, "context_pack", "data", status, label="組裝")
         if status != "success":
             _append_event(
                 events,
@@ -522,7 +522,7 @@ def _append_context_blocks(
                 node_id=node_id,
                 timestamp=overview.get("created_at"),
                 severity="danger" if status == "failed" else "warning",
-                title=f"{block_map.get('label') or key}输入状态",
+                title=f"{block_map.get('label') or key}輸入狀態",
                 message=_context_block_message(block_map),
                 metadata={
                     "block_key": key,
@@ -591,7 +591,7 @@ def _append_llm_runs(
             node_id=node_id,
             timestamp=timestamp,
             severity="success" if success else "danger",
-            title=f"LLM {'成功' if success else '失败'}",
+            title=f"LLM {'成功' if success else '失敗'}",
             message=message,
             metadata={
                 "provider": provider,
@@ -627,13 +627,13 @@ def _append_history_runs(
         status = "success" if success else "failed"
         node_id = "history_save" if index == 1 else f"history_save_{index}"
         timestamp = _datetime_to_iso(run.get("created_at")) or fallback_created_at
-        message = "报告历史已保存" if success else f"报告历史保存失败：{_safe_text(run.get('error_message_sanitized'), max_length=160) or '未知错误'}"
+        message = "報告歷史已保存" if success else f"報告歷史保存失敗：{_safe_text(run.get('error_message_sanitized'), max_length=160) or '未知錯誤'}"
         _put_node(
             nodes,
             node_id,
             lane="artifact",
             kind="artifact",
-            label="保存报告",
+            label="保存報告",
             status=status,
             ended_at=timestamp,
             message=message,
@@ -650,7 +650,7 @@ def _append_history_runs(
             node_id=node_id,
             timestamp=timestamp,
             severity="success" if success else "danger",
-            title="历史保存成功" if success else "历史保存失败",
+            title="歷史保存成功" if success else "歷史保存失敗",
             message=message,
             metadata={
                 "metadata_saved": run.get("metadata_saved"),
@@ -714,7 +714,7 @@ def _append_notification_runs(
             node_id=node_id,
             timestamp=timestamp,
             severity="success" if status == "success" else ("warning" if status == "skipped" else "danger"),
-            title="通知发送成功" if status == "success" else ("通知跳过" if status == "skipped" else "通知失败"),
+            title="通知發送成功" if status == "success" else ("通知跳過" if status == "skipped" else "通知失敗"),
             message=message,
             metadata={
                 "channel": channel,
@@ -825,7 +825,7 @@ def _put_skeleton_tail(
         kind="analysis",
         label="ContextPack",
         status=downstream_status,
-        message="尚未记录输入上下文诊断",
+        message="尚未記錄輸入上下文診斷",
     )
     _put_node(
         nodes,
@@ -834,16 +834,16 @@ def _put_skeleton_tail(
         kind="model",
         label="LLM 生成",
         status=downstream_status,
-        message="尚未记录 LLM 诊断",
+        message="尚未記錄 LLM 診斷",
     )
     _put_node(
         nodes,
         "history_save",
         lane="artifact",
         kind="artifact",
-        label="保存报告",
+        label="保存報告",
         status=downstream_status,
-        message="尚未记录历史保存结果",
+        message="尚未記錄歷史保存結果",
     )
     _put_node(
         nodes,
@@ -852,9 +852,9 @@ def _put_skeleton_tail(
         kind="notification",
         label="推送通知",
         status=downstream_status,
-        message="尚未记录通知结果",
+        message="尚未記錄通知結果",
     )
-    _append_edge(edges, anchor_node_id, "context_pack", "data", downstream_status, label="输入")
+    _append_edge(edges, anchor_node_id, "context_pack", "data", downstream_status, label="輸入")
     _append_edge(edges, "context_pack", "llm", "data", downstream_status, label="生成")
     _append_edge(edges, "llm", "history_save", "data", downstream_status, label="保存")
     _append_edge(edges, "history_save", "notification", "control", downstream_status, label="通知")
@@ -887,8 +887,8 @@ def _append_task_events(events: List[Dict[str, Any]], task: Any, flow_status: st
         node_id="task_queue",
         timestamp=_datetime_to_iso(getattr(task, "created_at", None)),
         severity="info",
-        title="任务已创建",
-        message=getattr(task, "message", None) or "任务已加入队列",
+        title="任務已創建",
+        message=getattr(task, "message", None) or "任務已加入隊列",
     )
     if getattr(task, "started_at", None):
         _append_event(
@@ -897,8 +897,8 @@ def _append_task_events(events: List[Dict[str, Any]], task: Any, flow_status: st
             node_id="task_queue",
             timestamp=_datetime_to_iso(getattr(task, "started_at", None)),
             severity="info",
-            title="任务开始执行",
-            message=getattr(task, "message", None) or "任务执行中",
+            title="任務開始執行",
+            message=getattr(task, "message", None) or "任務執行中",
         )
     if flow_status == "failed":
         _append_event(
@@ -907,7 +907,7 @@ def _append_task_events(events: List[Dict[str, Any]], task: Any, flow_status: st
             node_id="task_queue",
             timestamp=_datetime_to_iso(getattr(task, "completed_at", None)),
             severity="danger",
-            title="任务失败",
+            title="任務失敗",
             message=getattr(task, "error", None) or getattr(task, "message", None),
         )
     elif flow_status in {"cancel_requested", "cancelled"}:
@@ -917,7 +917,7 @@ def _append_task_events(events: List[Dict[str, Any]], task: Any, flow_status: st
             node_id="task_queue",
             timestamp=_datetime_to_iso(getattr(task, "completed_at", None)),
             severity="warning",
-            title="任务取消" if flow_status == "cancelled" else "任务请求取消",
+            title="任務取消" if flow_status == "cancelled" else "任務請求取消",
             message=getattr(task, "message", None),
         )
     elif flow_status == "success":
@@ -927,7 +927,7 @@ def _append_task_events(events: List[Dict[str, Any]], task: Any, flow_status: st
             node_id="task_queue",
             timestamp=_datetime_to_iso(getattr(task, "completed_at", None)),
             severity="success",
-            title="任务完成",
+            title="任務完成",
             message=getattr(task, "message", None) or "分析完成",
         )
 
@@ -1014,10 +1014,10 @@ def _append_active_flow_events(
                         node_id,
                         edge_kind,
                         nodes[node_id].get("status", "unknown"),
-                        label="降级" if edge_kind == "fallback" else ("重试" if edge_kind == "retry" else "调用"),
+                        label="降級" if edge_kind == "fallback" else ("重試" if edge_kind == "retry" else "調用"),
                     )
                 else:
-                    _append_edge(edges, "task_queue", node_id, "control", nodes[node_id].get("status", "unknown"), label="调用")
+                    _append_edge(edges, "task_queue", node_id, "control", nodes[node_id].get("status", "unknown"), label="調用")
                 last_provider_node_by_type[provider_data_type] = (node_id, provider_run)
             elif event_type in {"llm_run", "llm_run_started"}:
                 anchor = "analysis_pipeline" if "analysis_pipeline" in nodes else "task_queue"
@@ -1049,7 +1049,7 @@ def _append_external_event(events: List[Dict[str, Any]], event: Dict[str, Any]) 
             "severity": event.get("severity") if event.get("severity") in {"info", "success", "warning", "danger"} else "info",
             "type": _safe_key(event.get("type")) or "event",
             "node_id": _safe_text(event.get("node_id"), max_length=120),
-            "title": _safe_text(event.get("title"), max_length=100) or "运行事件",
+            "title": _safe_text(event.get("title"), max_length=100) or "運行事件",
             "message": _safe_text(event.get("message"), max_length=220),
             "metadata": metadata,
         }
@@ -1127,65 +1127,65 @@ def _context_pack_status(overview: Optional[Dict[str, Any]]) -> str:
 
 def _context_pack_message(overview: Optional[Dict[str, Any]]) -> str:
     if not overview:
-        return "未记录 AnalysisContextPack overview"
+        return "未記錄 AnalysisContextPack overview"
     counts = overview.get("counts")
     if isinstance(counts, Mapping):
         available = counts.get("available", 0)
-        return f"输入上下文已组装，可用块 {available}"
-    return "输入上下文已组装"
+        return f"輸入上下文已組裝，可用塊 {available}"
+    return "輸入上下文已組裝"
 
 
 def _context_block_message(block: Dict[str, Any]) -> str:
     status = str(block.get("status") or "")
     if status == "available":
-        return "已进入本次分析输入"
+        return "已進入本次分析輸入"
     if status == "fallback":
-        return "本次分析输入使用降级数据"
+        return "本次分析輸入使用降級數據"
     if status == "partial":
-        return "本次分析输入仅部分可用"
+        return "本次分析輸入僅部分可用"
     if status == "stale":
-        return "本次分析输入使用过期数据"
+        return "本次分析輸入使用過期數據"
     if status == "estimated":
-        return "本次分析输入使用估算数据"
+        return "本次分析輸入使用估算數據"
     if status == "fetch_failed":
-        return "输入块抓取失败"
+        return "輸入塊抓取失敗"
     if status == "missing":
         reasons = _as_list(block.get("missing_reasons"))
         reason = _safe_text(reasons[0], max_length=120) if reasons else None
-        return f"未进入本次分析输入：{reason}" if reason else "未进入本次分析输入"
+        return f"未進入本次分析輸入：{reason}" if reason else "未進入本次分析輸入"
     if status == "not_supported":
-        return "当前市场或链路不支持该输入块"
-    return f"输入块状态为 {status or 'unknown'}"
+        return "當前市場或鏈路不支持該輸入塊"
+    return f"輸入塊狀態爲 {status or 'unknown'}"
 
 
 def _provider_run_message(label: str, provider: str, run: Dict[str, Any], *, success: bool) -> str:
     if success:
         record_count = _safe_int(run.get("record_count"))
-        suffix = f"，返回 {record_count} 条" if record_count is not None else ""
+        suffix = f"，返回 {record_count} 條" if record_count is not None else ""
         return f"{label} {provider} 成功{suffix}"
     error = _safe_text(run.get("error_message_sanitized") or run.get("error_type"), max_length=160)
-    return f"{label} {provider} 失败：{error or '未知错误'}"
+    return f"{label} {provider} 失敗：{error or '未知錯誤'}"
 
 
 def _llm_run_message(model: Optional[str], run: Dict[str, Any], *, success: bool) -> str:
     display_model = _safe_text(model or run.get("provider") or "unknown", max_length=120)
     if success:
         if run.get("fallback_model"):
-            return f"LLM {display_model} 成功，期间发生模型切换"
+            return f"LLM {display_model} 成功，期間發生模型切換"
         return f"LLM {display_model} 成功"
     error = _safe_text(run.get("error_message_sanitized") or run.get("error_type"), max_length=160)
-    return f"LLM {display_model} 失败：{error or '未知错误'}"
+    return f"LLM {display_model} 失敗：{error or '未知錯誤'}"
 
 
 def _notification_run_message(channel: str, run: Dict[str, Any], status: str) -> str:
     if status == "success":
-        return f"{channel} 通知发送成功"
+        return f"{channel} 通知發送成功"
     if status == "skipped":
-        return f"{channel} 通知跳过"
+        return f"{channel} 通知跳過"
     if status == "failed":
         error = _safe_text(run.get("error_message_sanitized") or run.get("status"), max_length=160)
-        return f"{channel} 通知失败：{error or '未知错误'}"
-    return f"{channel} 通知结果未知"
+        return f"{channel} 通知失敗：{error or '未知錯誤'}"
+    return f"{channel} 通知結果未知"
 
 
 def _build_summary(
@@ -1368,13 +1368,13 @@ def _map_task_status(status_value: str) -> str:
 
 def _task_status_message(status: str) -> str:
     return {
-        "pending": "任务已加入队列",
-        "running": "任务执行中",
-        "success": "任务已完成",
-        "failed": "任务失败",
-        "cancel_requested": "任务请求取消",
-        "cancelled": "任务已取消",
-    }.get(status, "任务状态未知")
+        "pending": "任務已加入隊列",
+        "running": "任務執行中",
+        "success": "任務已完成",
+        "failed": "任務失敗",
+        "cancel_requested": "任務請求取消",
+        "cancelled": "任務已取消",
+    }.get(status, "任務狀態未知")
 
 
 def _valid_status(value: Any) -> str:

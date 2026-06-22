@@ -261,7 +261,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
         )
         run_full_analysis.assert_called_once_with(config, args, None)
         warning_log.assert_any_call(
-            "定时模式下检测到 --stocks 参数；计划执行将忽略启动时股票快照，并在每次运行前重新读取最新的 STOCK_LIST。"
+            "定時模式下檢測到 --stocks 參數；計劃執行將忽略啓動時股票快照，並在每次運行前重新讀取最新的 STOCK_LIST。"
         )
 
     def test_standalone_run_resolves_stocks_before_run_full_analysis(self) -> None:
@@ -366,7 +366,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
             background_task["task"]()
 
         worker.run_once.assert_called_once_with()
-        info_log.assert_any_call("[EventMonitor] 本轮触发 %d 条提醒", 2)
+        info_log.assert_any_call("[EventMonitor] 本輪觸發 %d 條提醒", 2)
 
     def test_schedule_mode_registers_event_monitor_worker_without_legacy_rules(self) -> None:
         args = self._make_args(schedule=True)
@@ -420,14 +420,14 @@ class MainScheduleModeTestCase(unittest.TestCase):
              ) as run_diagnostics, \
              patch(
                  "src.services.notification_diagnostics.format_notification_diagnostics",
-                 return_value="通知配置诊断",
+                 return_value="通知配置診斷",
              ), \
              patch("builtins.print") as print_output:
             exit_code = main.main()
 
         self.assertEqual(exit_code, 0)
         run_diagnostics.assert_called_once_with(config)
-        print_output.assert_called_once_with("通知配置诊断")
+        print_output.assert_called_once_with("通知配置診斷")
         start_api_server.assert_not_called()
         run_full_analysis.assert_not_called()
 
@@ -1004,8 +1004,8 @@ class MainScheduleModeTestCase(unittest.TestCase):
         with patch.object(main, "_refresh_stock_index_cache_for_analysis") as refresh, \
              patch("main._compute_trading_day_filter", return_value=([], "cn", False)), \
              patch("src.core.pipeline.StockAnalysisPipeline", side_effect=build_pipeline), \
-             patch("main._prime_daily_market_context", side_effect=[("", ""), ("缓存摘要", "完整复盘")]) as prime_context, \
-             patch("main._run_market_review_with_shared_lock", return_value=SimpleNamespace(report="大盘复盘")) as run_with_lock:
+             patch("main._prime_daily_market_context", side_effect=[("", ""), ("緩存摘要", "完整復盤")]) as prime_context, \
+             patch("main._run_market_review_with_shared_lock", return_value=SimpleNamespace(report="大盤復盤")) as run_with_lock:
             main.run_full_analysis(config, args, [])
 
         self.assertTrue(pipeline_kwargs["daily_market_context_enabled"])
@@ -1044,7 +1044,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
              patch("main._compute_trading_day_filter", return_value=([], "cn", False)), \
              patch("main._resolve_daily_market_context_target_date", side_effect=resolve_target_date), \
              patch("src.core.pipeline.StockAnalysisPipeline", side_effect=build_pipeline), \
-             patch("main._prime_daily_market_context", return_value=("大盘退潮，高风险，建议观望，仓位上限30%。", "完整复盘正文")) as prime_context, \
+             patch("main._prime_daily_market_context", return_value=("大盤退潮，高風險，建議觀望，倉位上限30%。", "完整復盤正文")) as prime_context, \
              patch("main._run_market_review_with_shared_lock") as run_with_lock, \
              patch("src.core.market_review.run_market_review") as run_market_review:
             main.run_full_analysis(config, args, [])
@@ -1108,8 +1108,8 @@ class MainScheduleModeTestCase(unittest.TestCase):
              patch("main._compute_trading_day_filter", return_value=([], "cn,us", False)), \
              patch("main._resolve_daily_market_context_target_date", return_value=target_date), \
              patch("src.core.pipeline.StockAnalysisPipeline", side_effect=build_pipeline), \
-             patch("main._prime_daily_market_context", return_value=("A股缓存摘要", "")) as prime_context, \
-             patch("main._run_market_review_with_shared_lock", return_value="多市场复盘") as run_with_lock, \
+             patch("main._prime_daily_market_context", return_value=("A股緩存摘要", "")) as prime_context, \
+             patch("main._run_market_review_with_shared_lock", return_value="多市場復盤") as run_with_lock, \
              patch("src.core.market_review.run_market_review") as run_market_review:
             main.run_full_analysis(config, args, [])
 
@@ -1158,7 +1158,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
         pipeline._daily_market_context_service = None
         pipeline.db = MagicMock()
         pipeline.query_id = "prime-query"
-        context = SimpleNamespace(source="analysis_history", summary="历史复盘摘要")
+        context = SimpleNamespace(source="analysis_history", summary="歷史復盤摘要")
         service = MagicMock()
         service.get_context.return_value = context
 
@@ -1176,7 +1176,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
                 return_full_report=True,
             )
 
-        self.assertEqual(summary, "历史复盘摘要")
+        self.assertEqual(summary, "歷史復盤摘要")
         self.assertEqual(full_report, "")
         service_cls.assert_called_once_with(db_manager=pipeline.db)
         call_kwargs = service.get_context.call_args.kwargs
@@ -1204,8 +1204,8 @@ class MainScheduleModeTestCase(unittest.TestCase):
         pipeline.query_id = "prime-query"
         context = SimpleNamespace(
             source="market_review_runtime",
-            summary="本轮运行时复盘摘要",
-            full_report="本轮运行时完整复盘",
+            summary="本輪運行時復盤摘要",
+            full_report="本輪運行時完整復盤",
             query_id="prime-query",
         )
         service = MagicMock()
@@ -1226,8 +1226,8 @@ class MainScheduleModeTestCase(unittest.TestCase):
                 require_current_query_match=True,
             )
 
-        self.assertEqual(summary, "本轮运行时复盘摘要")
-        self.assertEqual(full_report, "本轮运行时完整复盘")
+        self.assertEqual(summary, "本輪運行時復盤摘要")
+        self.assertEqual(full_report, "本輪運行時完整復盤")
         self.assertTrue(service.get_context.call_args.kwargs["require_query_id_match"])
 
     def test_run_full_analysis_generates_full_market_review_once_after_stock_analysis(self) -> None:
@@ -1254,7 +1254,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
 
         def run_with_lock(*args, **kwargs):
             events.append("market-review")
-            return SimpleNamespace(report="完整复盘")
+            return SimpleNamespace(report="完整復盤")
 
         with patch.object(main, "_refresh_stock_index_cache_for_analysis") as refresh, \
              patch("main._compute_trading_day_filter", return_value=([], "cn", False)), \
@@ -1322,7 +1322,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
             pipeline_kwargs.update(kwargs)
             return pipeline
 
-        runtime_context = ("本轮运行时复盘摘要", "## 本轮运行时完整复盘")
+        runtime_context = ("本輪運行時復盤摘要", "## 本輪運行時完整復盤")
         with patch.object(main, "_refresh_stock_index_cache_for_analysis") as refresh, \
              patch("main._compute_trading_day_filter", return_value=([], "cn", False)), \
              patch("main._resolve_daily_market_context_target_date", return_value=target_date), \
@@ -1339,7 +1339,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
         run_with_lock.assert_not_called()
         run_market_review.assert_not_called()
         pipeline.notifier.send.assert_called_once()
-        self.assertIn("## 本轮运行时完整复盘", pipeline.notifier.send.call_args.args[0])
+        self.assertIn("## 本輪運行時完整復盤", pipeline.notifier.send.call_args.args[0])
         self.assertEqual(pipeline.notifier.send.call_args.kwargs["route_type"], "report")
         query_scoped_read = unittest.mock.call(
             config,
@@ -1390,7 +1390,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
         def build_pipeline(*args, **kwargs):
             return pipeline
 
-        runtime_context = ("本轮运行时复盘摘要", "## 本轮运行时完整复盘")
+        runtime_context = ("本輪運行時復盤摘要", "## 本輪運行時完整復盤")
         with (
             patch.object(main, "_refresh_stock_index_cache_for_analysis") as refresh,
             patch("main._compute_trading_day_filter", return_value=([], "cn", False)),
@@ -1410,8 +1410,8 @@ class MainScheduleModeTestCase(unittest.TestCase):
         pipeline.notifier.send.assert_not_called()
         pipeline.notifier.save_report_to_file.assert_called_once()
         saved_content, saved_filename = pipeline.notifier.save_report_to_file.call_args.args
-        self.assertTrue(saved_content.startswith("# 🎯 大盘复盘\n\n"))
-        self.assertIn("## 本轮运行时完整复盘", saved_content)
+        self.assertTrue(saved_content.startswith("# 🎯 大盤復盤\n\n"))
+        self.assertIn("## 本輪運行時完整復盤", saved_content)
         self.assertTrue(saved_filename.startswith("market_review_"))
         self.assertTrue(saved_filename.endswith(".md"))
         self.assertEqual(prime_context.call_count, 3)
@@ -1444,7 +1444,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
              patch("src.core.pipeline.StockAnalysisPipeline", side_effect=build_pipeline), \
              patch(
                 "main._prime_daily_market_context",
-                return_value=("大盘退潮，高风险，建议观望。", "## 完整大盘复盘\n市场结构偏弱，建议保守。"),
+                return_value=("大盤退潮，高風險，建議觀望。", "## 完整大盤復盤\n市場結構偏弱，建議保守。"),
              ) as prime_context, \
              patch("main._run_market_review_with_shared_lock") as run_with_lock, \
              patch("src.core.market_review.run_market_review") as run_market_review:
@@ -1504,7 +1504,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
 
         def run_with_lock(*args, **kwargs):
             events.append("market-review")
-            return SimpleNamespace(report="完整复盘")
+            return SimpleNamespace(report="完整復盤")
 
         with patch.object(main, "_refresh_stock_index_cache_for_analysis") as refresh, \
              patch("main._compute_trading_day_filter", return_value=([], "cn", False)), \
@@ -1594,8 +1594,8 @@ class MainScheduleModeTestCase(unittest.TestCase):
              patch(
                 "main._prime_daily_market_context",
                 return_value=(
-                    "大盘退潮，高风险，建议观望。",
-                    "## 完整大盘复盘\n市场结构偏弱，建议保守。",
+                    "大盤退潮，高風險，建議觀望。",
+                    "## 完整大盤復盤\n市場結構偏弱，建議保守。",
                 ),
              ) as prime_context, \
              patch("main._run_market_review_with_shared_lock") as run_with_lock, \
@@ -1637,8 +1637,8 @@ class MainScheduleModeTestCase(unittest.TestCase):
             current_time=unittest.mock.ANY,
         )
         notifier_message = pipeline.notifier.send.call_args.args[0]
-        self.assertIn("## 完整大盘复盘", notifier_message)
-        self.assertNotIn("大盘退潮，高风险，建议观望。", notifier_message)
+        self.assertIn("## 完整大盤復盤", notifier_message)
+        self.assertNotIn("大盤退潮，高風險，建議觀望。", notifier_message)
 
     def test_run_market_review_with_shared_lock_forwards_request_config(self) -> None:
         config = self._make_config(
@@ -1650,7 +1650,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
             analysis_delay=0,
             database_path=str(Path(self.temp_dir.name) / "stock_analysis.db"),
         )
-        run_review = MagicMock(return_value="复盘结果")
+        run_review = MagicMock(return_value="復盤結果")
 
         with patch("src.core.market_review_lock.try_acquire_market_review_lock", return_value=object()) as acquire_lock, \
              patch("src.core.market_review_lock.release_market_review_lock") as release_lock:
@@ -1660,7 +1660,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
                 send_notification=False,
             )
 
-        self.assertEqual(result, "复盘结果")
+        self.assertEqual(result, "復盤結果")
         acquire_lock.assert_called_once_with(config)
         run_review.assert_called_once_with(config=config, send_notification=False)
         release_lock.assert_called_once_with(unittest.mock.ANY)
@@ -1678,10 +1678,10 @@ class MainScheduleModeTestCase(unittest.TestCase):
         pipeline._daily_market_context_service = MagicMock()
         pipeline._daily_market_context_service.get_context.return_value = SimpleNamespace(
             source="analysis_history",
-            summary="旧A股复盘摘要",
+            summary="舊A股復盤摘要",
         )
         pipeline.db = MagicMock()
-        context = SimpleNamespace(source="analysis_history", summary="多市场复盘摘要", full_report="完整复盘正文")
+        context = SimpleNamespace(source="analysis_history", summary="多市場復盤摘要", full_report="完整復盤正文")
         regional_service = MagicMock()
         regional_service.get_context.return_value = context
 
@@ -1696,14 +1696,14 @@ class MainScheduleModeTestCase(unittest.TestCase):
                 return_full_report=True,
             )
 
-        self.assertEqual(summary, "多市场复盘摘要")
-        self.assertEqual(full_report, "完整复盘正文")
+        self.assertEqual(summary, "多市場復盤摘要")
+        self.assertEqual(full_report, "完整復盤正文")
         service_cls.assert_called_once_with(db_manager=pipeline.db)
         regional_service.get_context.assert_called_once()
         self.assertIsNot(
             regional_service,
             pipeline._daily_market_context_service,
-            "多市场预热必须使用独立服务避免共享缓存污染",
+            "多市場預熱必須使用獨立服務避免共享緩存污染",
         )
         pipeline._daily_market_context_service.get_context.assert_not_called()
 
@@ -1816,7 +1816,7 @@ class MainScheduleModeTestCase(unittest.TestCase):
 
         self.assertEqual(exit_code, 1)
         output = capture_stream.getvalue()
-        self.assertIn("加载配置失败", output)
+        self.assertIn("加載配置失敗", output)
         self.assertIn("config boom", output)
 
     def test_bootstrap_logging_failure_does_not_block_startup(self) -> None:
@@ -1864,9 +1864,9 @@ class MainScheduleModeTestCase(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         run_mock.assert_called_once()
         output = capture_stream.getvalue()
-        self.assertIn("文件日志初始化失败，已降级为控制台日志输出", output)
+        self.assertIn("文件日誌初始化失敗，已降級爲控制臺日誌輸出", output)
         self.assertIn("/app/logs", output)
-        self.assertIn("官方 Docker 镜像启动入口会自动修复默认挂载目录权限", output)
+        self.assertIn("官方 Docker 鏡像啓動入口會自動修復默認掛載目錄權限", output)
 
     def test_run_full_analysis_import_failure_propagates(self) -> None:
         """P1: import failures in run_full_analysis must propagate, not be swallowed."""

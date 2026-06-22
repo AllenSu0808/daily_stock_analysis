@@ -426,8 +426,8 @@ class SystemConfigService:
         channel: str,
         items: Sequence[Dict[str, str]],
         mask_token: str = "******",
-        title: str = "DSA 通知测试",
-        content: str = "这是一条来自 DSA Web 设置页的通知测试消息。",
+        title: str = "DSA 通知測試",
+        content: str = "這是一條來自 DSA Web 設置頁的通知測試消息。",
         timeout_seconds: float = 20.0,
     ) -> Dict[str, Any]:
         """Send one real notification test without persisting submitted values."""
@@ -480,7 +480,7 @@ class SystemConfigService:
             error_code, retryable = self._classify_notification_exception(exc)
             return self._build_notification_test_result(
                 success=False,
-                message=f"通知测试异常: {exc}",
+                message=f"通知測試異常: {exc}",
                 error_code=error_code,
                 stage="notification_send",
                 retryable=retryable,
@@ -1511,7 +1511,7 @@ class SystemConfigService:
             )
             warnings.append(
                 (
-                    "新闻窗口已按策略计算："
+                    "新聞窗口已按策略計算："
                     f"NEWS_STRATEGY_PROFILE={profile}, "
                     f"NEWS_MAX_AGE_DAYS={max_age}, "
                     f"effective_days={effective_days} "
@@ -1527,15 +1527,15 @@ class SystemConfigService:
             if reload_now:
                 warnings.append(
                     (
-                        f"MAX_WORKERS={max_workers} 已保存。任务队列空闲时会自动应用；"
-                        "若当前存在运行中任务，将在队列空闲后生效。"
+                        f"MAX_WORKERS={max_workers} 已保存。任務隊列空閒時會自動應用；"
+                        "若當前存在運行中任務，將在隊列空閒後生效。"
                     )
                 )
             else:
                 warnings.append(
                     (
-                        f"MAX_WORKERS={max_workers} 已写入 .env，但本次未触发运行时重载"
-                        "（reload_now=false）；重载后才会应用。"
+                        f"MAX_WORKERS={max_workers} 已寫入 .env，但本次未觸發運行時重載"
+                        "（reload_now=false）；重載後才會應用。"
                     )
                 )
 
@@ -1545,9 +1545,9 @@ class SystemConfigService:
         if startup_only_run_keys:
             warnings.append(
                 (
-                    f"{', '.join(sorted(startup_only_run_keys))} 已写入 .env。"
-                    "它属于启动期单次运行配置：当前已运行的 WebUI/API 进程不会因为本次保存立即触发分析；"
-                    "请重启当前进程后，在非 schedule 模式下按新值生效。"
+                    f"{', '.join(sorted(startup_only_run_keys))} 已寫入 .env。"
+                    "它屬於啓動期單次運行配置：當前已運行的 WebUI/API 進程不會因爲本次保存立即觸發分析；"
+                    "請重啓當前進程後，在非 schedule 模式下按新值生效。"
                 )
             )
 
@@ -1557,9 +1557,9 @@ class SystemConfigService:
         if startup_only_schedule_keys:
             warnings.append(
                 (
-                    f"{', '.join(sorted(startup_only_schedule_keys))} 已写入 .env。"
-                    "这些属于启动期调度模式配置：当前已运行的 WebUI/API 进程不会因为本次保存启动、"
-                    "停止或重建 scheduler；请重启当前进程，并以 schedule 模式重新启动后生效。"
+                    f"{', '.join(sorted(startup_only_schedule_keys))} 已寫入 .env。"
+                    "這些屬於啓動期調度模式配置：當前已運行的 WebUI/API 進程不會因爲本次保存啓動、"
+                    "停止或重建 scheduler；請重啓當前進程，並以 schedule 模式重新啓動後生效。"
                 )
             )
 
@@ -1567,9 +1567,9 @@ class SystemConfigService:
             schedule_enabled = (current_map.get("SCHEDULE_ENABLED", "false") or "false").strip().lower()
             warnings.append(
                 (
-                    f"SCHEDULE_ENABLED={schedule_enabled} 已写入 .env。"
-                    "如果当前进程是 WebUI/API/Desktop 长运行进程，runtime scheduler 会按新配置启停；"
-                    "CLI schedule 模式仍按启动参数和配置运行。"
+                    f"SCHEDULE_ENABLED={schedule_enabled} 已寫入 .env。"
+                    "如果當前進程是 WebUI/API/Desktop 長運行進程，runtime scheduler 會按新配置啓停；"
+                    "CLI schedule 模式仍按啓動參數和配置運行。"
                 )
             )
 
@@ -1579,9 +1579,9 @@ class SystemConfigService:
             effective = schedule_times or schedule_time
             warnings.append(
                 (
-                    f"SCHEDULE_TIMES={effective} 已写入 .env。"
-                    "有效时间点会去重、排序；为空时继续使用 SCHEDULE_TIME。"
-                    "如果当前进程存在 runtime scheduler，会按新时间重建 daily jobs。"
+                    f"SCHEDULE_TIMES={effective} 已寫入 .env。"
+                    "有效時間點會去重、排序；爲空時繼續使用 SCHEDULE_TIME。"
+                    "如果當前進程存在 runtime scheduler，會按新時間重建 daily jobs。"
                 )
             )
 
@@ -1589,9 +1589,9 @@ class SystemConfigService:
             schedule_time = (current_map.get("SCHEDULE_TIME", "") or "").strip() or "18:00"
             warnings.append(
                 (
-                    f"SCHEDULE_TIME={schedule_time} 已写入 .env。"
-                    "如果当前进程已经以 schedule 模式运行，scheduler 会在下一轮检查中自动重建 daily job；"
-                    "如果当前进程未以 schedule 模式运行，本次保存不会启动 scheduler。"
+                    f"SCHEDULE_TIME={schedule_time} 已寫入 .env。"
+                    "如果當前進程已經以 schedule 模式運行，scheduler 會在下一輪檢查中自動重建 daily job；"
+                    "如果當前進程未以 schedule 模式運行，本次保存不會啓動 scheduler。"
                 )
             )
 
@@ -1602,9 +1602,9 @@ class SystemConfigService:
         if startup_only_bind_keys:
             warnings.append(
                 (
-                    f"{', '.join(sorted(startup_only_bind_keys))} 已写入 .env。"
-                    "这些属于启动期监听配置：当前已运行的 WebUI/API 进程不会因为本次保存重新绑定监听地址或端口；"
-                    "请重启当前进程、Docker 容器或服务管理器后生效。"
+                    f"{', '.join(sorted(startup_only_bind_keys))} 已寫入 .env。"
+                    "這些屬於啓動期監聽配置：當前已運行的 WebUI/API 進程不會因爲本次保存重新綁定監聽地址或端口；"
+                    "請重啓當前進程、Docker 容器或服務管理器後生效。"
                 )
             )
 
@@ -1646,13 +1646,13 @@ class SystemConfigService:
 
         cleaned_targets = list(cleared_labels)
         if removed_fallbacks:
-            cleaned_targets.append("备选模型中的失效项")
+            cleaned_targets.append("備選模型中的失效項")
 
         cleaned_text = " / ".join(cleaned_targets)
         warning = (
-            f"检测到已同步清理失效的运行时模型引用：{cleaned_text}。"
-            "如需恢复，请先补回对应渠道模型列表后重新选择；"
-            "也可用桌面端导出备份或手动 .env 还原之前的 LLM_* / "
+            f"檢測到已同步清理失效的運行時模型引用：{cleaned_text}。"
+            "如需恢復，請先補回對應渠道模型列表後重新選擇；"
+            "也可用桌面端導出備份或手動 .env 還原之前的 LLM_* / "
             "LITELLM_MODEL / AGENT_LITELLM_MODEL / VISION_MODEL / LLM_TEMPERATURE。"
         )
         return [warning]
@@ -1674,7 +1674,7 @@ class SystemConfigService:
         """Parse raw `.env` text into update items using current dotenv semantics."""
         normalized_content = content.replace("\ufeff", "")
         if not normalized_content.strip():
-            raise ConfigImportError("未识别到有效 .env 配置")
+            raise ConfigImportError("未識別到有效 .env 配置")
 
         from dotenv import dotenv_values
 
@@ -1691,7 +1691,7 @@ class SystemConfigService:
             )
 
         if not updates:
-            raise ConfigImportError("未识别到有效 .env 配置")
+            raise ConfigImportError("未識別到有效 .env 配置")
 
         return updates
 
@@ -2145,14 +2145,14 @@ class SystemConfigService:
             ntfy_server_url, ntfy_topic = resolve_ntfy_endpoint(ntfy_url)
             if ntfy_server_url and ntfy_topic:
                 return None
-            return "NTFY_URL 必须包含 topic path，例如 https://ntfy.sh/my-topic。"
+            return "NTFY_URL 必須包含 topic path，例如 https://ntfy.sh/my-topic。"
         if channel == "gotify":
             gotify_url = (effective_map.get("GOTIFY_URL") or "").strip()
             if not gotify_url:
                 return None
             if resolve_gotify_message_endpoint(gotify_url):
                 return None
-            return "GOTIFY_URL 必须是 Gotify server base URL，不包含 /message。"
+            return "GOTIFY_URL 必須是 Gotify server base URL，不包含 /message。"
         return None
 
     def _build_notification_test_config(self, effective_map: Dict[str, str]) -> Config:
@@ -2222,11 +2222,11 @@ class SystemConfigService:
             total_count = len(attempts)
             success = success_count > 0
             if success_count == total_count and total_count > 0:
-                message = f"自定义 Webhook 通知测试成功（{success_count}/{total_count}）"
+                message = f"自定義 Webhook 通知測試成功（{success_count}/{total_count}）"
             elif success_count > 0:
-                message = f"自定义 Webhook 通知测试部分成功（{success_count}/{total_count}）"
+                message = f"自定義 Webhook 通知測試部分成功（{success_count}/{total_count}）"
             else:
-                message = f"自定义 Webhook 通知测试失败（{success_count}/{total_count}）"
+                message = f"自定義 Webhook 通知測試失敗（{success_count}/{total_count}）"
             return self._build_notification_test_result(
                 success=success,
                 message=message,
@@ -2257,7 +2257,7 @@ class SystemConfigService:
         attempt = {
             "channel": channel,
             "success": ok,
-            "message": "通知测试发送成功" if ok else "通知测试发送失败",
+            "message": "通知測試發送成功" if ok else "通知測試發送失敗",
             "target": target,
             "error_code": None if ok else "send_failed",
             "stage": "notification_send",
@@ -2266,7 +2266,7 @@ class SystemConfigService:
         }
         return self._build_notification_test_result(
             success=ok,
-            message=f"{channel} 通知测试成功" if ok else f"{channel} 通知测试失败",
+            message=f"{channel} 通知測試成功" if ok else f"{channel} 通知測試失敗",
             error_code=None if ok else "send_failed",
             stage="notification_send",
             retryable=False,
@@ -2635,9 +2635,9 @@ class SystemConfigService:
                 return explicit_model, "explicit"
             has_direct_source = self._has_setup_runtime_source_for_model(explicit_model, effective_map)
             if yaml_models and explicit_model not in set(yaml_models):
-                return "", "主模型未出现在当前 LiteLLM YAML model_list 中"
+                return "", "主模型未出現在當前 LiteLLM YAML model_list 中"
             if channel_models and explicit_model not in set(channel_models):
-                return "", "主模型未出现在当前启用渠道模型列表中"
+                return "", "主模型未出現在當前啓用渠道模型列表中"
             if yaml_models or channel_models or has_direct_source:
                 return explicit_model, "explicit"
             return "", "主模型缺少可用渠道或匹配的 API Key"
@@ -2651,13 +2651,13 @@ class SystemConfigService:
         if legacy_model:
             return legacy_model, "legacy"
 
-        return "", "尚未检测到主模型配置"
+        return "", "尚未檢測到主模型配置"
 
     def _build_setup_primary_llm_check(self, effective_map: Dict[str, str]) -> Dict[str, Any]:
         model, source = self._resolve_setup_primary_model(effective_map)
         if model:
             source_label = {
-                "explicit": "显式主模型",
+                "explicit": "顯式主模型",
                 "yaml": "LiteLLM YAML",
                 "channel": "LLM 渠道",
                 "legacy": "legacy provider",
@@ -2668,7 +2668,7 @@ class SystemConfigService:
                 "ai_model",
                 True,
                 "configured",
-                f"已检测到 {source_label}: {model}",
+                f"已檢測到 {source_label}: {model}",
             )
         return self._setup_check(
             "llm_primary",
@@ -2677,7 +2677,7 @@ class SystemConfigService:
             True,
             "needs_action",
             source,
-            "请配置 LITELLM_MODEL、LLM_CHANNELS、LITELLM_CONFIG 或 legacy provider API Key。",
+            "請配置 LITELLM_MODEL、LLM_CHANNELS、LITELLM_CONFIG 或 legacy provider API Key。",
         )
 
     def _build_setup_agent_llm_check(
@@ -2694,7 +2694,7 @@ class SystemConfigService:
                     "agent",
                     True,
                     "inherited",
-                    "未单独配置 Agent 主模型，将继承 LLM 主渠道。",
+                    "未單獨配置 Agent 主模型，將繼承 LLM 主渠道。",
                 )
             return self._setup_check(
                 "llm_agent",
@@ -2702,8 +2702,8 @@ class SystemConfigService:
                 "agent",
                 True,
                 "needs_action",
-                "Agent 未配置独立模型，且 LLM 主渠道尚不可用。",
-                "请先补齐 LLM 主渠道配置。",
+                "Agent 未配置獨立模型，且 LLM 主渠道尚不可用。",
+                "請先補齊 LLM 主渠道配置。",
             )
 
         configured_models = set(
@@ -2740,7 +2740,7 @@ class SystemConfigService:
             True,
             "needs_action",
             f"Agent 主模型 {agent_model} 缺少可用渠道或匹配的 API Key。",
-            "请调整 AGENT_LITELLM_MODEL 或补齐对应渠道配置。",
+            "請調整 AGENT_LITELLM_MODEL 或補齊對應渠道配置。",
         )
 
     def _build_setup_stock_list_check(self, effective_map: Dict[str, str]) -> Dict[str, Any]:
@@ -2748,7 +2748,7 @@ class SystemConfigService:
         if stocks:
             return self._setup_check(
                 "stock_list",
-                "自选股",
+                "自選股",
                 "base",
                 True,
                 "configured",
@@ -2756,12 +2756,12 @@ class SystemConfigService:
             )
         return self._setup_check(
             "stock_list",
-            "自选股",
+            "自選股",
             "base",
             True,
             "needs_action",
-            "当前 STOCK_LIST 为空。",
-            "请至少添加 1 只股票用于首次试跑。",
+            "當前 STOCK_LIST 爲空。",
+            "請至少添加 1 只股票用於首次試跑。",
         )
 
     def _build_setup_notification_check(self, effective_map: Dict[str, str]) -> Dict[str, Any]:
@@ -2813,7 +2813,7 @@ class SystemConfigService:
                 "notification",
                 False,
                 "configured",
-                "已检测到至少一个通知渠道配置。",
+                "已檢測到至少一個通知渠道配置。",
             )
         return self._setup_check(
             "notification",
@@ -2821,8 +2821,8 @@ class SystemConfigService:
             "notification",
             False,
             "optional",
-            "通知为可选项，未配置也不影响首次跑通。",
-            "需要推送时可稍后配置飞书、Telegram、邮件或其他通知渠道。",
+            "通知爲可選項，未配置也不影響首次跑通。",
+            "需要推送時可稍後配置飛書、Telegram、郵件或其他通知渠道。",
         )
 
     def _build_setup_storage_check(self, effective_map: Dict[str, str]) -> Dict[str, Any]:
@@ -2835,21 +2835,21 @@ class SystemConfigService:
         if not probe.exists() or not probe.is_dir():
             return self._setup_check(
                 "storage",
-                "数据库 / 本地存储",
+                "數據庫 / 本地存儲",
                 "system",
                 True,
                 "needs_action",
-                f"数据库路径父目录不可用: {parent}",
-                "请检查 DATABASE_PATH 或上级目录权限。",
+                f"數據庫路徑父目錄不可用: {parent}",
+                "請檢查 DATABASE_PATH 或上級目錄權限。",
             )
 
         if os.access(probe, os.W_OK):
-            detail = f"数据库路径可用: {db_path}"
+            detail = f"數據庫路徑可用: {db_path}"
             if not parent.exists():
-                detail = f"数据库上级目录可创建: {parent}"
+                detail = f"數據庫上級目錄可創建: {parent}"
             return self._setup_check(
                 "storage",
-                "数据库 / 本地存储",
+                "數據庫 / 本地存儲",
                 "system",
                 True,
                 "configured",
@@ -2858,12 +2858,12 @@ class SystemConfigService:
 
         return self._setup_check(
             "storage",
-            "数据库 / 本地存储",
+            "數據庫 / 本地存儲",
             "system",
             True,
             "needs_action",
-            f"数据库路径上级目录不可写: {probe}",
-            "请调整 DATABASE_PATH 或目录权限。",
+            f"數據庫路徑上級目錄不可寫: {probe}",
+            "請調整 DATABASE_PATH 或目錄權限。",
         )
 
     @staticmethod
@@ -3158,7 +3158,7 @@ class SystemConfigService:
             "blocked due to policy",
             "moderation_blocked",
             "policy_blocked",
-            "请求被拦截",
+            "請求被攔截",
         )
         return any(token in lowered for token in blocked_tokens)
 
@@ -3423,10 +3423,10 @@ class SystemConfigService:
                     "key": "FEISHU_CHAT_ID",
                     "code": "feishu_mode_mismatch",
                     "message": (
-                        "仅配置 FEISHU_APP_ID / FEISHU_APP_SECRET 不会开启飞书静态通知；"
-                        "App Bot 主动推送需要同时配置 FEISHU_CHAT_ID，"
-                        "Webhook 推送请填写 FEISHU_WEBHOOK_URL；"
-                        "事件订阅请使用 FEISHU_STREAM_ENABLED=true 并完成应用发布与权限配置。"
+                        "僅配置 FEISHU_APP_ID / FEISHU_APP_SECRET 不會開啓飛書靜態通知；"
+                        "App Bot 主動推送需要同時配置 FEISHU_CHAT_ID，"
+                        "Webhook 推送請填寫 FEISHU_WEBHOOK_URL；"
+                        "事件訂閱請使用 FEISHU_STREAM_ENABLED=true 並完成應用發布與權限配置。"
                     ),
                     "severity": "warning",
                     "expected": (

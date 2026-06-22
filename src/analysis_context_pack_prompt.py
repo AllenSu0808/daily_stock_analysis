@@ -9,11 +9,11 @@ from typing import Any, Dict, Iterable, List, Optional
 
 BLOCK_LABELS_ZH = {
     "quote": "行情",
-    "daily_bars": "日线",
-    "technical": "技术",
-    "chip": "筹码",
+    "daily_bars": "日線",
+    "technical": "技術",
+    "chip": "籌碼",
     "fundamentals": "基本面",
-    "news": "新闻",
+    "news": "新聞",
 }
 
 BLOCK_LABELS_EN = {
@@ -29,11 +29,11 @@ STATUS_LABELS_ZH = {
     "available": "可用",
     "missing": "缺失",
     "not_supported": "不支持",
-    "fallback": "降级",
-    "stale": "过期",
+    "fallback": "降級",
+    "stale": "過期",
     "estimated": "估算",
     "partial": "部分可用",
-    "fetch_failed": "抓取失败",
+    "fetch_failed": "抓取失敗",
 }
 
 STATUS_LABELS_EN = {
@@ -51,7 +51,7 @@ QUALITY_LEVEL_LABELS_ZH = {
     "good": "良好",
     "usable": "可用",
     "limited": "受限",
-    "poor": "较差",
+    "poor": "較差",
 }
 
 QUALITY_LEVEL_LABELS_EN = {
@@ -167,14 +167,14 @@ def _format_zh(payload: Dict[str, Any]) -> str:
     lines.extend(_subject_lines(payload, lang="zh"))
     block_lines = _block_lines(payload, lang="zh")
     if block_lines:
-        lines.append("- 数据块状态：")
+        lines.append("- 數據塊狀態：")
         lines.extend(f"  - {line}" for line in block_lines)
     metadata_lines = _metadata_lines(payload, lang="zh")
     if metadata_lines:
         lines.extend(metadata_lines)
     warnings = _list_strings(_nested(payload, "data_quality", "warnings"))
     if warnings:
-        lines.append(f"- 数据质量提醒：{_join_text(warnings, lang='zh')}")
+        lines.append(f"- 數據質量提醒：{_join_text(warnings, lang='zh')}")
     lines.extend(_data_limitation_lines(payload, lang="zh"))
     return "\n".join(lines) + "\n"
 
@@ -217,13 +217,13 @@ def _subject_lines(payload: Dict[str, Any], *, lang: str) -> List[str]:
             line += f"; {', '.join(details)}"
         return [line]
 
-    label = code or "未知标的"
+    label = code or "未知標的"
     if name:
         label += f"（{name}）"
-    line = f"- 标的：{label}"
+    line = f"- 標的：{label}"
     details = []
     if market:
-        details.append(f"市场={market}")
+        details.append(f"市場={market}")
     if version:
         details.append(f"pack_version={version}")
     if details:
@@ -279,12 +279,12 @@ def _metadata_lines(payload: Dict[str, Any], *, lang: str) -> List[str]:
     return [
         f"- News result count: {news_count}"
         if lang == "en"
-        else f"- 新闻结果数：{news_count}"
+        else f"- 新聞結果數：{news_count}"
     ]
 
 
 def _data_limitation_lines(payload: Dict[str, Any], *, lang: str) -> List[str]:
-    lines = ["", "## Data Limitations" if lang == "en" else "## 数据限制"]
+    lines = ["", "## Data Limitations" if lang == "en" else "## 數據限制"]
     data_quality = payload.get("data_quality")
     if not isinstance(data_quality, Mapping):
         data_quality = {}
@@ -298,7 +298,7 @@ def _data_limitation_lines(payload: Dict[str, Any], *, lang: str) -> List[str]:
             if level_text:
                 line += f" ({level_text})"
         else:
-            line = f"- 数据质量评分：{score}/100"
+            line = f"- 數據質量評分：{score}/100"
             if level_text:
                 line += f"（{level_text}）"
         lines.append(line)
@@ -323,8 +323,8 @@ def _data_limitation_lines(payload: Dict[str, Any], *, lang: str) -> List[str]:
             )
         else:
             lines.append(
-                "- 置信度规则：当 quote、daily_bars 或 technical 为 stale、fallback、missing、"
-                "fetch_failed、partial 或 estimated 时，最终 JSON 的 confidence_level 不得为高。"
+                "- 置信度規則：當 quote、daily_bars 或 technical 爲 stale、fallback、missing、"
+                "fetch_failed、partial 或 estimated 時，最終 JSON 的 confidence_level 不得爲高。"
             )
 
     if lang == "en":
@@ -339,11 +339,11 @@ def _data_limitation_lines(payload: Dict[str, Any], *, lang: str) -> List[str]:
         )
     else:
         lines.append(
-            "- 分析规则：辅助数据块缺失只限制对应分析段落，不要把缺失本身解释为利好或利空。"
+            "- 分析規則：輔助數據塊缺失只限制對應分析段落，不要把缺失本身解釋爲利好或利空。"
         )
         lines.append(
-            "- 安全规则：只使用本摘要中的 status、source、warnings 和 missing_reason；"
-            "不要复述 raw payload、新闻正文、趋势原始值、secret、token 或 webhook。"
+            "- 安全規則：只使用本摘要中的 status、source、warnings 和 missing_reason；"
+            "不要複述 raw payload、新聞正文、趨勢原始值、secret、token 或 webhook。"
         )
     return lines
 
@@ -413,17 +413,17 @@ def _phase_data_quality_constraint_lines(payload: Dict[str, Any], *, lang: str) 
 
     if phase in INTRADAY_MARKET_PHASES:
         return [
-            "- 阶段数据规则：盘中判断受实时行情、日线或技术数据质量限制；"
-            "给出短线结论前必须说明这些限制。"
+            "- 階段數據規則：盤中判斷受實時行情、日線或技術數據質量限制；"
+            "給出短線結論前必須說明這些限制。"
         ]
     if phase == "premarket":
         return [
-            "- 阶段数据规则：开盘计划受数据新鲜度或降级状态限制；"
-            "不得把降级行情描述成今日走势已经发生。"
+            "- 階段數據規則：開盤計劃受數據新鮮度或降級狀態限制；"
+            "不得把降級行情描述成今日走勢已經發生。"
         ]
     if phase in CONSERVATIVE_MARKET_PHASES:
         return [
-            "- 阶段数据规则：只能保守使用当前可用数据，不得补全不存在的盘中事实。"
+            "- 階段數據規則：只能保守使用當前可用數據，不得補全不存在的盤中事實。"
         ]
     return []
 

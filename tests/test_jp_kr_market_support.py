@@ -67,11 +67,11 @@ def test_market_guidelines_for_jp_kr_exclude_a_share_specific_context() -> None:
     kr_guidelines = get_market_guidelines("005930.KS")
 
     assert "日股" in jp_guidelines
-    assert "韩股" in kr_guidelines
+    assert "韓股" in kr_guidelines
     for text in (jp_guidelines, kr_guidelines):
         assert "不要套用 A 股" in text
-        assert "北向资金" in text
-        assert "龙虎榜" in text
+        assert "北向資金" in text
+        assert "龍虎榜" in text
 
 
 def test_yfinance_keeps_jp_kr_suffix_codes_and_indices() -> None:
@@ -94,8 +94,8 @@ def test_yfinance_keeps_jp_kr_suffix_codes_and_indices() -> None:
 
     assert {item["code"] for item in jp_indices} == {"N225", "TOPX"}
     assert {item["code"] for item in kr_indices} == {"KS11", "KQ11"}
-    assert ("^N225", "日经225", "N225") in captured
-    assert ("^TOPX", "东证指数", "TOPX") in captured
+    assert ("^N225", "日經225", "N225") in captured
+    assert ("^TOPX", "東證指數", "TOPX") in captured
     assert ("^KS11", "KOSPI", "KS11") in captured
     assert ("^KQ11", "KOSDAQ", "KQ11") in captured
 

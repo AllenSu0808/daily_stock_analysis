@@ -103,7 +103,7 @@ class AlertIndicatorHelperTestCase(unittest.TestCase):
             "rsi_threshold",
             "TEST",
             rsi_params,
-            pd.DataFrame({"日期": pd.date_range("2026-01-01", periods=3), "收盘": [10, 9, 11]}),
+            pd.DataFrame({"日期": pd.date_range("2026-01-01", periods=3), "收盤": [10, 9, 11]}),
         )
 
         macd_params = normalize_indicator_parameters("macd_cross", {
@@ -321,16 +321,16 @@ class AlertWorkerTestCase(unittest.TestCase):
         signal_service = DecisionSignalService()
         signal_service.create_signal({
             "stock_code": "600519",
-            "stock_name": "贵州茅台",
+            "stock_name": "貴州茅臺",
             "market": "cn",
             "source_type": "analysis",
             "source_report_id": 1390,
             "trace_id": "analysis-1390",
             "trigger_source": "api",
             "action": "sell",
-            "reason": "跌破关键支撑",
-            "watch_conditions": "观察能否收回均线",
-            "risk_summary": "下行风险扩大",
+            "reason": "跌破關鍵支撐",
+            "watch_conditions": "觀察能否收回均線",
+            "risk_summary": "下行風險擴大",
         })
         notifier = self._notifier()
         worker = AlertWorker(
@@ -355,9 +355,9 @@ class AlertWorkerTestCase(unittest.TestCase):
         self.assertEqual(summary["id"], all_signals[0]["id"])
         self.assertEqual(summary["action"], "sell")
         alert_text = notifier.send_with_results.call_args.args[0]
-        self.assertIn("AI 决策信号", alert_text)
-        self.assertIn("跌破关键支撑", alert_text)
-        self.assertIn("观察能否收回均线", alert_text)
+        self.assertIn("AI 決策信號", alert_text)
+        self.assertIn("跌破關鍵支撐", alert_text)
+        self.assertIn("觀察能否收回均線", alert_text)
 
     def test_p6_triggered_stock_alert_creates_alert_signal_when_no_active_signal(self) -> None:
         self._create_rule(target="600519")

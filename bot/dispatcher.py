@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-命令分发器
+命令分發器
 ===================================
 
-负责解析命令、匹配处理器、分发执行。
+負責解析命令、匹配處理器、分發執行。
 """
 
 import asyncio
@@ -23,16 +23,16 @@ logger = logging.getLogger(__name__)
 
 class RateLimiter:
     """
-    简单的频率限制器
+    簡單的頻率限制器
 
-    基于滑动窗口算法，限制每个用户的请求频率。
+    基於滑動窗口算法，限制每個用戶的請求頻率。
     """
 
     def __init__(self, max_requests: int = 10, window_seconds: int = 60):
         """
         Args:
-            max_requests: 窗口内最大请求数
-            window_seconds: 窗口时间（秒）
+            max_requests: 窗口內最大請求數
+            window_seconds: 窗口時間（秒）
         """
         self.max_requests = max_requests
         self.window_seconds = window_seconds
@@ -40,37 +40,37 @@ class RateLimiter:
 
     def is_allowed(self, user_id: str) -> bool:
         """
-        检查用户是否允许请求
+        檢查用戶是否允許請求
 
         Args:
-            user_id: 用户标识
+            user_id: 用戶標識
 
         Returns:
-            是否允许
+            是否允許
         """
         now = time.time()
         window_start = now - self.window_seconds
 
-        # 清理过期记录
+        # 清理過期記錄
         self._requests[user_id] = [
             t for t in self._requests[user_id]
             if t > window_start
         ]
 
-        # 检查是否超限
+        # 檢查是否超限
         if len(self._requests[user_id]) >= self.max_requests:
             return False
 
-        # 记录本次请求
+        # 記錄本次請求
         self._requests[user_id].append(now)
         return True
 
     def get_remaining(self, user_id: str) -> int:
-        """获取剩余可用请求数"""
+        """獲取剩餘可用請求數"""
         now = time.time()
         window_start = now - self.window_seconds
 
-        # 清理过期记录
+        # 清理過期記錄
         self._requests[user_id] = [
             t for t in self._requests[user_id]
             if t > window_start
@@ -81,13 +81,13 @@ class RateLimiter:
 
 class CommandDispatcher:
     """
-    命令分发器
+    命令分發器
 
-    职责：
-    1. 注册和管理命令处理器
-    2. 解析消息中的命令和参数
-    3. 分发命令到对应处理器
-    4. 处理未知命令和错误
+    職責：
+    1. 註冊和管理命令處理器
+    2. 解析消息中的命令和參數
+    3. 分發命令到對應處理器
+    4. 處理未知命令和錯誤
 
     使用示例：
         dispatcher = CommandDispatcher()
@@ -106,10 +106,10 @@ class CommandDispatcher:
     ):
         """
         Args:
-            command_prefix: 命令前缀，默认 "/"
-            rate_limit_requests: 频率限制：窗口内最大请求数
-            rate_limit_window: 频率限制：窗口时间（秒）
-            admin_users: 管理员用户 ID 列表
+            command_prefix: 命令前綴，默認 "/"
+            rate_limit_requests: 頻率限制：窗口內最大請求數
+            rate_limit_window: 頻率限制：窗口時間（秒）
+            admin_users: 管理員用戶 ID 列表
         """
         self.command_prefix = command_prefix
         self.admin_users = set(admin_users or [])
@@ -118,50 +118,50 @@ class CommandDispatcher:
         self._aliases: Dict[str, str] = {}
         self._rate_limiter = RateLimiter(rate_limit_requests, rate_limit_window)
 
-        # 回调函数：获取帮助命令的命令列表
+        # 回調函數：獲取幫助命令的命令列表
         self._help_command_getter: Optional[Callable] = None
 
     def register(self, command: BotCommand) -> None:
         """
-        注册命令
+        註冊命令
 
         Args:
-            command: 命令实例
+            command: 命令實例
         """
         name = command.name.lower()
 
         if name in self._commands:
-            logger.warning(f"[Dispatcher] 命令 '{name}' 已存在，将被覆盖")
+            logger.warning(f"[Dispatcher] 命令 '{name}' 已存在，將被覆蓋")
 
         self._commands[name] = command
-        logger.debug(f"[Dispatcher] 注册命令: {name}")
+        logger.debug(f"[Dispatcher] 註冊命令: {name}")
 
-        # 注册别名
+        # 註冊別名
         for alias in command.aliases:
             alias_lower = alias.lower()
             if alias_lower in self._aliases:
-                logger.warning(f"[Dispatcher] 别名 '{alias_lower}' 已存在，将被覆盖")
+                logger.warning(f"[Dispatcher] 別名 '{alias_lower}' 已存在，將被覆蓋")
             self._aliases[alias_lower] = name
-            logger.debug(f"[Dispatcher] 注册别名: {alias_lower} -> {name}")
+            logger.debug(f"[Dispatcher] 註冊別名: {alias_lower} -> {name}")
 
     def register_class(self, command_class: Type[BotCommand]) -> None:
         """
-        注册命令类（自动实例化）
+        註冊命令類（自動實例化）
 
         Args:
-            command_class: 命令类
+            command_class: 命令類
         """
         self.register(command_class())
 
     def unregister(self, name: str) -> bool:
         """
-        注销命令
+        註銷命令
 
         Args:
-            name: 命令名称
+            name: 命令名稱
 
         Returns:
-            是否成功注销
+            是否成功註銷
         """
         name = name.lower()
 
@@ -170,24 +170,24 @@ class CommandDispatcher:
 
         command = self._commands.pop(name)
 
-        # 移除别名
+        # 移除別名
         for alias in command.aliases:
             self._aliases.pop(alias.lower(), None)
 
-        logger.debug(f"[Dispatcher] 注销命令: {name}")
+        logger.debug(f"[Dispatcher] 註銷命令: {name}")
         return True
 
     def get_command(self, name: str) -> Optional[BotCommand]:
         """
-        获取命令
+        獲取命令
 
-        支持命令名和别名查询。
+        支持命令名和別名查詢。
 
         Args:
-            name: 命令名或别名
+            name: 命令名或別名
 
         Returns:
-            命令实例，或 None
+            命令實例，或 None
         """
         name = name.lower()
 
@@ -195,7 +195,7 @@ class CommandDispatcher:
         if name in self._commands:
             return self._commands[name]
 
-        # 再查别名
+        # 再查別名
         if name in self._aliases:
             return self._commands.get(self._aliases[name])
 
@@ -206,7 +206,7 @@ class CommandDispatcher:
         列出所有命令
 
         Args:
-            include_hidden: 是否包含隐藏命令
+            include_hidden: 是否包含隱藏命令
 
         Returns:
             命令列表
@@ -219,21 +219,21 @@ class CommandDispatcher:
         return sorted(commands, key=lambda c: c.name)
 
     def is_admin(self, user_id: str) -> bool:
-        """检查用户是否是管理员"""
+        """檢查用戶是否是管理員"""
         return user_id in self.admin_users
 
     def add_admin(self, user_id: str) -> None:
-        """添加管理员"""
+        """添加管理員"""
         self.admin_users.add(user_id)
 
     def remove_admin(self, user_id: str) -> None:
-        """移除管理员"""
+        """移除管理員"""
         self.admin_users.discard(user_id)
 
     def dispatch(self, message: BotMessage) -> BotResponse:
-        """同步分发消息。
+        """同步分發消息。
 
-        保持现有同步调用方兼容，实际逻辑委托给 `dispatch_async()`。
+        保持現有同步調用方兼容，實際邏輯委託給 `dispatch_async()`。
         """
         try:
             asyncio.get_running_loop()
@@ -256,31 +256,31 @@ class CommandDispatcher:
         if "error" in error_holder:
             raise error_holder["error"]
 
-        return result_holder.get("response", BotResponse.error_response("命令执行失败"))
+        return result_holder.get("response", BotResponse.error_response("命令執行失敗"))
 
     def _prepare_dispatch(self, message: BotMessage) -> tuple[Optional[str], List[str], Optional[BotCommand], Optional[BotResponse]]:
         """Run shared dispatch pre-checks for sync/async entrypoints."""
         if not self._rate_limiter.is_allowed(message.user_id):
             remaining_time = self._rate_limiter.window_seconds
             return None, [], None, BotResponse.error_response(
-                f"请求过于频繁，请 {remaining_time} 秒后再试"
+                f"請求過於頻繁，請 {remaining_time} 秒後再試"
             )
 
         cmd_name, args = message.get_command_and_args(self.command_prefix)
         if cmd_name is None:
             return None, args, None, None
 
-        logger.info(f"[Dispatcher] 收到命令: {cmd_name}, 参数: {args}, 用户: {message.user_name}")
+        logger.info(f"[Dispatcher] 收到命令: {cmd_name}, 參數: {args}, 用戶: {message.user_name}")
 
         command = self.get_command(cmd_name)
         if command is None:
             return cmd_name, args, None, BotResponse.error_response(
                 f"未知命令: {cmd_name}\n"
-                f"发送 `{self.command_prefix}help` 查看可用命令。"
+                f"發送 `{self.command_prefix}help` 查看可用命令。"
             )
 
         if command.admin_only and not self.is_admin(message.user_id):
-            return cmd_name, args, None, BotResponse.error_response("此命令需要管理员权限")
+            return cmd_name, args, None, BotResponse.error_response("此命令需要管理員權限")
 
         error_msg = command.validate_args(args)
         if error_msg:
@@ -303,31 +303,31 @@ class CommandDispatcher:
             if message.mentioned:
                 return BotResponse.text_response(
                     "你好！我是股票分析助手。\n"
-                    f"发送 `{self.command_prefix}help` 查看可用命令。"
+                    f"發送 `{self.command_prefix}help` 查看可用命令。"
                 )
             return BotResponse.text_response("")
 
         if command is None:
-            return BotResponse.error_response("命令执行失败")
+            return BotResponse.error_response("命令執行失敗")
 
         try:
             response = command.execute(message, args)
-            logger.info(f"[Dispatcher] 命令 {cmd_name} 执行成功")
+            logger.info(f"[Dispatcher] 命令 {cmd_name} 執行成功")
             return response
         except Exception as e:
-            logger.error(f"[Dispatcher] 命令 {cmd_name} 执行失败: {e}")
+            logger.error(f"[Dispatcher] 命令 {cmd_name} 執行失敗: {e}")
             logger.exception(e)
-            return BotResponse.error_response(f"命令执行失败: {str(e)[:100]}")
+            return BotResponse.error_response(f"命令執行失敗: {str(e)[:100]}")
 
     async def dispatch_async(self, message: BotMessage) -> BotResponse:
         """
-        异步分发消息到对应命令
+        異步分發消息到對應命令
 
         Args:
-            message: 消息对象
+            message: 消息對象
 
         Returns:
-            响应对象
+            響應對象
         """
         cmd_name, args, command, early_response = self._prepare_dispatch(message)
         if early_response is not None:
@@ -342,32 +342,32 @@ class CommandDispatcher:
             if message.mentioned:
                 return BotResponse.text_response(
                     "你好！我是股票分析助手。\n"
-                    f"发送 `{self.command_prefix}help` 查看可用命令。"
+                    f"發送 `{self.command_prefix}help` 查看可用命令。"
                 )
-            # 非命令消息，不处理
+            # 非命令消息，不處理
             return BotResponse.text_response("")
 
         if command is None:
-            return BotResponse.error_response("命令执行失败")
+            return BotResponse.error_response("命令執行失敗")
 
-        # 6. 执行命令
+        # 6. 執行命令
         try:
             response = await command.execute_async(message, args)
-            logger.info(f"[Dispatcher] 命令 {cmd_name} 执行成功")
+            logger.info(f"[Dispatcher] 命令 {cmd_name} 執行成功")
             return response
         except Exception as e:
-            logger.error(f"[Dispatcher] 命令 {cmd_name} 执行失败: {e}")
+            logger.error(f"[Dispatcher] 命令 {cmd_name} 執行失敗: {e}")
             logger.exception(e)
-            return BotResponse.error_response(f"命令执行失败: {str(e)[:100]}")
+            return BotResponse.error_response(f"命令執行失敗: {str(e)[:100]}")
 
     def set_help_command_getter(self, getter: Callable) -> None:
         """
-        设置帮助命令的命令列表获取器
+        設置幫助命令的命令列表獲取器
 
-        用于让 HelpCommand 获取命令列表。
+        用於讓 HelpCommand 獲取命令列表。
 
         Args:
-            getter: 回调函数，返回命令列表
+            getter: 回調函數，返回命令列表
         """
         self._help_command_getter = getter
 
@@ -389,25 +389,25 @@ Return a JSON object (and NOTHING else) with these fields:
 - "codes": a list of stock codes mentioned (may be empty).
   Format: A-share 6-digit ("600519"), HK with prefix ("hk00700"), US ticker uppercase ("AAPL").
 - "strategy": strategy/technique name if the user specified one, else null.
-  e.g. "缠论", "MACD", "趋势跟踪", "chan_theory", etc.
+  e.g. "纏論", "MACD", "趨勢跟蹤", "chan_theory", etc.
 
 Examples:
-User: "帮我分析一下600519和000858"
+User: "幫我分析一下600519和000858"
 {"intent":"analysis","codes":["600519","000858"],"strategy":null}
 
-User: "用缠论看看AAPL"
-{"intent":"analysis","codes":["AAPL"],"strategy":"缠论"}
+User: "用纏論看看AAPL"
+{"intent":"analysis","codes":["AAPL"],"strategy":"纏論"}
 
-User: "今天大盘怎么样"
+User: "今天大盤怎麼樣"
 {"intent":"chat","codes":[],"strategy":null}
 
-User: "明天天气如何"
+User: "明天天氣如何"
 {"intent":"none","codes":[],"strategy":null}
 
 User: "600519"
 {"intent":"analysis","codes":["600519"],"strategy":null}
 
-User: "帮我分析茅台"
+User: "幫我分析茅臺"
 {"intent":"analysis","codes":[],"strategy":null}
 
 User: "analyze TSLA and NVDA using trend strategy"
@@ -424,19 +424,19 @@ User: "analyze TSLA and NVDA using trend strategy"
         r'(?:[036]\d{5}|(?:43|83|87|88|92)\d{4})'  # A-share / BSE 6-digit codes
         r'|(?:hk|HK)\d{5}'                    # HK code
         r'|(?<![a-zA-Z])[A-Z]{2,5}(?![a-zA-Z])'  # US ticker — UPPERCASE only, no IGNORECASE
-        r'|分析|看看|查一?下|研究|诊断|怎么样|走势|趋势'
-        r'|能买|可以买|涨还是跌|怎么看|能追|建议|目标价'
-        r'|支撑|压力|阻力|止损|买点|卖点|技术面|基本面|筹码'
+        r'|分析|看看|查一?下|研究|診斷|怎麼樣|走勢|趨勢'
+        r'|能買|可以買|漲還是跌|怎麼看|能追|建議|目標價'
+        r'|支撐|壓力|阻力|止損|買點|賣點|技術面|基本面|籌碼'
         r'|(?i:analyz|stock|buy|sell|trend|backtest|strateg)',
     )
 
     _NL_NAME_CLEANUP_PATTERNS = (
-        r'[，,。.!！?？:：;；`\'"“”‘’（）()\[\]{}<>]+',
+        r'[，,。.!！?？:：;；`\'"「」『』（）()\[\]{}<>]+',
         r'(?i:\b(?:please|analy[sz]e|analysis|research|check|look\s+at|stock|ticker|trend|price)\b)',
-        r'(?:帮我|帮忙|麻烦|请|想请你|我想|想|用|按照|基于|关于|对)\s*',
-        r'(?:分析|看看|研究|诊断|查一?下|聊聊|说说|问问|评估)\s*',
-        r'(?:最近|近期|当前|今天|这只|这个|个股|股票)\s*',
-        r'(?:走势|情况|表现|如何|怎么样|怎么看|可以吗|能买吗|值不值得买|技术面|基本面|策略)\s*',
+        r'(?:幫我|幫忙|麻煩|請|想請你|我想|想|用|按照|基於|關於|對)\s*',
+        r'(?:分析|看看|研究|診斷|查一?下|聊聊|說說|問問|評估)\s*',
+        r'(?:最近|近期|當前|今天|這隻|這個|個股|股票)\s*',
+        r'(?:走勢|情況|表現|如何|怎麼樣|怎麼看|可以嗎|能買嗎|值不值得買|技術面|基本面|策略)\s*',
         r'\s+',
     )
 
@@ -728,15 +728,15 @@ User: "analyze TSLA and NVDA using trend strategy"
         return None
 
 
-# 全局分发器实例
+# 全局分發器實例
 _dispatcher: Optional[CommandDispatcher] = None
 
 
 def get_dispatcher() -> CommandDispatcher:
     """
-    获取全局分发器实例
+    獲取全局分發器實例
 
-    使用单例模式，首次调用时自动初始化并注册所有命令。
+    使用單例模式，首次調用時自動初始化並註冊所有命令。
     """
     global _dispatcher
 
@@ -745,7 +745,7 @@ def get_dispatcher() -> CommandDispatcher:
 
         config = get_config()
 
-        # 创建分发器
+        # 創建分發器
         _dispatcher = CommandDispatcher(
             command_prefix=getattr(config, 'bot_command_prefix', '/'),
             rate_limit_requests=getattr(config, 'bot_rate_limit_requests', 10),
@@ -753,17 +753,17 @@ def get_dispatcher() -> CommandDispatcher:
             admin_users=getattr(config, 'bot_admin_users', []),
         )
 
-        # 自动注册所有命令
+        # 自動註冊所有命令
         from bot.commands import ALL_COMMANDS
         for command_class in ALL_COMMANDS:
             _dispatcher.register_class(command_class)
 
-        logger.info(f"[Dispatcher] 初始化完成，已注册 {len(_dispatcher._commands)} 个命令")
+        logger.info(f"[Dispatcher] 初始化完成，已註冊 {len(_dispatcher._commands)} 個命令")
 
     return _dispatcher
 
 
 def reset_dispatcher() -> None:
-    """重置全局分发器（主要用于测试）"""
+    """重置全局分發器（主要用於測試）"""
     global _dispatcher
     _dispatcher = None

@@ -124,7 +124,7 @@ class TestFundamentalContext(unittest.TestCase):
                 },
             },
             "belong_boards": [
-                {"name": "Technology", "type": "行业"},
+                {"name": "Technology", "type": "行業"},
                 {"name": "Consumer Electronics", "type": "概念"},
             ],
             "source_chain": ["growth:yfinance.info"],
@@ -155,7 +155,7 @@ class TestFundamentalContext(unittest.TestCase):
         self.assertEqual(dividend.get("ttm_cash_dividend_per_share"), 1.05)
         self.assertEqual(dividend.get("ttm_dividend_yield_pct"), 0.36)
         self.assertEqual(ctx.get("belong_boards"), [
-            {"name": "Technology", "type": "行业"},
+            {"name": "Technology", "type": "行業"},
             {"name": "Consumer Electronics", "type": "概念"},
         ])
 
@@ -206,16 +206,16 @@ class TestFundamentalContext(unittest.TestCase):
         tushare = _DummyFetcher(
             "TushareFetcher",
             priority=1,
-            rankings=([{"name": "半导体", "change_pct": 1.0}], [{"name": "消费", "change_pct": -1.0}]),
+            rankings=([{"name": "半導體", "change_pct": 1.0}], [{"name": "消費", "change_pct": -1.0}]),
         )
         efinance = _DummyFetcher(
             "EfinanceFetcher",
             priority=0,
-            rankings=([{"name": "地产", "change_pct": 2.0}], [{"name": "煤炭", "change_pct": -2.0}]),
+            rankings=([{"name": "地產", "change_pct": 2.0}], [{"name": "煤炭", "change_pct": -2.0}]),
         )
         manager = DataFetcherManager(fetchers=[efinance, tushare, akshare])
         top, bottom = manager.get_sector_rankings(1)
-        self.assertEqual(top[0]["name"], "地产")
+        self.assertEqual(top[0]["name"], "地產")
         self.assertEqual(bottom[0]["name"], "煤炭")
 
     def test_fundamental_context_aggregates_blocks(self) -> None:
@@ -238,7 +238,7 @@ class TestFundamentalContext(unittest.TestCase):
                 patch.object(manager, "get_realtime_quote", return_value=quote), \
                 patch("data_provider.fundamental_adapter.AkshareFundamentalAdapter.get_fundamental_bundle", return_value={
                     "growth": {"revenue_yoy": 10.1, "net_profit_yoy": 8.5},
-                    "earnings": {"forecast_summary": "预增"},
+                    "earnings": {"forecast_summary": "預增"},
                     "institution": {"institution_holding_change": 1.2},
                     "source_chain": ["growth:akshare"],
                     "errors": [],
@@ -520,21 +520,21 @@ class TestFundamentalContext(unittest.TestCase):
         fetcher = _DummyBoardFetcher(
             "EfinanceFetcher",
             priority=0,
-            boards=[{"name": "白酒"}, {"board_name": "消费"}],
+            boards=[{"name": "白酒"}, {"board_name": "消費"}],
         )
         manager = DataFetcherManager(fetchers=[fetcher])
         boards = manager.get_belong_boards("600519")
         self.assertEqual(len(boards), 2)
         self.assertEqual(boards[0]["name"], "白酒")
-        self.assertEqual(boards[1]["name"], "消费")
+        self.assertEqual(boards[1]["name"], "消費")
 
     def test_get_belong_boards_preserves_cn_code_and_type_fields(self) -> None:
         fetcher = _DummyBoardFetcher(
             "EfinanceFetcher",
             priority=0,
             boards=[
-                {"板块名称": "白酒", "板块代码": "BK0815", "板块类型": "行业"},
-                {"板块": "消费", "代码": "BK0475", "类别": "概念"},
+                {"板塊名稱": "白酒", "板塊代碼": "BK0815", "板塊類型": "行業"},
+                {"板塊": "消費", "代碼": "BK0475", "類別": "概念"},
             ],
         )
         manager = DataFetcherManager(fetchers=[fetcher])
@@ -542,11 +542,11 @@ class TestFundamentalContext(unittest.TestCase):
         self.assertEqual(len(boards), 2)
         self.assertEqual(
             boards[0],
-            {"name": "白酒", "code": "BK0815", "type": "行业"},
+            {"name": "白酒", "code": "BK0815", "type": "行業"},
         )
         self.assertEqual(
             boards[1],
-            {"name": "消费", "code": "BK0475", "type": "概念"},
+            {"name": "消費", "code": "BK0475", "type": "概念"},
         )
 
     def test_get_belong_boards_supports_extended_name_aliases_in_dict_payload(self) -> None:
@@ -554,10 +554,10 @@ class TestFundamentalContext(unittest.TestCase):
             "EfinanceFetcher",
             priority=0,
             boards=[
-                {"所属板块": "新能源"},
-                {"板块名": "半导体"},
-                {"industry": "医药"},
-                {"行业": "算力"},
+                {"所屬板塊": "新能源"},
+                {"板塊名": "半導體"},
+                {"industry": "醫藥"},
+                {"行業": "算力"},
             ],
         )
         manager = DataFetcherManager(fetchers=[fetcher])
@@ -566,8 +566,8 @@ class TestFundamentalContext(unittest.TestCase):
             boards,
             [
                 {"name": "新能源"},
-                {"name": "半导体"},
-                {"name": "医药"},
+                {"name": "半導體"},
+                {"name": "醫藥"},
                 {"name": "算力"},
             ],
         )

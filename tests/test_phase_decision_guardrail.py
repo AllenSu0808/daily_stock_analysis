@@ -10,21 +10,21 @@ from src.phase_decision_guardrail import apply_phase_decision_guardrails
 def _result(**kwargs) -> AnalysisResult:
     defaults = {
         "code": "600519",
-        "name": "贵州茅台",
+        "name": "貴州茅臺",
         "trend_prediction": "看多",
         "sentiment_score": 76,
-        "operation_advice": "立即买入",
+        "operation_advice": "立即買入",
         "decision_type": "buy",
         "confidence_level": "高",
-        "analysis_summary": "盘中偏强",
+        "analysis_summary": "盤中偏強",
         "dashboard": {
-            "core_conclusion": {"one_sentence": "立即买入"},
+            "core_conclusion": {"one_sentence": "立即買入"},
             "phase_decision": {
-                "action_window": "盘中跟踪",
-                "immediate_action": "立即买入",
+                "action_window": "盤中跟蹤",
+                "immediate_action": "立即買入",
                 "watch_conditions": ["放量突破"],
                 "next_check_time": "14:30",
-                "confidence_reason": "趋势偏强",
+                "confidence_reason": "趨勢偏強",
                 "data_limitations": [],
             },
         },
@@ -47,7 +47,7 @@ def _phase(phase: str = "intraday") -> dict:
 
 def _overview(status: str = "stale") -> dict:
     return {
-        "subject": {"code": "600519", "stock_name": "贵州茅台", "market": "cn"},
+        "subject": {"code": "600519", "stock_name": "貴州茅臺", "market": "cn"},
         "blocks": [
             {
                 "key": "quote",
@@ -59,7 +59,7 @@ def _overview(status: str = "stale") -> dict:
             },
             {
                 "key": "daily_bars",
-                "label": "日线",
+                "label": "日線",
                 "status": "available",
                 "source": "akshare",
                 "warnings": [],
@@ -67,7 +67,7 @@ def _overview(status: str = "stale") -> dict:
             },
             {
                 "key": "technical",
-                "label": "技术",
+                "label": "技術",
                 "status": "available",
                 "source": "local",
                 "warnings": [],
@@ -102,17 +102,17 @@ def test_degraded_core_data_caps_high_confidence_buy() -> None:
 
 def test_degraded_core_data_caps_high_confidence_hold_advice() -> None:
     result = _result(
-        operation_advice="暂不加仓，观望",
+        operation_advice="暫不加倉，觀望",
         decision_type="hold",
         confidence_level="高",
         dashboard={
-            "core_conclusion": {"one_sentence": "暂不加仓，观望"},
+            "core_conclusion": {"one_sentence": "暫不加倉，觀望"},
             "phase_decision": {
-                "action_window": "盘中跟踪",
-                "immediate_action": "暂不加仓，观望",
+                "action_window": "盤中跟蹤",
+                "immediate_action": "暫不加倉，觀望",
                 "watch_conditions": ["放量突破"],
                 "next_check_time": "14:30",
-                "confidence_reason": "趋势未确认",
+                "confidence_reason": "趨勢未確認",
                 "data_limitations": [],
             },
         },
@@ -143,7 +143,7 @@ def test_premarket_high_confidence_immediate_action_is_conservative() -> None:
 
     assert "confidence_capped_non_intraday_action" in adjustments
     assert result.confidence_level == "低"
-    assert result.dashboard["phase_decision"]["immediate_action"] == "等待盘中确认，禁止追高。"
+    assert result.dashboard["phase_decision"]["immediate_action"] == "等待盤中確認，禁止追高。"
 
 
 def test_premarket_medium_confidence_immediate_action_rewrites_action_only() -> None:
@@ -183,17 +183,17 @@ def test_premarket_medium_confidence_immediate_action_rewrites_action_only() -> 
 
 def test_unknown_low_confidence_immediate_action_rewrites_action_only() -> None:
     result = _result(
-        operation_advice="观察为主",
+        operation_advice="觀察爲主",
         decision_type="hold",
         confidence_level="低",
         dashboard={
-            "core_conclusion": {"one_sentence": "观察为主"},
+            "core_conclusion": {"one_sentence": "觀察爲主"},
             "phase_decision": {
-                "action_window": "未知阶段观察",
-                "immediate_action": "立即买入",
-                "watch_conditions": ["确认开市状态"],
-                "next_check_time": "阶段确认后",
-                "confidence_reason": "阶段未知",
+                "action_window": "未知階段觀察",
+                "immediate_action": "立即買入",
+                "watch_conditions": ["確認開市狀態"],
+                "next_check_time": "階段確認後",
+                "confidence_reason": "階段未知",
                 "data_limitations": [],
             },
         },
@@ -209,7 +209,7 @@ def test_unknown_low_confidence_immediate_action_rewrites_action_only() -> None:
     assert "non_intraday_action_adjusted" in adjustments
     assert "confidence_capped_non_intraday_action" not in adjustments
     assert result.confidence_level == "低"
-    assert result.dashboard["phase_decision"]["immediate_action"] == "等待盘中确认，禁止追高。"
+    assert result.dashboard["phase_decision"]["immediate_action"] == "等待盤中確認，禁止追高。"
 
 
 def test_premarket_degraded_immediate_action_uses_strongest_cap() -> None:
@@ -225,16 +225,16 @@ def test_premarket_degraded_immediate_action_uses_strongest_cap() -> None:
     assert "confidence_capped_core_data_degraded" in adjustments
     assert "confidence_capped_non_intraday_action" in adjustments
     assert result.confidence_level == "低"
-    assert result.dashboard["phase_decision"]["immediate_action"] == "等待盘中确认，禁止追高。"
+    assert result.dashboard["phase_decision"]["immediate_action"] == "等待盤中確認，禁止追高。"
 
 
 def test_intraday_postmarket_recap_wording_is_adjusted_in_zh_and_en() -> None:
     zh_result = _result(
-        operation_advice="今日收盘后复盘显示可买入",
-        analysis_summary="明日重点关注突破",
+        operation_advice="今日收盤後復盤顯示可買入",
+        analysis_summary="明日重點關注突破",
         dashboard={
-            "core_conclusion": {"one_sentence": "今日收盘后复盘显示偏强"},
-            "phase_decision": {"immediate_action": "明日重点关注突破", "watch_conditions": []},
+            "core_conclusion": {"one_sentence": "今日收盤後復盤顯示偏強"},
+            "phase_decision": {"immediate_action": "明日重點關注突破", "watch_conditions": []},
         },
     )
 
@@ -246,8 +246,8 @@ def test_intraday_postmarket_recap_wording_is_adjusted_in_zh_and_en() -> None:
     )
 
     assert "postmarket_recap_wording_adjusted" in zh_adjustments
-    assert "今日收盘后" not in zh_result.dashboard["core_conclusion"]["one_sentence"]
-    assert "明日重点" not in zh_result.analysis_summary
+    assert "今日收盤後" not in zh_result.dashboard["core_conclusion"]["one_sentence"]
+    assert "明日重點" not in zh_result.analysis_summary
 
     en_result = _result(
         operation_advice="Buy after today's close",
@@ -274,10 +274,10 @@ def test_intraday_postmarket_recap_wording_is_adjusted_in_zh_and_en() -> None:
 
 def test_postmarket_recap_and_missing_inputs_are_fail_open() -> None:
     postmarket = _result(
-        operation_advice="今日收盘后复盘显示可持有",
+        operation_advice="今日收盤後復盤顯示可持有",
         dashboard={
-            "core_conclusion": {"one_sentence": "今日收盘后复盘显示可持有"},
-            "phase_decision": {"watch_conditions": ["不破支撑"]},
+            "core_conclusion": {"one_sentence": "今日收盤後復盤顯示可持有"},
+            "phase_decision": {"watch_conditions": ["不破支撐"]},
         },
     )
 
@@ -289,8 +289,8 @@ def test_postmarket_recap_and_missing_inputs_are_fail_open() -> None:
     )
 
     assert adjustments == []
-    assert "今日收盘后" in postmarket.dashboard["core_conclusion"]["one_sentence"]
-    assert postmarket.dashboard["phase_decision"]["watch_conditions"] == ["不破支撑"]
+    assert "今日收盤後" in postmarket.dashboard["core_conclusion"]["one_sentence"]
+    assert postmarket.dashboard["phase_decision"]["watch_conditions"] == ["不破支撐"]
 
     missing = _result(dashboard={})
     adjustments = apply_phase_decision_guardrails(
@@ -310,7 +310,7 @@ def test_guardrail_creates_dashboard_for_agent_compatible_result_object() -> Non
         confidence_level="高",
         decision_type="hold",
         operation_advice="持有",
-        analysis_summary="测试摘要",
+        analysis_summary="測試摘要",
     )
 
     adjustments = apply_phase_decision_guardrails(

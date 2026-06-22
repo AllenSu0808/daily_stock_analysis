@@ -21,7 +21,7 @@ def _make_platform(public_key: str) -> DiscordPlatform:
 
 
 def _current_timestamp() -> str:
-    """返回当前 Unix 秒字符串，用于生成有效签名。"""
+    """返回當前 Unix 秒字符串，用於生成有效籤名。"""
     return str(int(time.time()))
 
 
@@ -54,7 +54,7 @@ def test_signed_ping_request_is_accepted():
 
 
 def test_signed_interaction_request_returns_deferred_ack():
-    """type=2 交互应返回 type 5 延迟 ACK，同时仍解析出 BotMessage。"""
+    """type=2 交互應返回 type 5 延遲 ACK，同時仍解析出 BotMessage。"""
     signing_key = SigningKey.generate()
     platform = _make_platform(signing_key.verify_key.encode().hex())
     payload = {
@@ -85,12 +85,12 @@ def test_signed_interaction_request_returns_deferred_ack():
         payload,
     )
 
-    # 应返回 type 5 延迟 ACK
+    # 應返回 type 5 延遲 ACK
     assert response is not None
     assert response.status_code == 200
     assert response.body == {"type": 5}
 
-    # 同时仍解析出消息
+    # 同時仍解析出消息
     assert message is not None
     assert message.platform == "discord"
     assert message.chat_id == "channel-1"
@@ -98,7 +98,7 @@ def test_signed_interaction_request_returns_deferred_ack():
     assert message.user_id == "user-1"
     assert message.user_name == "tester"
     assert message.content == "/analyze 600519"
-    # follow-up 需要的字段存在于 raw_data
+    # follow-up 需要的字段存在於 raw_data
     assert message.raw_data.get("application_id") == "app-123"
     assert message.raw_data.get("token") == "interaction-token"
 
@@ -162,12 +162,12 @@ def test_invalid_public_key_configuration_is_rejected():
 
 
 def test_expired_timestamp_is_rejected():
-    """过期 timestamp（超出 ±5 分钟窗口）应被拒绝，防重放攻击。"""
+    """過期 timestamp（超出 ±5 分鐘窗口）應被拒絕，防重放攻擊。"""
     signing_key = SigningKey.generate()
     platform = _make_platform(signing_key.verify_key.encode().hex())
     payload = {"type": 1}
     body = json.dumps(payload).encode("utf-8")
-    # 10 分钟前的 timestamp
+    # 10 分鐘前的 timestamp
     stale_ts = str(int(time.time()) - 600)
 
     message, response = platform.handle_webhook(
@@ -182,7 +182,7 @@ def test_expired_timestamp_is_rejected():
 
 
 def test_format_response_wraps_interaction_callback():
-    """type=2 交互响应应使用 Interaction Response 回调格式（type=4 + data）。"""
+    """type=2 交互響應應使用 Interaction Response 回調格式（type=4 + data）。"""
     from bot.models import BotMessage, BotResponse, ChatType
 
     platform = _make_platform("00" * 32)
@@ -196,19 +196,19 @@ def test_format_response_wraps_interaction_callback():
         content="/analyze 600519",
         raw_data={"type": 2, "data": {"name": "analyze"}},
     )
-    response = BotResponse.text_response("分析结果")
+    response = BotResponse.text_response("分析結果")
 
     webhook_response = platform.format_response(response, message)
 
     assert webhook_response.status_code == 200
     assert webhook_response.body["type"] == 4
     assert "data" in webhook_response.body
-    assert webhook_response.body["data"]["content"] == "分析结果"
+    assert webhook_response.body["data"]["content"] == "分析結果"
     assert webhook_response.body["data"]["tts"] is False
 
 
 def test_send_followup_patches_original_message():
-    """send_followup 应 PATCH Discord follow-up webhook。"""
+    """send_followup 應 PATCH Discord follow-up webhook。"""
     from bot.models import BotMessage, BotResponse, ChatType
 
     platform = _make_platform("00" * 32)
@@ -226,7 +226,7 @@ def test_send_followup_patches_original_message():
             "token": "interaction-token",
         },
     )
-    response = BotResponse.text_response("分析结果")
+    response = BotResponse.text_response("分析結果")
 
     with patch("bot.platforms.discord.requests") as mock_requests:
         mock_resp = type("R", (), {"status_code": 200, "text": "ok"})()
@@ -237,11 +237,11 @@ def test_send_followup_patches_original_message():
     mock_requests.patch.assert_called_once()
     call_args = mock_requests.patch.call_args
     assert "/app-123/interaction-token/messages/@original" in call_args[0][0]
-    assert call_args[1]["json"]["content"] == "分析结果"
+    assert call_args[1]["json"]["content"] == "分析結果"
 
 
 def test_send_followup_chunks_long_content():
-    """超过 2000 字符的 follow-up 应被分块：首块 PATCH，后续 POST。"""
+    """超過 2000 字符的 follow-up 應被分塊：首塊 PATCH，後續 POST。"""
     from bot.models import BotMessage, BotResponse, ChatType
 
     platform = _make_platform("00" * 32)
@@ -259,7 +259,7 @@ def test_send_followup_chunks_long_content():
             "token": "interaction-token",
         },
     )
-    # 生成超过 2000 字符的内容
+    # 生成超過 2000 字符的內容
     long_content = "A" * 3500
     response = BotResponse.text_response(long_content)
 
@@ -270,18 +270,18 @@ def test_send_followup_chunks_long_content():
         result = platform.send_followup(response, message)
 
     assert result is True
-    # 首块使用 PATCH
+    # 首塊使用 PATCH
     mock_requests.patch.assert_called_once()
     patch_url = mock_requests.patch.call_args[0][0]
     assert "/messages/@original" in patch_url
-    # 后续块使用 POST
+    # 後續塊使用 POST
     assert mock_requests.post.call_count >= 1
     post_url = mock_requests.post.call_args[0][0]
     assert post_url.endswith("/app-123/interaction-token")
 
 
 def test_send_followup_missing_token_returns_false():
-    """缺少 interaction token 时 send_followup 应返回 False。"""
+    """缺少 interaction token 時 send_followup 應返回 False。"""
     from bot.models import BotMessage, BotResponse, ChatType
 
     platform = _make_platform("00" * 32)
@@ -295,12 +295,12 @@ def test_send_followup_missing_token_returns_false():
         content="/analyze 600519",
         raw_data={"type": 2},
     )
-    response = BotResponse.text_response("分析结果")
+    response = BotResponse.text_response("分析結果")
     assert platform.send_followup(response, message) is False
 
 
 def test_non_numeric_timestamp_is_rejected():
-    """非数字 timestamp 应被拒绝。"""
+    """非數字 timestamp 應被拒絕。"""
     signing_key = SigningKey.generate()
     platform = _make_platform(signing_key.verify_key.encode().hex())
     payload = {"type": 1}
@@ -318,7 +318,7 @@ def test_non_numeric_timestamp_is_rejected():
 
 
 def test_boolean_option_true_emits_name():
-    """布尔 True 选项应输出 option name，而非字面 'true'。"""
+    """布爾 True 選項應輸出 option name，而非字面 'true'。"""
     platform = _make_platform("00" * 32)
     interaction_data = {
         "name": "analyze",
@@ -332,7 +332,7 @@ def test_boolean_option_true_emits_name():
 
 
 def test_boolean_option_false_is_omitted():
-    """布尔 False 选项应被忽略，不出现在命令内容中。"""
+    """布爾 False 選項應被忽略，不出現在命令內容中。"""
     platform = _make_platform("00" * 32)
     interaction_data = {
         "name": "analyze",

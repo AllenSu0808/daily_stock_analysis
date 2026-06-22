@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-状态命令
+狀態命令
 ===================================
 
-显示系统运行状态和配置信息。
+顯示系統運行狀態和配置信息。
 """
 
 import platform
@@ -18,10 +18,10 @@ from bot.models import BotMessage, BotResponse
 
 class StatusCommand(BotCommand):
     """
-    状态命令
+    狀態命令
     
-    显示系统运行状态，包括：
-    - 服务状态
+    顯示系統運行狀態，包括：
+    - 服務狀態
     - 配置信息
     - 可用功能
     """
@@ -32,32 +32,32 @@ class StatusCommand(BotCommand):
     
     @property
     def aliases(self) -> List[str]:
-        return ["s", "状态", "info"]
+        return ["s", "狀態", "info"]
     
     @property
     def description(self) -> str:
-        return "显示系统状态"
+        return "顯示系統狀態"
     
     @property
     def usage(self) -> str:
         return "/status"
     
     def execute(self, message: BotMessage, args: List[str]) -> BotResponse:
-        """执行状态命令"""
+        """執行狀態命令"""
         from src.config import get_config
         
         config = get_config()
         
-        # 收集状态信息
+        # 收集狀態信息
         status_info = self._collect_status(config)
         
-        # 格式化输出
+        # 格式化輸出
         text = self._format_status(status_info, message.platform)
         
         return BotResponse.markdown_response(text)
     
     def _collect_status(self, config) -> dict:
-        """收集系统状态信息"""
+        """收集系統狀態信息"""
         from src.config import _uses_direct_env_provider, get_configured_llm_models
 
         status = {
@@ -65,16 +65,16 @@ class StatusCommand(BotCommand):
             "python_version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
             "platform": platform.system(),
             "stock_count": len(config.stock_list),
-            "stock_list": config.stock_list[:5],  # 只显示前5个
+            "stock_list": config.stock_list[:5],  # 只顯示前5個
         }
         
-        # AI 配置状态
+        # AI 配置狀態
         llm_channels = getattr(config, "llm_channels", []) or []
         llm_model_list = getattr(config, "llm_model_list", []) or []
         llm_model = (getattr(config, "litellm_model", "") or "").strip()
         agent_model = (getattr(config, "agent_litellm_model", "") or "").strip()
         status["ai_primary_model"] = llm_model
-        status["ai_agent_model"] = agent_model or ("继承主模型" if llm_model else "")
+        status["ai_agent_model"] = agent_model or ("繼承主模型" if llm_model else "")
         status["ai_channels"] = [
             str(channel.get("name") or "").strip()
             for channel in llm_channels
@@ -103,7 +103,7 @@ class StatusCommand(BotCommand):
             and (has_direct_env_model or (llm_model_list and primary_model_reachable))
         )
         
-        # 搜索服务状态
+        # 搜索服務狀態
         status["search_bocha"] = len(config.bocha_api_keys) > 0
         status["search_tavily"] = len(config.tavily_api_keys) > 0
         status["search_brave"] = len(config.brave_api_keys) > 0
@@ -111,7 +111,7 @@ class StatusCommand(BotCommand):
         status["search_minimax"] = len(config.minimax_api_keys) > 0
         status["search_searxng"] = config.has_searxng_enabled()
         
-        # 通知渠道状态
+        # 通知渠道狀態
         status["notify_wechat"] = bool(config.wechat_webhook_url)
         status["notify_feishu"] = bool(config.feishu_webhook_url)
         status["notify_telegram"] = bool(config.telegram_bot_token and config.telegram_chat_id)
@@ -143,22 +143,22 @@ class StatusCommand(BotCommand):
         return status
     
     def _format_status(self, status: dict, platform: str) -> str:
-        """格式化状态信息"""
-        # 状态图标
+        """格式化狀態信息"""
+        # 狀態圖標
         def icon(enabled: bool) -> str:
             return "✅" if enabled else "❌"
         
         lines = [
-            "📊 **股票分析助手 - 系统状态**",
+            "📊 **股票分析助手 - 系統狀態**",
             "",
-            f"🕐 时间: {status['timestamp']}",
+            f"🕐 時間: {status['timestamp']}",
             f"🐍 Python: {status['python_version']}",
-            f"💻 平台: {status['platform']}",
+            f"💻 平臺: {status['platform']}",
             "",
             "---",
             "",
-            "**📈 自选股配置**",
-            f"• 股票数量: {status['stock_count']} 只",
+            "**📈 自選股配置**",
+            f"• 股票數量: {status['stock_count']} 只",
         ]
         
         if status['stock_list']:
@@ -169,7 +169,7 @@ class StatusCommand(BotCommand):
         
         lines.extend([
             "",
-            "**🤖 AI 分析服务**",
+            "**🤖 AI 分析服務**",
             f"• 主模型: {status['ai_primary_model'] or '未配置'}",
             f"• Agent 模型: {status['ai_agent_model'] or '未配置'}",
             f"• LLM 渠道: {', '.join(status['ai_channels']) if status['ai_channels'] else '未配置'}",
@@ -180,7 +180,7 @@ class StatusCommand(BotCommand):
                 for name, enabled in status["ai_legacy_keys"].items()
             ),
             "",
-            "**🔍 搜索服务**",
+            "**🔍 搜索服務**",
             f"• Bocha: {icon(status['search_bocha'])}",
             f"• Tavily: {icon(status['search_tavily'])}",
             f"• Brave: {icon(status['search_brave'])}",
@@ -189,29 +189,29 @@ class StatusCommand(BotCommand):
             f"• SearXNG: {icon(status['search_searxng'])}",
             "",
             "**📢 通知渠道**",
-            f"• 企业微信: {icon(status['notify_wechat'])}",
-            f"• 飞书: {icon(status['notify_feishu'])}",
+            f"• 企業微信: {icon(status['notify_wechat'])}",
+            f"• 飛書: {icon(status['notify_feishu'])}",
             f"• Telegram: {icon(status['notify_telegram'])}",
-            f"• 邮件: {icon(status['notify_email'])}",
-            f"• 自定义 Webhook: {icon(status['notify_custom'])}",
+            f"• 郵件: {icon(status['notify_email'])}",
+            f"• 自定義 Webhook: {icon(status['notify_custom'])}",
             f"• Discord: {icon(status['notify_discord'])}",
             f"• Slack: {icon(status['notify_slack'])}",
-            f"• PushPlus/Pushover/Server酱3: {icon(status['notify_push'])}",
+            f"• PushPlus/Pushover/Server醬3: {icon(status['notify_push'])}",
         ])
         
-        # AI 服务总体状态
+        # AI 服務總體狀態
         if status["ai_available"]:
             lines.extend([
                 "",
                 "---",
-                "✅ **系统就绪，可以开始分析！**",
+                "✅ **系統就緒，可以開始分析！**",
             ])
         else:
             lines.extend([
                 "",
                 "---",
-                "⚠️ **AI 服务未配置，分析功能不可用**",
-                "请配置 LITELLM_MODEL、LLM_CHANNELS、LITELLM_CONFIG 或任一 provider API Key",
+                "⚠️ **AI 服務未配置，分析功能不可用**",
+                "請配置 LITELLM_MODEL、LLM_CHANNELS、LITELLM_CONFIG 或任一 provider API Key",
             ])
         
         return "\n".join(lines)

@@ -23,7 +23,7 @@ def reset_remote_stock_index_state() -> None:
     service._reset_remote_stock_index_state_for_tests()
 
 
-def _stock_index_payload(size: int = 100, *, name: str = "平安银行") -> list[list[object]]:
+def _stock_index_payload(size: int = 100, *, name: str = "平安銀行") -> list[list[object]]:
     return [
         [
             f"{index:06d}.SZ",
@@ -45,7 +45,7 @@ def _bse_stock_index_payload(size: int = 100) -> list[list[object]]:
     payload = _stock_index_payload(size=size)
     payload[0][0] = "920964.BJ"
     payload[0][1] = "920964"
-    payload[0][2] = "润农节水"
+    payload[0][2] = "潤農節水"
     payload[0][6] = "BSE"
     return payload
 
@@ -67,7 +67,7 @@ def test_refresh_remote_stock_index_cache_writes_valid_payload(tmp_path: Path) -
 
     assert result.refreshed is True
     assert result.cache_path == cache_path
-    assert json.loads(cache_path.read_text(encoding="utf-8"))[0][2] == "平安银行"
+    assert json.loads(cache_path.read_text(encoding="utf-8"))[0][2] == "平安銀行"
     get.assert_called_once_with(service.DEFAULT_STOCK_INDEX_REMOTE_URL, timeout=10)
 
 
@@ -81,7 +81,7 @@ def test_refresh_remote_stock_index_cache_decodes_remote_payload_as_utf8(tmp_pat
         result = service.refresh_remote_stock_index_cache(settings)
 
     assert result.refreshed is True
-    assert json.loads(cache_path.read_text(encoding="utf-8"))[0][2] == "平安银行"
+    assert json.loads(cache_path.read_text(encoding="utf-8"))[0][2] == "平安銀行"
 
 
 def test_refresh_remote_stock_index_cache_clears_backend_loader_cache(tmp_path: Path) -> None:
@@ -111,7 +111,7 @@ def test_refresh_remote_stock_index_cache_skips_fresh_cache(tmp_path: Path) -> N
 
 def test_refresh_remote_stock_index_cache_keeps_old_cache_on_download_failure(tmp_path: Path) -> None:
     cache_path = tmp_path / "stocks.index.json"
-    cache_path.write_text(json.dumps(_stock_index_payload(name="旧缓存"), ensure_ascii=False), encoding="utf-8")
+    cache_path.write_text(json.dumps(_stock_index_payload(name="舊緩存"), ensure_ascii=False), encoding="utf-8")
     old_mtime = time.time() - 100 * 3600
     os.utime(cache_path, (old_mtime, old_mtime))
     settings = service.RemoteStockIndexSettings(cache_path=cache_path, ttl_hours=48)
@@ -121,7 +121,7 @@ def test_refresh_remote_stock_index_cache_keeps_old_cache_on_download_failure(tm
 
     assert result.cache_path == cache_path
     assert result.error == "timeout"
-    assert json.loads(cache_path.read_text(encoding="utf-8"))[0][2] == "旧缓存"
+    assert json.loads(cache_path.read_text(encoding="utf-8"))[0][2] == "舊緩存"
 
 
 def test_refresh_remote_stock_index_cache_suppresses_after_repeated_failures(tmp_path: Path) -> None:
@@ -155,7 +155,7 @@ def test_refresh_remote_stock_index_cache_retries_after_failure_window(tmp_path:
 
 def test_refresh_remote_stock_index_cache_rejects_invalid_remote_payload(tmp_path: Path) -> None:
     cache_path = tmp_path / "stocks.index.json"
-    cache_path.write_text(json.dumps(_stock_index_payload(name="旧缓存"), ensure_ascii=False), encoding="utf-8")
+    cache_path.write_text(json.dumps(_stock_index_payload(name="舊緩存"), ensure_ascii=False), encoding="utf-8")
     settings = service.RemoteStockIndexSettings(cache_path=cache_path, ttl_hours=0)
 
     with patch.object(service.requests, "get", return_value=_response([["000001.SZ"]])):
@@ -163,7 +163,7 @@ def test_refresh_remote_stock_index_cache_rejects_invalid_remote_payload(tmp_pat
 
     assert result.cache_path == cache_path
     assert result.error
-    assert json.loads(cache_path.read_text(encoding="utf-8"))[0][2] == "旧缓存"
+    assert json.loads(cache_path.read_text(encoding="utf-8"))[0][2] == "舊緩存"
 
 
 def test_validate_stock_index_payload_accepts_bse_market() -> None:

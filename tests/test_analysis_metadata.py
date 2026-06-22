@@ -129,13 +129,13 @@ class TestSelectionSourcePatternEdgeCases:
         pattern = re.compile(SELECTION_SOURCE_PATTERN)
 
         # Chinese characters should fail
-        assert pattern.fullmatch("手动输入") is None
-        assert pattern.fullmatch("自动补全") is None
-        assert pattern.fullmatch("图片识别") is None
+        assert pattern.fullmatch("手動輸入") is None
+        assert pattern.fullmatch("自動補全") is None
+        assert pattern.fullmatch("圖片識別") is None
 
         # Mixed characters should fail
-        assert pattern.fullmatch("manual输入") is None
-        assert pattern.fullmatch("autocomplete识别") is None
+        assert pattern.fullmatch("manual輸入") is None
+        assert pattern.fullmatch("autocomplete識別") is None
 
 
 class TestSelectionSourceIntegration:
@@ -282,11 +282,11 @@ class TestSelectionSourceDocumentation:
             "manual": [
                 "User directly inputs 600519 in input box",
                 "User directly inputs AAPL in input box",
-                "User directly inputs 贵州茅台 in input box",
+                "User directly inputs 貴州茅臺 in input box",
             ],
             "autocomplete": [
-                "User inputs '茅台', selects '贵州茅台' from dropdown",
-                "User inputs 'gzmt', selects '贵州茅台' from dropdown",
+                "User inputs '茅臺', selects '貴州茅臺' from dropdown",
+                "User inputs 'gzmt', selects '貴州茅臺' from dropdown",
                 "User inputs '6005', selects '600519.SH' from dropdown",
             ],
             "import": [

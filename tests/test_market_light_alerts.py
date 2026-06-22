@@ -29,8 +29,8 @@ def _snapshot(
         "trade_date": trade_date,
         "status": status,
         "score": score,
-        "label": "需观察",
-        "temperature_label": "震荡",
+        "label": "需觀察",
+        "temperature_label": "震蕩",
         "reasons": ["test"],
         "guidance": "test",
         "dimensions": {

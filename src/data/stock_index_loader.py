@@ -174,7 +174,7 @@ def _get_stock_index_signature(index_path: Path) -> tuple[float, int] | None:
     try:
         stat_result = index_path.stat()
     except OSError as exc:
-        logger.debug("[股票名称] 读取股票索引元数据失败 %s: %s", index_path, exc)
+        logger.debug("[股票名稱] 讀取股票索引元數據失敗 %s: %s", index_path, exc)
         return None
     if not index_path.is_file():
         return None
@@ -260,13 +260,13 @@ def get_stock_name_index_map() -> Dict[str, str]:
                 else:
                     _STOCK_INDEX_CACHE = _load_stock_index_file(index_path)
                 logger.debug(
-                    "[股票名称] 已加载前端股票索引映射: %s (%d 条)",
+                    "[股票名稱] 已加載前端股票索引映射: %s (%d 條)",
                     index_path,
                     len(_STOCK_INDEX_CACHE),
                 )
                 return _STOCK_INDEX_CACHE
             except (OSError, TypeError, ValueError) as exc:
-                logger.debug("[股票名称] 读取股票索引失败 %s: %s", index_path, exc)
+                logger.debug("[股票名稱] 讀取股票索引失敗 %s: %s", index_path, exc)
 
         _STOCK_INDEX_CACHE = {}
         return _STOCK_INDEX_CACHE
@@ -322,7 +322,7 @@ def get_stock_code_index_map() -> Dict[str, str]:
                 for key, value in _build_stock_code_lookup(raw_items).items():
                     merged_lookup.setdefault(key, value)
             except (OSError, TypeError, ValueError) as exc:
-                logger.debug("[鑲＄エ绱㈠紩] 瑙ｆ瀽浠ｇ爜绱㈠紩澶辫触 %s: %s", index_path, exc)
+                logger.debug("[鑲＄エ鞝㈠紩] 瑙ｆ瀽浠ｇ爜鞝㈠紩澶辮觸 %s: %s", index_path, exc)
 
         _STOCK_CODE_LOOKUP_CACHE = merged_lookup
         return _STOCK_CODE_LOOKUP_CACHE
@@ -343,7 +343,7 @@ def _resolve_index_stock_code_uncached(query: str) -> str | None:
             if resolved:
                 return resolved
         except (OSError, TypeError, ValueError) as exc:
-            logger.debug("[股票索引] 解析代码索引失败 %s: %s", index_path, exc)
+            logger.debug("[股票索引] 解析代碼索引失敗 %s: %s", index_path, exc)
 
     return None
 

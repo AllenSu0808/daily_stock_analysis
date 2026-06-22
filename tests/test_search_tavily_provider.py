@@ -228,7 +228,7 @@ class TestTavilySearchProvider(unittest.TestCase):
                 news_max_age_days=3,
                 news_strategy_profile="short",
             )
-            intel = service.search_comprehensive_intel("510300", "沪深300ETF", max_searches=3)
+            intel = service.search_comprehensive_intel("510300", "滬深300ETF", max_searches=3)
 
         self.assertIn("latest_news", intel)
         self.assertIn("market_analysis", intel)
@@ -260,7 +260,7 @@ class TestTavilySearchProvider(unittest.TestCase):
                 news_max_age_days=3,
                 news_strategy_profile="short",
             )
-            intel = service.search_comprehensive_intel("600519", "贵州茅台", max_searches=3)
+            intel = service.search_comprehensive_intel("600519", "貴州茅臺", max_searches=3)
 
         self.assertIn("latest_news", intel)
         self.assertIn("market_analysis", intel)

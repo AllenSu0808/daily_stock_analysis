@@ -34,22 +34,22 @@ logger = logging.getLogger(__name__)
 
 # Tool name → friendly label for progress messages
 _THINKING_TOOL_LABELS: Dict[str, str] = {
-    "get_realtime_quote": "行情获取",
-    "get_daily_history": "K线数据获取",
-    "analyze_trend": "技术指标分析",
-    "get_chip_distribution": "筹码分布分析",
-    "search_stock_news": "新闻搜索",
-    "search_comprehensive_intel": "综合情报搜索",
-    "get_market_indices": "市场概览获取",
-    "get_sector_rankings": "行业板块分析",
-    "get_analysis_context": "历史分析上下文",
-    "get_stock_info": "基本信息获取",
-    "analyze_pattern": "K线形态识别",
+    "get_realtime_quote": "行情獲取",
+    "get_daily_history": "K線數據獲取",
+    "analyze_trend": "技術指標分析",
+    "get_chip_distribution": "籌碼分布分析",
+    "search_stock_news": "新聞搜索",
+    "search_comprehensive_intel": "綜合情報搜索",
+    "get_market_indices": "市場概覽獲取",
+    "get_sector_rankings": "行業板塊分析",
+    "get_analysis_context": "歷史分析上下文",
+    "get_stock_info": "基本信息獲取",
+    "analyze_pattern": "K線形態識別",
     "get_volume_analysis": "量能分析",
-    "calculate_ma": "均线计算",
-    "get_skill_backtest_summary": "技能回测概览",
-    "get_strategy_backtest_summary": "策略回测概览",
-    "get_stock_backtest_summary": "个股回测数据",
+    "calculate_ma": "均線計算",
+    "get_skill_backtest_summary": "技能回測概覽",
+    "get_strategy_backtest_summary": "策略回測概覽",
+    "get_stock_backtest_summary": "個股回測數據",
 }
 
 
@@ -503,11 +503,11 @@ def run_agent_loop(
         # --- progress: thinking ---
         if progress_callback:
             if not tool_calls_log:
-                thinking_msg = "正在制定分析路径..."
+                thinking_msg = "正在制定分析路徑..."
             else:
                 last_tool = tool_calls_log[-1].get("tool", "")
                 label = labels.get(last_tool, last_tool)
-                thinking_msg = f"「{label}」已完成，继续深入分析..."
+                thinking_msg = f"「{label}」已完成，繼續深入分析..."
             progress_callback({"type": "thinking", "step": step + 1, "message": thinking_msg})
 
         # --- LLM call ---
@@ -624,7 +624,7 @@ def run_agent_loop(
                 total_tokens,
             )
             if progress_callback:
-                progress_callback({"type": "generating", "step": step + 1, "message": "正在生成最终分析..."})
+                progress_callback({"type": "generating", "step": step + 1, "message": "正在生成最終分析..."})
 
             final_content = response.content or ""
             is_error = response.provider == "error"

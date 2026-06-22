@@ -16,16 +16,16 @@ class TestEfinanceMainIndices(unittest.TestCase):
         fetcher = EfinanceFetcher()
         fake_df = pd.DataFrame(
             {
-                "股票代码": ["000001"],
-                "最新价": [3200.0],
-                "涨跌幅": [0.63],
-                "涨跌额": [20.0],
-                "今开": [3188.0],
-                "开盘": [0.0],
+                "股票代碼": ["000001"],
+                "最新價": [3200.0],
+                "漲跌幅": [0.63],
+                "漲跌額": [20.0],
+                "今開": [3188.0],
+                "開盤": [0.0],
                 "最高": [3215.0],
                 "最低": [3170.0],
                 "成交量": [123456789],
-                "成交额": [9876543210.0],
+                "成交額": [9876543210.0],
                 "振幅": [1.2],
             }
         )
@@ -42,7 +42,7 @@ class TestEfinanceMainIndices(unittest.TestCase):
         self.assertIsNotNone(data)
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]["code"], "sh000001")
-        self.assertEqual(data[0]["name"], "上证指数")
+        self.assertEqual(data[0]["name"], "上證指數")
         self.assertAlmostEqual(data[0]["open"], 3188.0)
         self.assertAlmostEqual(data[0]["current"], 3200.0)
 
@@ -50,16 +50,16 @@ class TestEfinanceMainIndices(unittest.TestCase):
         fetcher = EfinanceFetcher()
         fake_df = pd.DataFrame(
             {
-                "股票代码": ["000001"],
-                "最新价": [3200.0],
-                "涨跌幅": [0.63],
-                "涨跌额": [20.0],
-                "今开": [""],
-                "开盘": [3186.0],
+                "股票代碼": ["000001"],
+                "最新價": [3200.0],
+                "漲跌幅": [0.63],
+                "漲跌額": [20.0],
+                "今開": [""],
+                "開盤": [3186.0],
                 "最高": [3215.0],
                 "最低": [3170.0],
                 "成交量": [123456789],
-                "成交额": [9876543210.0],
+                "成交額": [9876543210.0],
                 "振幅": [1.2],
             }
         )

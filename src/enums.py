@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-枚举类型定义
+枚舉類型定義
 ===================================
 
-集中管理系统中使用的枚举类型，提供类型安全和代码可读性。
+集中管理系統中使用的枚舉類型，提供類型安全和代碼可讀性。
 """
 
 from enum import Enum
@@ -12,25 +12,25 @@ from enum import Enum
 
 class ReportType(str, Enum):
     """
-    报告类型枚举
+    報告類型枚舉
 
-    用于 API 触发分析时选择推送的报告格式。
-    继承 str 使其可以直接与字符串比较和序列化。
+    用於 API 觸發分析時選擇推送的報告格式。
+    繼承 str 使其可以直接與字符串比較和序列化。
     """
-    SIMPLE = "simple"  # 精简报告：使用 generate_single_stock_report
-    FULL = "full"      # 完整报告：使用 generate_dashboard_report
-    BRIEF = "brief"    # 简洁模式：3-5 句话概括，适合移动端/推送
+    SIMPLE = "simple"  # 精簡報告：使用 generate_single_stock_report
+    FULL = "full"      # 完整報告：使用 generate_dashboard_report
+    BRIEF = "brief"    # 簡潔模式：3-5 句話概括，適合移動端/推送
 
     @classmethod
     def from_str(cls, value: str) -> "ReportType":
         """
-        从字符串安全地转换为枚举值
+        從字符串安全地轉換爲枚舉值
         
         Args:
             value: 字符串值
             
         Returns:
-            对应的枚举值，无效输入返回默认值 SIMPLE
+            對應的枚舉值，無效輸入返回默認值 SIMPLE
         """
         try:
             normalized = value.lower().strip()
@@ -42,9 +42,9 @@ class ReportType(str, Enum):
     
     @property
     def display_name(self) -> str:
-        """获取用于显示的名称"""
+        """獲取用於顯示的名稱"""
         return {
-            ReportType.SIMPLE: "精简报告",
-            ReportType.FULL: "完整报告",
-            ReportType.BRIEF: "简洁报告",
-        }.get(self, "精简报告")
+            ReportType.SIMPLE: "精簡報告",
+            ReportType.FULL: "完整報告",
+            ReportType.BRIEF: "簡潔報告",
+        }.get(self, "精簡報告")

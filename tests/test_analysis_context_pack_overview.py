@@ -28,7 +28,7 @@ from src.schemas.analysis_context_pack import (
 
 def _pack() -> AnalysisContextPack:
     return AnalysisContextPack(
-        subject=AnalysisSubject(code="600519", stock_name="贵州茅台", market="cn"),
+        subject=AnalysisSubject(code="600519", stock_name="貴州茅臺", market="cn"),
         created_at=datetime(2026, 4, 10, 8, 30, tzinfo=timezone.utc),
         blocks={
             "news": AnalysisContextBlock(
@@ -36,7 +36,7 @@ def _pack() -> AnalysisContextPack:
                 items={
                     "content": AnalysisContextItem(
                         status=ContextFieldStatus.MISSING,
-                        value="这是一段不应出现在公共 overview 的完整新闻正文",
+                        value="這是一段不應出現在公共 overview 的完整新聞正文",
                         missing_reason="news_context_missing",
                     ),
                     "freshness": AnalysisContextItem(
@@ -79,7 +79,7 @@ def _pack() -> AnalysisContextPack:
                 items={
                     "trend_result": AnalysisContextItem(
                         status=ContextFieldStatus.AVAILABLE,
-                        value={"trend_status": "多头排列", "ma5": 1800.0},
+                        value={"trend_status": "多頭排列", "ma5": 1800.0},
                     )
                 },
             ),
@@ -185,8 +185,8 @@ def test_renderer_does_not_dump_items_values_payloads_or_sensitive_markers() -> 
     assert "metadata" in keys
 
     rendered = json.dumps(overview, ensure_ascii=False)
-    assert "完整新闻正文" not in rendered
-    assert "多头排列" not in rendered
+    assert "完整新聞正文" not in rendered
+    assert "多頭排列" not in rendered
     assert "secret-key" not in rendered
     assert "hooks.example.test" not in rendered
     assert "authorization" not in rendered
@@ -228,7 +228,7 @@ def test_labels_follow_report_language_and_prompt_block_order() -> None:
     )
     assert [block["label"] for block in overview_zh["blocks"][:3]] == [
         "行情",
-        "技术",
+        "技術",
         "基本面",
     ]
     assert [block["label"] for block in overview_en["blocks"][:3]] == [
@@ -237,7 +237,7 @@ def test_labels_follow_report_language_and_prompt_block_order() -> None:
         "fundamentals",
     ]
     prompt = format_analysis_context_pack_prompt_section(pack, report_language="zh")
-    assert prompt.index("行情:") < prompt.index("技术:") < prompt.index("基本面:")
+    assert prompt.index("行情:") < prompt.index("技術:") < prompt.index("基本面:")
 
 
 def test_extract_and_sanitize_handle_json_snapshot_strings() -> None:
@@ -246,15 +246,15 @@ def test_extract_and_sanitize_handle_json_snapshot_strings() -> None:
         {
             "enhanced_context": {
                 "code": "600519",
-                "daily_market_context_summary": "仅供Prompt，历史复盘摘要",
+                "daily_market_context_summary": "僅供Prompt，歷史復盤摘要",
                 "portfolio_context": {
                     "quantity": 100,
                     "avg_cost": 1800,
                 },
-                "daily_market_context": {"summary": "大盘偏弱，谨慎"},
+                "daily_market_context": {"summary": "大盤偏弱，謹慎"},
             },
             "portfolio_context": {"total_cost": 180000},
-            "daily_market_context_summary": "根快照大盘摘要（应清理）",
+            "daily_market_context_summary": "根快照大盤摘要（應清理）",
             "analysis_context_pack_overview": overview,
             "market_phase_summary": {"phase": "intraday", "market": "cn"},
         },
@@ -269,7 +269,7 @@ def test_extract_and_sanitize_handle_json_snapshot_strings() -> None:
     assert sanitized == {
         "enhanced_context": {
             "code": "600519",
-            "daily_market_context": {"summary": "大盘偏弱，谨慎"},
+            "daily_market_context": {"summary": "大盤偏弱，謹慎"},
         }
     }
 
@@ -281,7 +281,7 @@ def test_extract_reprojects_persisted_overview_to_public_schema() -> None:
             "created_at": "2026-04-10T08:30:00+00:00",
             "subject": {
                 "code": "600519",
-                "stock_name": "贵州茅台",
+                "stock_name": "貴州茅臺",
                 "market": "cn",
                 "api_key": "secret-key",
             },
@@ -297,7 +297,7 @@ def test_extract_reprojects_persisted_overview_to_public_schema() -> None:
                 },
                 {
                     "key": "news",
-                    "label": "新闻",
+                    "label": "新聞",
                     "status": "missing",
                     "source": None,
                     "warnings": [],
@@ -307,7 +307,7 @@ def test_extract_reprojects_persisted_overview_to_public_schema() -> None:
                         "backup_unavailable",
                         "extra_reason_not_exposed",
                     ],
-                    "content": "完整新闻正文不应出现",
+                    "content": "完整新聞正文不應出現",
                 },
             ],
             "counts": {
@@ -378,7 +378,7 @@ def test_extract_reprojects_persisted_overview_to_public_schema() -> None:
     rendered = json.dumps(extracted, ensure_ascii=False)
     assert "items" not in rendered
     assert "value" not in rendered
-    assert "完整新闻正文" not in rendered
+    assert "完整新聞正文" not in rendered
     assert "webhook_url" not in rendered
     assert "hooks.example.test" not in rendered
     assert "secret-key" not in rendered

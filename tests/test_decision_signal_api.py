@@ -97,7 +97,7 @@ def client_and_db(tmp_path):
 def _payload(**overrides):
     payload = {
         "stock_code": "SH600519",
-        "stock_name": "贵州茅台",
+        "stock_name": "貴州茅臺",
         "market": "cn",
         "source_type": "analysis",
         "source_agent": "api-test",
@@ -111,7 +111,7 @@ def _payload(**overrides):
         "horizon": "3d",
         "entry_low": 1680,
         "stop_loss": 1600,
-        "reason": "突破平台",
+        "reason": "突破平臺",
         "evidence": {"source": "unit-test"},
         "metadata": {"task_id": "task-3001", "alert_trigger_id": "alert-1"},
     }
@@ -177,13 +177,13 @@ def test_create_duplicate_list_detail_latest_and_status_update(client_and_db) ->
 
     duplicate_resp = client.post(
         "/api/v1/decision-signals",
-        json=_payload(reason="重复报告里不同文案不应覆盖旧信号"),
+        json=_payload(reason="重複報告裡不同文案不應覆蓋舊信號"),
     )
     assert duplicate_resp.status_code == 200, duplicate_resp.text
     duplicate = duplicate_resp.json()
     assert duplicate["created"] is False
     assert duplicate["item"]["id"] == signal_id
-    assert duplicate["item"]["reason"] == "突破平台"
+    assert duplicate["item"]["reason"] == "突破平臺"
 
     list_resp = client.get(
         "/api/v1/decision-signals",

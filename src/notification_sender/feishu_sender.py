@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-飞书 发送提醒服务
+飛書 發送提醒服務
 
-职责：
-1. 通过 webhook 发送飞书消息
-2. 通过飞书应用机器人（App Bot）发送消息（lark-oapi SDK）
+職責：
+1. 通過 webhook 發送飛書消息
+2. 通過飛書應用機器人（App Bot）發送消息（lark-oapi SDK）
 """
 import base64
 import hashlib
@@ -93,7 +93,7 @@ class FeishuSender:
         ).strip().lower()
         if self._feishu_receive_id_type not in ("chat_id", "open_id"):
             logger.warning(
-                "无效的 FEISHU_RECEIVE_ID_TYPE=%s，回退为 chat_id",
+                "無效的 FEISHU_RECEIVE_ID_TYPE=%s，回退爲 chat_id",
                 self._feishu_receive_id_type,
             )
             self._feishu_receive_id_type = "chat_id"
@@ -103,7 +103,7 @@ class FeishuSender:
         ).strip().lower()
         if raw_domain not in ("feishu", "lark"):
             logger.warning(
-                "无效的 FEISHU_DOMAIN=%s，回退为 feishu", raw_domain
+                "無效的 FEISHU_DOMAIN=%s，回退爲 feishu", raw_domain
             )
             raw_domain = "feishu"
         self._feishu_domain = FEISHU_DOMAIN if raw_domain == "feishu" else LARK_DOMAIN
@@ -121,7 +121,7 @@ class FeishuSender:
         return {
             "config": {"wide_screen_mode": True},
             "header": {
-                "title": {"tag": "plain_text", "content": "股票智能分析报告"},
+                "title": {"tag": "plain_text", "content": "股票智能分析報告"},
             },
             "elements": [
                 {
@@ -172,7 +172,7 @@ class FeishuSender:
                 return self._app_client
             if not FEISHU_SDK_AVAILABLE:
                 logger.warning(
-                    "飞书 App Bot 需要 lark-oapi 库；标准安装请运行: pip install -r requirements.txt"
+                    "飛書 App Bot 需要 lark-oapi 庫；標準安裝請運行: pip install -r requirements.txt"
                 )
                 self._app_client = None
                 return None
@@ -182,7 +182,7 @@ class FeishuSender:
                     missing.append("FEISHU_APP_ID")
                 if not self._feishu_app_secret:
                     missing.append("FEISHU_APP_SECRET")
-                logger.warning("飞书 App Bot 凭据不全，缺少: %s", ", ".join(missing))
+                logger.warning("飛書 App Bot 憑據不全，缺少: %s", ", ".join(missing))
                 self._app_client = None
                 return None
             try:
@@ -194,9 +194,9 @@ class FeishuSender:
                     .log_level(_lark.LogLevel.WARNING)
                     .build()
                 )
-                logger.info("飞书 App Bot 客户端初始化成功 (domain=%s)", self._feishu_domain)
+                logger.info("飛書 App Bot 客戶端初始化成功 (domain=%s)", self._feishu_domain)
             except Exception as e:
-                logger.error("飞书 App Bot 客户端初始化失败: %s", e)
+                logger.error("飛書 App Bot 客戶端初始化失敗: %s", e)
                 self._app_client = None
             return self._app_client
 
@@ -207,7 +207,7 @@ class FeishuSender:
     def _send_via_app_bot(self, content: str) -> bool:
         """Send message through the Feishu App Bot, chunking if necessary."""
         if not self._feishu_chat_id:
-            logger.warning("FEISHU_CHAT_ID 未配置，跳过 App Bot 推送")
+            logger.warning("FEISHU_CHAT_ID 未配置，跳過 App Bot 推送")
             return False
 
         client = self._ensure_app_client()
@@ -219,7 +219,7 @@ class FeishuSender:
 
         if content_bytes > self._feishu_max_bytes:
             logger.info(
-                "App Bot 消息超长 (%d 字节)，将分批发送", content_bytes
+                "App Bot 消息超長 (%d 字節)，將分批發送", content_bytes
             )
             return self._app_send_chunked(client, formatted)
 
@@ -232,14 +232,14 @@ class FeishuSender:
                 content, self._feishu_max_bytes, add_page_marker=True
             )
         except (ValueError, TypeError, Exception) as e:
-            logger.error("App Bot 分片失败: %s", e)
+            logger.error("App Bot 分片失敗: %s", e)
             return False
 
         success = True
         for i, chunk in enumerate(chunks):
             ok = self._app_send_once(client, chunk)
             if not ok:
-                logger.error("App Bot 第 %d/%d 批发送失败", i + 1, len(chunks))
+                logger.error("App Bot 第 %d/%d 批發送失敗", i + 1, len(chunks))
                 success = False
             if i < len(chunks) - 1:
                 time.sleep(1)
@@ -287,7 +287,7 @@ class FeishuSender:
                 .build()
             )
         except Exception as e:
-            logger.error("App Bot 请求构建失败: %s: %s", type(e).__name__, e)
+            logger.error("App Bot 請求構建失敗: %s: %s", type(e).__name__, e)
             return False
 
         last_status: Optional[str] = None
@@ -297,7 +297,7 @@ class FeishuSender:
                 resp = client.im.v1.message.create(req)
             except Exception as e:
                 logger.warning(
-                    "App Bot 发送异常 (attempt=%d/%d): %s: %s",
+                    "App Bot 發送異常 (attempt=%d/%d): %s: %s",
                     attempt + 1, _APP_SEND_RETRIES, type(e).__name__, e,
                 )
                 if attempt < _APP_SEND_RETRIES - 1:
@@ -309,7 +309,7 @@ class FeishuSender:
                 continue
 
             if resp.success():
-                logger.info("App Bot 消息发送成功 (type=%s)", msg_type)
+                logger.info("App Bot 消息發送成功 (type=%s)", msg_type)
                 return True
 
             try:
@@ -321,7 +321,7 @@ class FeishuSender:
             )
             last_status = status
             logger.warning(
-                "App Bot 发送失败 (attempt=%d/%d): %s",
+                "App Bot 發送失敗 (attempt=%d/%d): %s",
                 attempt + 1, _APP_SEND_RETRIES, status,
             )
 
@@ -333,7 +333,7 @@ class FeishuSender:
                 )
 
         if last_status:
-            logger.error("App Bot 发送最终失败: %s", last_status)
+            logger.error("App Bot 發送最終失敗: %s", last_status)
         return False
 
     # ------------------------------------------------------------------
@@ -353,7 +353,7 @@ class FeishuSender:
             Whether the send succeeded.
         """
         if content is None:
-            logger.error("send_to_feishu: content 不能为 None")
+            logger.error("send_to_feishu: content 不能爲 None")
             return False
         if self._feishu_url:
             return self._send_via_webhook(content, timeout_seconds=timeout_seconds)
@@ -372,7 +372,7 @@ class FeishuSender:
         effective_max_bytes = max_bytes - keyword_overhead
 
         if effective_max_bytes <= 0:
-            logger.error("飞书关键词过长，超过单条消息允许的最大字节数，无法发送")
+            logger.error("飛書關鍵詞過長，超過單條消息允許的最大字節數，無法發送")
             return False
 
         content_bytes = len(formatted_content.encode("utf-8")) + keyword_overhead
@@ -380,39 +380,39 @@ class FeishuSender:
             min_chunk_bytes = MIN_MAX_BYTES + PAGE_MARKER_SAFE_BYTES
             if effective_max_bytes < min_chunk_bytes:
                 logger.error(
-                    "飞书关键词过长，剩余分片预算(%s字节)不足以安全分页发送，至少需要 %s 字节",
+                    "飛書關鍵詞過長，剩餘分片預算(%s字節)不足以安全分頁發送，至少需要 %s 字節",
                     effective_max_bytes,
                     min_chunk_bytes,
                 )
                 return False
-            logger.info("飞书消息内容超长(%d字节/%d字符)，将分批发送", content_bytes, len(content))
+            logger.info("飛書消息內容超長(%d字節/%d字符)，將分批發送", content_bytes, len(content))
             return self._send_feishu_chunked(formatted_content, effective_max_bytes)
 
         try:
             return self._send_feishu_message(formatted_content, timeout_seconds=timeout_seconds)
         except Exception as e:
-            logger.error("发送飞书消息失败: %s", e)
+            logger.error("發送飛書消息失敗: %s", e)
             return False
 
     def _send_feishu_chunked(self, content: str, max_bytes: int) -> bool:
         try:
             chunks = chunk_content_by_max_bytes(content, max_bytes, add_page_marker=True)
         except ValueError as e:
-            logger.error("飞书消息分片失败，单片预算不足以安全分页（关键词过长或 max_bytes 过小）: %s", e)
+            logger.error("飛書消息分片失敗，單片預算不足以安全分頁（關鍵詞過長或 max_bytes 過小）: %s", e)
             return False
 
         total_chunks = len(chunks)
         success_count = 0
-        logger.info("飞书分批发送：共 %d 批", total_chunks)
+        logger.info("飛書分批發送：共 %d 批", total_chunks)
         for i, chunk in enumerate(chunks):
             try:
                 if self._send_feishu_message(chunk):
                     success_count += 1
-                    logger.info("飞书第 %d/%d 批发送成功", i + 1, total_chunks)
+                    logger.info("飛書第 %d/%d 批發送成功", i + 1, total_chunks)
                 else:
-                    logger.error("飞书第 %d/%d 批发送失败", i + 1, total_chunks)
+                    logger.error("飛書第 %d/%d 批發送失敗", i + 1, total_chunks)
             except Exception as e:
-                logger.error("飞书第 %d/%d 批发送异常: %s", i + 1, total_chunks, e)
+                logger.error("飛書第 %d/%d 批發送異常: %s", i + 1, total_chunks, e)
             if i < total_chunks - 1:
                 time.sleep(1)
         return success_count == total_chunks
@@ -435,28 +435,28 @@ class FeishuSender:
             except (requests.exceptions.ConnectionError,
                      requests.exceptions.Timeout,
                      requests.exceptions.RequestException) as e:
-                logger.error("飞书 Webhook 网络请求异常: %s", e)
+                logger.error("飛書 Webhook 網絡請求異常: %s", e)
                 return False
             if response.status_code == 200:
                 try:
                     result = response.json()
                 except (ValueError, AttributeError):
-                    logger.error("飞书 Webhook 返回非 JSON 响应: %s", response.text[:200])
+                    logger.error("飛書 Webhook 返回非 JSON 響應: %s", response.text[:200])
                     return False
                 if not isinstance(result, dict):
-                    logger.error("飞书 Webhook 返回非预期格式: %s", type(result).__name__)
+                    logger.error("飛書 Webhook 返回非預期格式: %s", type(result).__name__)
                     return False
                 code = result.get("code") if "code" in result else result.get("StatusCode")
                 if code == 0:
-                    logger.info("飞书 Webhook 消息发送成功")
+                    logger.info("飛書 Webhook 消息發送成功")
                     return True
                 logger.error(
-                    "飞书 Webhook 返回错误 [code=%s]: %s",
+                    "飛書 Webhook 返回錯誤 [code=%s]: %s",
                     code,
-                    result.get("msg") or result.get("StatusMessage", "未知错误"),
+                    result.get("msg") or result.get("StatusMessage", "未知錯誤"),
                 )
                 return False
-            logger.error("飞书 Webhook 请求失败: HTTP %d", response.status_code)
+            logger.error("飛書 Webhook 請求失敗: HTTP %d", response.status_code)
             return False
 
         card_payload = {"msg_type": "interactive", "card": self._build_card_body(prepared_content)}

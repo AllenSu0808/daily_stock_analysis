@@ -37,14 +37,14 @@ DEFAULT_PARSER_SPECS: Tuple[CsvParserSpec, ...] = (
     CsvParserSpec(
         broker="huatai",
         aliases=(),
-        display_name="华泰",
+        display_name="華泰",
         column_hints={
-            "trade_date": ("成交日期", "成交时间", "发生日期", "日期"),
-            "symbol": ("证券代码", "股票代码", "代码"),
-            "side": ("买卖标志", "买卖方向", "操作"),
-            "quantity": ("成交数量", "数量", "成交股数"),
-            "price": ("成交均价", "成交价格", "价格", "成交价", "均价"),
-            "trade_uid": ("成交编号", "成交序号", "流水号"),
+            "trade_date": ("成交日期", "成交時間", "發生日期", "日期"),
+            "symbol": ("證券代碼", "股票代碼", "代碼"),
+            "side": ("買賣標誌", "買賣方向", "操作"),
+            "quantity": ("成交數量", "數量", "成交股數"),
+            "price": ("成交均價", "成交價格", "價格", "成交價", "均價"),
+            "trade_uid": ("成交編號", "成交序號", "流水號"),
         },
     ),
     CsvParserSpec(
@@ -52,12 +52,12 @@ DEFAULT_PARSER_SPECS: Tuple[CsvParserSpec, ...] = (
         aliases=("zhongxin",),
         display_name="中信",
         column_hints={
-            "trade_date": ("发生日期", "成交日期", "日期"),
-            "symbol": ("证券代码", "股票代码", "代码"),
-            "side": ("买卖方向", "买卖标志", "业务名称"),
-            "quantity": ("成交数量", "数量", "成交股数"),
-            "price": ("成交价格", "成交均价", "价格", "成交价"),
-            "trade_uid": ("合同编号", "成交编号", "委托编号"),
+            "trade_date": ("發生日期", "成交日期", "日期"),
+            "symbol": ("證券代碼", "股票代碼", "代碼"),
+            "side": ("買賣方向", "買賣標誌", "業務名稱"),
+            "quantity": ("成交數量", "數量", "成交股數"),
+            "price": ("成交價格", "成交均價", "價格", "成交價"),
+            "trade_uid": ("合同編號", "成交編號", "委託編號"),
         },
     ),
     CsvParserSpec(
@@ -65,12 +65,12 @@ DEFAULT_PARSER_SPECS: Tuple[CsvParserSpec, ...] = (
         aliases=("zhaoshang", "cmbchina"),
         display_name="招商",
         column_hints={
-            "trade_date": ("日期", "成交日期", "发生日期"),
-            "symbol": ("证券代码", "股票代码", "代码"),
-            "side": ("交易方向", "买卖方向", "买卖标志"),
-            "quantity": ("成交股数", "成交数量", "数量"),
-            "price": ("成交价", "成交价格", "成交均价", "均价"),
-            "trade_uid": ("流水号", "成交编号", "成交序号"),
+            "trade_date": ("日期", "成交日期", "發生日期"),
+            "symbol": ("證券代碼", "股票代碼", "代碼"),
+            "side": ("交易方向", "買賣方向", "買賣標誌"),
+            "quantity": ("成交股數", "成交數量", "數量"),
+            "price": ("成交價", "成交價格", "成交均價", "均價"),
+            "trade_uid": ("流水號", "成交編號", "成交序號"),
         },
     ),
 )
@@ -303,9 +303,9 @@ class PortfolioImportService:
             row,
             *(broker_hints.get("trade_date") or ()),
             "成交日期",
-            "发生日期",
+            "發生日期",
             "日期",
-            "成交时间",
+            "成交時間",
         )
         trade_date_obj = self._parse_date(trade_date_raw)
         if trade_date_obj is None:
@@ -314,9 +314,9 @@ class PortfolioImportService:
         symbol_raw = self._pick(
             row,
             *(broker_hints.get("symbol") or ()),
-            "证券代码",
-            "股票代码",
-            "代码",
+            "證券代碼",
+            "股票代碼",
+            "代碼",
         )
         symbol = canonical_stock_code(str(symbol_raw or "").strip())
         if not symbol:
@@ -325,10 +325,10 @@ class PortfolioImportService:
         side_raw = self._pick(
             row,
             *(broker_hints.get("side") or ()),
-            "买卖标志",
-            "买卖方向",
+            "買賣標誌",
+            "買賣方向",
             "交易方向",
-            "业务名称",
+            "業務名稱",
             "操作",
         )
         side = self._normalize_side(side_raw)
@@ -336,22 +336,22 @@ class PortfolioImportService:
             return None
 
         quantity = self._parse_float(
-            self._pick(row, *(broker_hints.get("quantity") or ()), "成交数量", "数量", "成交股数")
+            self._pick(row, *(broker_hints.get("quantity") or ()), "成交數量", "數量", "成交股數")
         )
         price = self._parse_float(
-            self._pick(row, *(broker_hints.get("price") or ()), "成交均价", "成交价格", "价格", "成交价", "均价")
+            self._pick(row, *(broker_hints.get("price") or ()), "成交均價", "成交價格", "價格", "成交價", "均價")
         )
         if quantity is None or quantity <= 0 or price is None or price <= 0:
             return None
 
         fee = 0.0
-        for col in ("手续费", "佣金", "交易费", "规费", "过户费"):
+        for col in ("手續費", "佣金", "交易費", "規費", "過戶費"):
             value = self._parse_float(self._pick(row, col))
             if value is not None:
                 fee += value
 
         tax = 0.0
-        for col in ("印花税", "税费", "其他税费"):
+        for col in ("印花稅", "稅費", "其他稅費"):
             value = self._parse_float(self._pick(row, col))
             if value is not None:
                 tax += value
@@ -359,13 +359,13 @@ class PortfolioImportService:
         trade_uid = self._pick(
             row,
             *(broker_hints.get("trade_uid") or ()),
-            "成交编号",
-            "成交序号",
-            "合同编号",
-            "委托编号",
-            "流水号",
+            "成交編號",
+            "成交序號",
+            "合同編號",
+            "委託編號",
+            "流水號",
         )
-        currency = self._pick(row, "币种", "货币")
+        currency = self._pick(row, "幣種", "貨幣")
 
         return {
             "trade_date": trade_date_obj,
@@ -418,15 +418,15 @@ class PortfolioImportService:
         if not text:
             return None
         compact = text.replace(" ", "")
-        buy_exact = {"buy", "b", "买", "买入", "证券买入", "普通买入"}
-        sell_exact = {"sell", "s", "卖", "卖出", "证券卖出", "普通卖出"}
+        buy_exact = {"buy", "b", "買", "買入", "證券買入", "普通買入"}
+        sell_exact = {"sell", "s", "賣", "賣出", "證券賣出", "普通賣出"}
         if compact in buy_exact:
             return "buy"
         if compact in sell_exact:
             return "sell"
-        if "买入" in compact or compact.startswith("买"):
+        if "買入" in compact or compact.startswith("買"):
             return "buy"
-        if "卖出" in compact or compact.startswith("卖"):
+        if "賣出" in compact or compact.startswith("賣"):
             return "sell"
         return None
 

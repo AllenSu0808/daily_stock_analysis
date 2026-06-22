@@ -223,7 +223,7 @@ class TestParseCodesFromText:
         assert _parse_codes_from_text(text) == ["600519", "300750", "AAPL"]
 
     def test_parses_fallback_from_plain_text(self):
-        text = "关注 600519、300750 和 AAPL。"
+        text = "關注 600519、300750 和 AAPL。"
         codes = _parse_codes_from_text(text)
         assert "600519" in codes
         assert "300750" in codes
@@ -244,11 +244,11 @@ class TestParseCodesFromText:
 
 class TestParseItemsFromText:
     def test_parses_new_format(self):
-        text = '[{"code":"600519","name":"贵州茅台","confidence":"high"},{"code":"00700","name":"腾讯控股","confidence":"medium"}]'
+        text = '[{"code":"600519","name":"貴州茅臺","confidence":"high"},{"code":"00700","name":"騰訊控股","confidence":"medium"}]'
         items = _parse_items_from_text(text)
         assert len(items) == 2
-        assert items[0] == ("600519", "贵州茅台", "high")
-        assert items[1] == ("00700", "腾讯控股", "medium")
+        assert items[0] == ("600519", "貴州茅臺", "high")
+        assert items[1] == ("00700", "騰訊控股", "medium")
 
     def test_fallback_to_legacy_format(self):
         text = '["600519", "300750"]'
@@ -256,13 +256,13 @@ class TestParseItemsFromText:
         assert [(i[0], i[1], i[2]) for i in items] == [("600519", None, "medium"), ("300750", None, "medium")]
 
     def test_normalizes_invalid_confidence(self):
-        text = '[{"code":"600519","name":"茅台","confidence":"invalid"}]'
+        text = '[{"code":"600519","name":"茅臺","confidence":"invalid"}]'
         items = _parse_items_from_text(text)
         assert items[0][2] == "medium"
 
     def test_filters_fake_codes_from_llm_field_names(self):
         """LLM sometimes returns JSON field names (CODE, NAME, HIGH) as items; filter them out."""
-        text = '[{"code":"CODE","name":"field"},{"code":"159887","name":"ETF"},{"code":"NAME","name":"x"},{"code":"512880","name":"证券ETF"},{"code":"HIGH","name":"y"}]'
+        text = '[{"code":"CODE","name":"field"},{"code":"159887","name":"ETF"},{"code":"NAME","name":"x"},{"code":"512880","name":"證券ETF"},{"code":"HIGH","name":"y"}]'
         items = _parse_items_from_text(text)
         codes = [i[0] for i in items]
         assert "CODE" not in codes
@@ -274,16 +274,16 @@ class TestParseItemsFromText:
 
     def test_parses_markdown_wrapped_json_preserves_names(self):
         """LLM often wraps JSON in ```json...```; strip only opening fence to avoid wiping content."""
-        text = '\n\n```json\n[{"code":"159887","name":"银行ETF","confidence":"high"},{"code":"512880","name":"证券ETF","confidence":"high"}]\n```'
+        text = '\n\n```json\n[{"code":"159887","name":"銀行ETF","confidence":"high"},{"code":"512880","name":"證券ETF","confidence":"high"}]\n```'
         items = _parse_items_from_text(text)
         assert len(items) == 2
-        assert items[0] == ("159887", "银行ETF", "high")
-        assert items[1] == ("512880", "证券ETF", "high")
+        assert items[0] == ("159887", "銀行ETF", "high")
+        assert items[1] == ("512880", "證券ETF", "high")
 
     def test_uses_json_repair_when_json_invalid(self):
-        text = '[{"code":"600519","name":"贵州茅台","confidence":"high"'
+        text = '[{"code":"600519","name":"貴州茅臺","confidence":"high"'
         items = _parse_items_from_text(text)
-        assert items == [("600519", "贵州茅台", "high")]
+        assert items == [("600519", "貴州茅臺", "high")]
 
 
 # ---------------------------------------------------------------------------
@@ -314,11 +314,11 @@ class TestExtractStockCodesFromImage:
 
     def test_rejects_unsupported_mime(self):
         jpeg = _make_jpeg_bytes()
-        with pytest.raises(ValueError, match="不支持的图片类型"):
+        with pytest.raises(ValueError, match="不支持的圖片類型"):
             extract_stock_codes_from_image(jpeg, "image/bmp")
 
     def test_rejects_empty_bytes(self):
-        with pytest.raises(ValueError, match="图片内容为空"):
+        with pytest.raises(ValueError, match="圖片內容爲空"):
             extract_stock_codes_from_image(b"", "image/jpeg")
 
     def test_rejects_wrong_magic_bytes(self):
@@ -332,5 +332,5 @@ class TestExtractStockCodesFromImage:
         with patch("src.services.image_stock_extractor.get_config", return_value=cfg), \
              patch("src.services.image_stock_extractor.litellm.completion",
                    side_effect=RuntimeError("network down")):
-            with pytest.raises(ValueError, match="Vision API 调用失败"):
+            with pytest.raises(ValueError, match="Vision API 調用失敗"):
                 extract_stock_codes_from_image(jpeg, "image/jpeg")

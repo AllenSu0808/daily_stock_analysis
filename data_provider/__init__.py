@@ -1,33 +1,33 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-数据源策略层 - 包初始化
+數據源策略層 - 包初始化
 ===================================
 
-本包实现策略模式管理多个数据源，实现：
-1. 统一的数据获取接口
-2. 自动故障切换
+本包實現策略模式管理多個數據源，實現：
+1. 統一的數據獲取接口
+2. 自動故障切換
 3. 防封禁流控策略
 
-数据源优先级（动态调整）：
-【配置了 TUSHARE_TOKEN 时】
-1. TushareFetcher (Priority 0) - 🔥 最高优先级（动态提升）
-2. EfinanceFetcher (Priority 0) - 同优先级
-3. AkshareFetcher (Priority 1) - 来自 akshare 库
-4. PytdxFetcher (Priority 2) - 来自 pytdx 库（通达信）
-5. BaostockFetcher (Priority 3) - 来自 baostock 库
-6. YfinanceFetcher (Priority 4) - 来自 yfinance 库
+數據源優先級（動態調整）：
+【配置了 TUSHARE_TOKEN 時】
+1. TushareFetcher (Priority 0) - 🔥 最高優先級（動態提升）
+2. EfinanceFetcher (Priority 0) - 同優先級
+3. AkshareFetcher (Priority 1) - 來自 akshare 庫
+4. PytdxFetcher (Priority 2) - 來自 pytdx 庫（通達信）
+5. BaostockFetcher (Priority 3) - 來自 baostock 庫
+6. YfinanceFetcher (Priority 4) - 來自 yfinance 庫
 
-【未配置 TUSHARE_TOKEN 时】
-1. EfinanceFetcher (Priority 0) - 最高优先级，来自 efinance 库
-2. AkshareFetcher (Priority 1) - 来自 akshare 库
-3. PytdxFetcher (Priority 2) - 来自 pytdx 库（通达信）
-4. TushareFetcher (Priority 2) - 来自 tushare 库（不可用）
-5. BaostockFetcher (Priority 3) - 来自 baostock 库
-6. YfinanceFetcher (Priority 4) - 来自 yfinance 库
-7. LongbridgeFetcher (Priority 5) - 长桥 OpenAPI（美股/港股兜底）
+【未配置 TUSHARE_TOKEN 時】
+1. EfinanceFetcher (Priority 0) - 最高優先級，來自 efinance 庫
+2. AkshareFetcher (Priority 1) - 來自 akshare 庫
+3. PytdxFetcher (Priority 2) - 來自 pytdx 庫（通達信）
+4. TushareFetcher (Priority 2) - 來自 tushare 庫（不可用）
+5. BaostockFetcher (Priority 3) - 來自 baostock 庫
+6. YfinanceFetcher (Priority 4) - 來自 yfinance 庫
+7. LongbridgeFetcher (Priority 5) - 長橋 OpenAPI（美股/港股兜底）
 
-提示：优先级数字越小越优先，同优先级按初始化顺序排列
+提示：優先級數字越小越優先，同優先級按初始化順序排列
 """
 
 from .base import BaseFetcher, DataFetcherManager

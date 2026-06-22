@@ -66,17 +66,17 @@ class GotifySender:
     ) -> bool:
         """Publish a notification to Gotify using JSON and header auth."""
         if not self._is_gotify_configured():
-            logger.warning("Gotify 配置不完整，跳过推送")
+            logger.warning("Gotify 配置不完整，跳過推送")
             return False
 
         endpoint = self._resolve_gotify_endpoint()
         if not endpoint:
-            logger.error("GOTIFY_URL 必须是 Gotify server base URL，不包含 /message")
+            logger.error("GOTIFY_URL 必須是 Gotify server base URL，不包含 /message")
             return False
 
         if title is None:
             date_str = datetime.now().strftime("%Y-%m-%d")
-            title = f"📈 股票分析报告 - {date_str}"
+            title = f"📈 股票分析報告 - {date_str}"
 
         headers = {
             "Content-Type": "application/json; charset=utf-8",
@@ -102,20 +102,20 @@ class GotifySender:
                 verify=self._webhook_verify_ssl,
             )
             if 200 <= response.status_code < 300:
-                logger.info("Gotify 消息发送成功")
+                logger.info("Gotify 消息發送成功")
                 return True
 
-            logger.error("Gotify 请求失败: HTTP %s", response.status_code)
-            logger.debug("Gotify 响应内容: %s", response.text)
+            logger.error("Gotify 請求失敗: HTTP %s", response.status_code)
+            logger.debug("Gotify 響應內容: %s", response.text)
             return False
         except requests.exceptions.Timeout:
-            logger.error("发送 Gotify 消息失败: 请求超时")
+            logger.error("發送 Gotify 消息失敗: 請求超時")
             return False
         except requests.exceptions.RequestException as exc:
-            logger.error("发送 Gotify 消息失败: 网络请求异常")
-            logger.debug("Gotify 请求异常类型: %s", type(exc).__name__)
+            logger.error("發送 Gotify 消息失敗: 網絡請求異常")
+            logger.debug("Gotify 請求異常類型: %s", type(exc).__name__)
             return False
         except Exception as exc:
-            logger.error("发送 Gotify 消息失败: 未知异常")
-            logger.debug("Gotify 未知异常类型: %s", type(exc).__name__)
+            logger.error("發送 Gotify 消息失敗: 未知異常")
+            logger.debug("Gotify 未知異常類型: %s", type(exc).__name__)
             return False

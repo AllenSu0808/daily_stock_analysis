@@ -35,12 +35,12 @@ _PHASE_CONTEXT_KEYS = (
 )
 
 _ZH_POSTMARKET_RECAP_PATTERNS = (
-    "今日收盘后",
-    "收盘后复盘",
-    "盘后复盘",
-    "明日重点关注",
-    "明天重点关注",
-    "完整交易日复盘",
+    "今日收盤後",
+    "收盤後復盤",
+    "盤後復盤",
+    "明日重點關注",
+    "明天重點關注",
+    "完整交易日復盤",
 )
 
 _EN_POSTMARKET_RECAP_PATTERNS = (
@@ -55,17 +55,17 @@ _EN_POSTMARKET_RECAP_PATTERNS = (
 )
 
 _IMMEDIATE_ACTION_MARKERS_ZH = (
-    "立即买入",
-    "马上买入",
-    "立即加仓",
-    "马上加仓",
-    "立即卖出",
-    "马上卖出",
-    "立即减仓",
-    "马上减仓",
+    "立即買入",
+    "馬上買入",
+    "立即加倉",
+    "馬上加倉",
+    "立即賣出",
+    "馬上賣出",
+    "立即減倉",
+    "馬上減倉",
 )
 _IMMEDIATE_ACTION_MARKERS_EN = ("buy now", "sell now", "immediate buy", "immediate sell", "add now", "reduce now")
-_NEGATION_PREFIXES_ZH = ("暂不", "不建议", "禁止", "不要", "无需", "避免", "不能", "不可", "不宜", "勿", "不")
+_NEGATION_PREFIXES_ZH = ("暫不", "不建議", "禁止", "不要", "無需", "避免", "不能", "不可", "不宜", "勿", "不")
 _NEGATION_PREFIXES_EN = ("do not", "don't", "dont", "not", "no", "avoid", "hold off", "without")
 
 
@@ -117,7 +117,7 @@ def apply_phase_decision_guardrails(
         reason = (
             "Core quote, daily-bar, or technical data is degraded; high confidence was capped."
             if language == "en"
-            else "核心行情、日线或技术数据受限，已限制高置信结论。"
+            else "核心行情、日線或技術數據受限，已限制高置信結論。"
         )
         _append_reason(phase_decision, reason)
         adjustments.append("confidence_capped_core_data_degraded")
@@ -131,7 +131,7 @@ def apply_phase_decision_guardrails(
         reason = (
             "Current market phase does not support immediate intraday buy/sell action."
             if language == "en"
-            else "当前市场阶段不支持即时盘中买卖动作。"
+            else "當前市場階段不支持即時盤中買賣動作。"
         )
         _append_reason(phase_decision, reason)
         adjustments.append("non_intraday_action_adjusted")
@@ -143,7 +143,7 @@ def apply_phase_decision_guardrails(
         reason = (
             "Intraday output contained post-market recap wording; replaced with phase-safe action wording."
             if language == "en"
-            else "盘中输出包含盘后复盘口吻，已替换为阶段安全动作表述。"
+            else "盤中輸出包含盤後復盤口吻，已替換爲階段安全動作表述。"
         )
         _replace_postmarket_recap_fields(result, phase_decision, language=language)
         _append_reason(phase_decision, reason)
@@ -212,7 +212,7 @@ def _phase_warning_limitations(summary: Optional[Mapping[str, Any]], *, language
         return []
     if language == "en":
         return [f"market phase warning: {item}" for item in warnings]
-    return [f"市场阶段提醒：{item}" for item in warnings]
+    return [f"市場階段提醒：{item}" for item in warnings]
 
 
 def _merge_limitations(*groups: Any, limit: int = 5) -> List[str]:
@@ -306,7 +306,7 @@ def _replace_postmarket_recap_fields(
         "This is an intraday phase; use live state, watch conditions, and the next "
         "check point rather than post-market recap wording."
         if language == "en"
-        else "当前处于盘中阶段，应以实时状态、观察条件和下一次检查点为准，避免盘后复盘口径。"
+        else "當前處於盤中階段，應以實時狀態、觀察條件和下一次檢查點為準，避免盤後復盤口徑。"
     )
     if _contains_any(core.get("one_sentence"), _patterns(language)):
         core["one_sentence"] = safe_action
@@ -329,13 +329,13 @@ def _append_reason(phase_decision: Dict[str, Any], reason: str) -> None:
 
 def _adjustment_limitation_text(adjustment: str, *, language: str) -> str:
     if adjustment == "postmarket_recap_wording_adjusted":
-        return "post-market recap wording adjusted" if language == "en" else "已修正盘后复盘口吻"
+        return "post-market recap wording adjusted" if language == "en" else "已修正盤後復盤口吻"
     if adjustment == "non_intraday_action_adjusted":
-        return "non-intraday immediate action adjusted" if language == "en" else "非盘中阶段已修正即时买卖动作"
+        return "non-intraday immediate action adjusted" if language == "en" else "非盤中階段已修正即時買賣動作"
     if adjustment == "confidence_capped_non_intraday_action":
-        return "confidence capped for non-intraday action" if language == "en" else "非盘中阶段已限制买卖置信度"
+        return "confidence capped for non-intraday action" if language == "en" else "非盤中階段已限制買賣置信度"
     if adjustment == "confidence_capped_core_data_degraded":
-        return "confidence capped due to degraded core data" if language == "en" else "核心数据受限已降低置信度"
+        return "confidence capped due to degraded core data" if language == "en" else "核心數據受限已降低置信度"
     return adjustment
 
 
@@ -343,7 +343,7 @@ def _safe_wait_action(language: str) -> str:
     return (
         "Wait for intraday confirmation; do not chase."
         if language == "en"
-        else "等待盘中确认，禁止追高。"
+        else "等待盤中確認，禁止追高。"
     )
 
 

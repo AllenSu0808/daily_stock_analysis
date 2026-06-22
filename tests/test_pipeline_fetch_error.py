@@ -31,7 +31,7 @@ class PipelineFetchErrorTestCase(unittest.TestCase):
         pipeline = StockAnalysisPipeline.__new__(StockAnalysisPipeline)
         pipeline.fetcher_manager = MagicMock()
         pipeline.db = MagicMock()
-        pipeline.fetcher_manager.get_stock_name.return_value = "贵州茅台"
+        pipeline.fetcher_manager.get_stock_name.return_value = "貴州茅臺"
         pipeline.db.has_today_data.return_value = True
         current_time = datetime(2026, 3, 28, 1, 0, tzinfo=timezone.utc)
 

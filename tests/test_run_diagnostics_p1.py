@@ -69,7 +69,7 @@ class _SuccessfulDailyFetcher(BaseFetcher):
 
 
 class _Quote:
-    name = "贵州茅台"
+    name = "貴州茅臺"
     price = 100
     change_pct = 1.2
     volume_ratio = 1.1
@@ -329,7 +329,7 @@ class RunDiagnosticsP1TestCase(unittest.TestCase):
                         "id": "provider_daily_data_unsafe_1",
                         "lane": "data_source",
                         "kind": "data_source",
-                        "label": "日线K线 · UnsafeFetcher",
+                        "label": "日線K線 · UnsafeFetcher",
                         "status": "failed",
                         "message": r"failed in C:\Users\activer\.env raw_response=full-raw-response",
                     },

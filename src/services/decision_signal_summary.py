@@ -49,13 +49,13 @@ def format_decision_signal_excerpt(summary: Any, report_language: str = "zh") ->
     language = "en" if str(report_language or "").lower().startswith("en") else "zh"
     labels = {
         "zh": {
-            "heading": "AI 决策信号",
-            "action": "动作",
+            "heading": "AI 決策信號",
+            "action": "動作",
             "horizon": "周期",
             "reason": "理由",
-            "watch_conditions": "观察条件",
-            "risk_summary": "风险",
-            "source_report_id": "报告",
+            "watch_conditions": "觀察條件",
+            "risk_summary": "風險",
+            "source_report_id": "報告",
         },
         "en": {
             "heading": "AI decision signal",

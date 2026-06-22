@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-FastAPI 应用工厂模块
+FastAPI 應用工廠模塊
 ===================================
 
-职责：
-1. 创建和配置 FastAPI 应用实例
-2. 配置 CORS 中间件
-3. 注册路由和异常处理器
-4. 托管前端静态文件（生产模式）
+職責：
+1. 創建和配置 FastAPI 應用實例
+2. 配置 CORS 中間件
+3. 註冊路由和異常處理器
+4. 託管前端靜態文件（生產模式）
 
 使用方式：
     from api.app import create_app
@@ -277,30 +277,30 @@ async def app_lifespan(app: FastAPI):
 
 def create_app(static_dir: Optional[Path] = None) -> FastAPI:
     """
-    创建并配置 FastAPI 应用实例
+    創建並配置 FastAPI 應用實例
     
     Args:
-        static_dir: 静态文件目录路径（可选，默认为项目根目录下的 static）
+        static_dir: 靜態文件目錄路徑（可選，默認爲項目根目錄下的 static）
         
     Returns:
-        配置完成的 FastAPI 应用实例
+        配置完成的 FastAPI 應用實例
     """
-    # 默认静态文件目录
+    # 默認靜態文件目錄
     if static_dir is None:
         static_dir = Path(__file__).parent.parent / "static"
     
-    # 创建 FastAPI 实例
+    # 創建 FastAPI 實例
     app = FastAPI(
         title="Daily Stock Analysis API",
         description=(
-            "A股/港股/美股自选股智能分析系统 API\n\n"
-            "## 功能模块\n"
-            "- 股票分析：触发 AI 智能分析\n"
-            "- 历史记录：查询历史分析报告\n"
-            "- 股票数据：获取行情数据\n\n"
-            "## 认证方式\n"
-            "支持可选管理员认证：ADMIN_AUTH_ENABLED=true 时，除登录、状态、健康检查和 "
-            "OpenAPI 文档外，/api/v1/* 需要有效管理员会话 Cookie；关闭时不强制认证。"
+            "A股/港股/美股自選股智能分析系統 API\n\n"
+            "## 功能模塊\n"
+            "- 股票分析：觸發 AI 智能分析\n"
+            "- 歷史記錄：查詢歷史分析報告\n"
+            "- 股票數據：獲取行情數據\n\n"
+            "## 認證方式\n"
+            "支持可選管理員認證：ADMIN_AUTH_ENABLED=true 時，除登錄、狀態、健康檢查和 "
+            "OpenAPI 文檔外，/api/v1/* 需要有效管理員會話 Cookie；關閉時不強制認證。"
         ),
         version="1.0.0",
         lifespan=app_lifespan,
@@ -317,12 +317,12 @@ def create_app(static_dir: Optional[Path] = None) -> FastAPI:
         "http://127.0.0.1:3000",
     ]
     
-    # 从环境变量添加额外的允许来源
+    # 從環境變量添加額外的允許來源
     extra_origins = os.environ.get("CORS_ORIGINS", "")
     if extra_origins:
         allowed_origins.extend([o.strip() for o in extra_origins.split(",") if o.strip()])
     
-    # 允许所有来源（开发/演示用）
+    # 允許所有來源（開發/演示用）
     allow_all_origins = os.environ.get("CORS_ALLOW_ALL", "").lower() == "true"
     allow_credentials = not allow_all_origins
     if allow_all_origins:
@@ -340,14 +340,14 @@ def create_app(static_dir: Optional[Path] = None) -> FastAPI:
     add_auth_middleware(app)
     
     # ============================================================
-    # 注册路由
+    # 註冊路由
     # ============================================================
     
     app.include_router(api_v1_router, prefix="/api/v1")
     add_error_handlers(app)
     
     # ============================================================
-    # 根路由和健康检查
+    # 根路由和健康檢查
     # ============================================================
     
     has_frontend = static_dir.exists() and (static_dir / "index.html").exists()
@@ -360,7 +360,7 @@ def create_app(static_dir: Optional[Path] = None) -> FastAPI:
 
         @app.get("/", include_in_schema=False)
         async def root():
-            """根路由 - 返回前端页面"""
+            """根路由 - 返回前端頁面"""
             return _frontend_index_response(static_dir)
     else:
         _FRONTEND_NOT_BUILT_HTML = """<!DOCTYPE html>
@@ -392,25 +392,25 @@ def create_app(static_dir: Optional[Path] = None) -> FastAPI:
 
         @app.get("/", include_in_schema=False)
         async def root():
-            """根路由 - 前端未构建时返回引导页面"""
+            """根路由 - 前端未構建時返回引導頁面"""
             return HTMLResponse(content=_FRONTEND_NOT_BUILT_HTML)
     
     @app.get(
         "/health",
         response_model=HealthResponse,
         tags=["Health"],
-        summary="健康检查",
-        description="用于负载均衡器或监控系统检查服务状态"
+        summary="健康檢查",
+        description="用於負載均衡器或監控系統檢查服務狀態"
     )
     @app.get(
         "/api/health",
         response_model=HealthResponse,
         tags=["Health"],
-        summary="健康检查",
-        description="用于负载均衡器或监控系统检查服务状态"
+        summary="健康檢查",
+        description="用於負載均衡器或監控系統檢查服務狀態"
     )
     async def health_check() -> HealthResponse:
-        """健康检查接口"""
+        """健康檢查接口"""
         return HealthResponse(
             status="ok",
             timestamp=datetime.now().isoformat()
@@ -459,7 +459,7 @@ def create_app(static_dir: Optional[Path] = None) -> FastAPI:
         )
     
     # ============================================================
-    # 静态文件托管（前端 SPA）
+    # 靜態文件託管（前端 SPA）
     # ============================================================
     
     if has_frontend:
@@ -524,5 +524,5 @@ def create_app(static_dir: Optional[Path] = None) -> FastAPI:
     return app
 
 
-# 默认应用实例（供 uvicorn 直接使用）
+# 默認應用實例（供 uvicorn 直接使用）
 app = create_app()

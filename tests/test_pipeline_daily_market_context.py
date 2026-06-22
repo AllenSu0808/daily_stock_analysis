@@ -62,7 +62,7 @@ def _market_context() -> DailyMarketContext:
     return DailyMarketContext(
         region="cn",
         trade_date=date(2026, 6, 6),
-        summary="大盘退潮，高风险，建议观望，仓位上限30%。",
+        summary="大盤退潮，高風險，建議觀望，倉位上限30%。",
         risk_tags=["high_risk", "low_position_cap"],
         source="analysis_history",
     )
@@ -277,14 +277,14 @@ def test_pipeline_uses_market_phase_effective_date_for_daily_market_context() ->
     pipeline.analysis_phase = "auto"
     pipeline.portfolio_context = None
     pipeline.fetcher_manager = MagicMock()
-    pipeline.fetcher_manager.get_stock_name.return_value = "贵州茅台"
+    pipeline.fetcher_manager.get_stock_name.return_value = "貴州茅臺"
     pipeline.fetcher_manager.get_chip_distribution.return_value = None
     pipeline.fetcher_manager.get_fundamental_context.return_value = {}
     pipeline.fetcher_manager.build_failed_fundamental_context.return_value = {}
     pipeline.db = MagicMock()
     pipeline.db.get_analysis_context.return_value = {
         "code": "600519",
-        "stock_name": "贵州茅台",
+        "stock_name": "貴州茅臺",
         "today": {},
         "yesterday": {},
     }
@@ -321,8 +321,8 @@ def test_pipeline_attaches_low_sensitive_market_context_to_enhanced_context() ->
     )
 
     assert enhanced_context["daily_market_context"]["region"] == "cn"
-    assert enhanced_context["daily_market_context"]["summary"].startswith("大盘退潮")
-    assert "大盘环境摘要" in enhanced_context["daily_market_context_summary"]
+    assert enhanced_context["daily_market_context"]["summary"].startswith("大盤退潮")
+    assert "大盤環境摘要" in enhanced_context["daily_market_context_summary"]
     assert "market_review_payload" not in str(enhanced_context)
 
 
@@ -331,14 +331,14 @@ def test_analyzer_prompt_renders_daily_market_context_before_technical_data() ->
     analyzer._get_skill_prompt_sections = lambda: ("", "", False)
     context = {
         "code": "600519",
-        "stock_name": "贵州茅台",
+        "stock_name": "貴州茅臺",
         "date": "2026-06-06",
         "today": {"close": 1800, "open": 1790, "high": 1810, "low": 1780},
         "daily_market_context": _market_context().to_safe_dict(),
     }
 
-    prompt = analyzer._format_prompt(context, "贵州茅台", report_language="zh")
+    prompt = analyzer._format_prompt(context, "貴州茅臺", report_language="zh")
 
-    assert "大盘环境摘要" in prompt
-    assert "大盘退潮" in prompt
-    assert prompt.index("大盘环境摘要") < prompt.index("技术面数据")
+    assert "大盤環境摘要" in prompt
+    assert "大盤退潮" in prompt
+    assert prompt.index("大盤環境摘要") < prompt.index("技術面數據")

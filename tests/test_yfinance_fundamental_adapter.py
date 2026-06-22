@@ -131,7 +131,7 @@ class TestYfinanceFundamentalAdapter(unittest.TestCase):
         self.assertEqual(
             bundle["belong_boards"],
             [
-                {"name": "Technology", "type": "行业"},
+                {"name": "Technology", "type": "行業"},
                 {"name": "Consumer Electronics", "type": "概念"},
             ],
         )

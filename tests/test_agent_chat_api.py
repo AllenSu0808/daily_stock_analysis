@@ -79,21 +79,21 @@ def test_agent_chat_forwards_stock_context_to_executor(tmp_path: Path) -> None:
                 response = client.post(
                     "/api/v1/agent/chat",
                     json={
-                        "message": "如果不考虑 TTM 呢",
+                        "message": "如果不考慮 TTM 呢",
                         "session_id": "s1",
                         "context": {
                             "stock_code": "600519",
-                            "stock_name": "匿名标的",
+                            "stock_name": "匿名標的",
                         },
                     },
                 )
 
     assert response.status_code == 200
     kwargs = executor.chat.call_args.kwargs
-    assert kwargs["message"] == "如果不考虑 TTM 呢"
+    assert kwargs["message"] == "如果不考慮 TTM 呢"
     assert kwargs["session_id"] == "s1"
     assert kwargs["context"]["stock_code"] == "600519"
-    assert kwargs["context"]["stock_name"] == "匿名标的"
+    assert kwargs["context"]["stock_name"] == "匿名標的"
 
 
 def test_agent_chat_stream_forwards_stock_context_to_executor(tmp_path: Path) -> None:
@@ -113,11 +113,11 @@ def test_agent_chat_stream_forwards_stock_context_to_executor(tmp_path: Path) ->
                 response = client.post(
                     "/api/v1/agent/chat/stream",
                     json={
-                        "message": "如果不考虑 TTM 呢",
+                        "message": "如果不考慮 TTM 呢",
                         "session_id": "s1",
                         "context": {
                             "stock_code": "600519",
-                            "stock_name": "匿名标的",
+                            "stock_name": "匿名標的",
                         },
                     },
                 )
@@ -125,7 +125,7 @@ def test_agent_chat_stream_forwards_stock_context_to_executor(tmp_path: Path) ->
     assert response.status_code == 200
     assert '"type": "done"' in response.text
     kwargs = executor.chat.call_args.kwargs
-    assert kwargs["message"] == "如果不考虑 TTM 呢"
+    assert kwargs["message"] == "如果不考慮 TTM 呢"
     assert kwargs["session_id"] == "s1"
     assert kwargs["context"]["stock_code"] == "600519"
-    assert kwargs["context"]["stock_name"] == "匿名标的"
+    assert kwargs["context"]["stock_name"] == "匿名標的"

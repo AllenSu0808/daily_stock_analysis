@@ -39,32 +39,32 @@ def isolated_db(tmp_path):
 def _result(**overrides) -> AnalysisResult:
     result = AnalysisResult(
         code="600519",
-        name="贵州茅台",
+        name="貴州茅臺",
         sentiment_score=82,
         trend_prediction="看多",
-        operation_advice="买入",
+        operation_advice="買入",
         decision_type="buy",
         confidence_level="高",
-        analysis_summary="趋势确认，量价配合。",
-        risk_warning="跌破支撑需止损",
+        analysis_summary="趨勢確認，量價配合。",
+        risk_warning="跌破支撐需止損",
         report_language="zh",
     )
     result.dashboard = {
         "battle_plan": {
             "sniper_points": {
-                "ideal_buy": "理想买入点：1700元",
+                "ideal_buy": "理想買入點：1700元",
                 "secondary_buy": "1680-1690（回踩MA5附近）",
-                "stop_loss": "止损位：1600元",
-                "take_profit": "目标位：1850元",
+                "stop_loss": "止損位：1600元",
+                "take_profit": "目標位：1850元",
             },
             "action_checklist": ["放量突破前高", "回踩不破MA10"],
         },
         "phase_decision": {
-            "watch_conditions": ["盘中量能继续放大"],
+            "watch_conditions": ["盤中量能繼續放大"],
         },
         "intelligence": {
             "risk_alerts": ["估值偏高"],
-            "positive_catalysts": ["业绩超预期"],
+            "positive_catalysts": ["業績超預期"],
         },
     }
     for key, value in overrides.items():
@@ -100,7 +100,7 @@ def test_build_payload_maps_report_context_and_price_plan() -> None:
 
     assert payload is not None
     assert payload["stock_code"] == "600519"
-    assert payload["stock_name"] == "贵州茅台"
+    assert payload["stock_name"] == "貴州茅臺"
     assert payload["market"] == "cn"
     assert payload["source_type"] == "analysis"
     assert payload["source_report_id"] == 88
@@ -115,9 +115,9 @@ def test_build_payload_maps_report_context_and_price_plan() -> None:
     assert payload["stop_loss"] == 1600.0
     assert payload["target_price"] == 1850.0
     assert payload["data_quality_summary"]["overall_score"] == 91
-    assert payload["watch_conditions"] == ["盘中量能继续放大"]
-    assert payload["risk_summary"] == ["跌破支撑需止损", "估值偏高"]
-    assert payload["catalyst_summary"] == ["业绩超预期"]
+    assert payload["watch_conditions"] == ["盤中量能繼續放大"]
+    assert payload["risk_summary"] == ["跌破支撐需止損", "估值偏高"]
+    assert payload["catalyst_summary"] == ["業績超預期"]
     assert payload["metadata"]["report_confidence_level"] == "高"
     assert payload["metadata"]["market_phase_summary"] == {
         "phase": "intraday",
@@ -132,7 +132,7 @@ def test_build_payload_uses_result_fallbacks_and_optional_catalysts() -> None:
     result.dashboard = {
         "battle_plan": {
             "sniper_points": {"ideal_buy": "1700"},
-            "action_checklist": ["等待回踩确认"],
+            "action_checklist": ["等待回踩確認"],
         },
         "intelligence": {},
     }
@@ -153,7 +153,7 @@ def test_build_payload_uses_result_fallbacks_and_optional_catalysts() -> None:
     assert payload["data_quality_summary"] == {"level": "limited"}
     assert payload["entry_low"] == 1700.0
     assert "entry_high" not in payload
-    assert payload["watch_conditions"] == ["等待回踩确认"]
+    assert payload["watch_conditions"] == ["等待回踩確認"]
     assert "catalyst_summary" not in payload
     assert payload["trigger_source"] == "system"
     assert payload["confidence"] == 0.4
@@ -184,7 +184,7 @@ def test_build_payload_maps_secondary_only_entry_to_entry_high() -> None:
     result = _result()
     result.dashboard = {
         "battle_plan": {
-            "sniper_points": {"secondary_buy": "次优买入点：1680元"},
+            "sniper_points": {"secondary_buy": "次優買入點：1680元"},
         },
     }
 
@@ -238,7 +238,7 @@ def test_build_payload_reuses_shared_sniper_fallback_paths(isolated_db) -> None:
 
 
 def test_build_payload_skips_ambiguous_action_non_stock_and_unknown_market() -> None:
-    ambiguous = _result(operation_advice="买盘增强，继续观察", action=None)
+    ambiguous = _result(operation_advice="買盤增強，繼續觀察", action=None)
     assert build_decision_signal_payload_from_report(
         ambiguous,
         trace_id="trace-1",
@@ -246,7 +246,7 @@ def test_build_payload_skips_ambiguous_action_non_stock_and_unknown_market() -> 
         report_type="simple",
     ) is None
 
-    market_review = _result(operation_advice="买入", action="buy")
+    market_review = _result(operation_advice="買入", action="buy")
     assert build_decision_signal_payload_from_report(
         market_review,
         trace_id="trace-2",
@@ -254,7 +254,7 @@ def test_build_payload_skips_ambiguous_action_non_stock_and_unknown_market() -> 
         report_type="market_review",
     ) is None
 
-    unknown_market = _result(code="UNKNOWN", operation_advice="买入", action="buy")
+    unknown_market = _result(code="UNKNOWN", operation_advice="買入", action="buy")
     assert build_decision_signal_payload_from_report(
         unknown_market,
         trace_id="trace-3",
@@ -266,7 +266,7 @@ def test_build_payload_skips_ambiguous_action_non_stock_and_unknown_market() -> 
 def test_extract_and_persist_reuses_service_dedup_and_sanitization(isolated_db) -> None:
     service = DecisionSignalService(db_manager=isolated_db)
     result = _result(
-        analysis_summary="趋势确认 token=super-secret",
+        analysis_summary="趨勢確認 token=super-secret",
     )
 
     first = extract_and_persist_from_analysis_result(
@@ -294,7 +294,7 @@ def test_extract_and_persist_reuses_service_dedup_and_sanitization(isolated_db) 
     assert second is not None
     assert first["created"] is True
     assert second["created"] is False
-    assert first["item"]["reason"] == "趋势确认 token=[REDACTED]"
+    assert first["item"]["reason"] == "趨勢確認 token=[REDACTED]"
     assert first["item"]["plan_quality"] == "complete"
     assert first["item"]["horizon"] == "intraday"
     assert first["item"]["expires_at"] is not None
@@ -304,7 +304,7 @@ def test_extract_and_persist_reuses_service_dedup_and_sanitization(isolated_db) 
     persisted = listed["items"][0]
     assert persisted["source_report_id"] == 901
     assert persisted["metadata"]["holding_state"] == "holding"
-    assert persisted["reason"] == "趋势确认 token=[REDACTED]"
+    assert persisted["reason"] == "趨勢確認 token=[REDACTED]"
     assert persisted["entry_low"] == 1690.0
     assert persisted["entry_high"] == 1700.0
 

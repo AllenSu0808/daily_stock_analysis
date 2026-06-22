@@ -27,21 +27,21 @@ from src.storage import get_db, persist_llm_usage
 logger = logging.getLogger(__name__)
 
 VISIBLE_ROLES = {"user", "assistant"}
-SUMMARY_USER_PREFIX = "[系统生成的历史对话摘要，仅供延续本会话]"
+SUMMARY_USER_PREFIX = "[系統生成的歷史對話摘要，僅供延續本會話]"
 SUMMARY_LLM_TIMEOUT_SECONDS = 20
 
-SUMMARY_SYSTEM_PROMPT = """你是股票问答系统的会话压缩器，只能总结已经出现过的用户可见对话内容。
+SUMMARY_SYSTEM_PROMPT = """你是股票問答系統的會話壓縮器，只能總結已經出現過的用戶可見對話內容。
 
-硬性规则：
-- 只总结已有对话，不新增行情、新闻、财务数据或投资建议。
-- 不推断未出现的事实，不补充新的买卖建议。
-- 必须保留标的、持仓成本、周期、风险偏好、策略视角、关键判断、操作条件、止损止盈、数据时效、工具失败和未决问题。
-- 输出必须使用 Markdown，并严格包含以下 5 个二级标题：
-  ## 会话摘要
-  ## 当前关注标的
-  ## 用户偏好与约束
-  ## 已有判断与操作条件
-  ## 风险、数据时效与未决问题
+硬性規則：
+- 只總結已有對話，不新增行情、新聞、財務數據或投資建議。
+- 不推斷未出現的事實，不補充新的買賣建議。
+- 必須保留標的、持倉成本、周期、風險偏好、策略視角、關鍵判斷、操作條件、止損止盈、數據時效、工具失敗和未決問題。
+- 輸出必須使用 Markdown，並嚴格包含以下 5 個二級標題：
+  ## 會話摘要
+  ## 當前關註標的
+  ## 用戶偏好與約束
+  ## 已有判斷與操作條件
+  ## 風險、數據時效與未決問題
 """
 
 
@@ -106,8 +106,8 @@ def build_summary_messages(
     """Build the text-only summary request messages."""
     sections: List[str] = []
     if previous_summary.strip():
-        sections.append("已有滚动摘要：\n" + previous_summary.strip())
-    sections.append("本次需要纳入摘要的新增对话：")
+        sections.append("已有滾動摘要：\n" + previous_summary.strip())
+    sections.append("本次需要納入摘要的新增對話：")
     sections.append(_render_visible_messages(messages))
     user_payload = "\n\n".join(sections).strip()
     return [

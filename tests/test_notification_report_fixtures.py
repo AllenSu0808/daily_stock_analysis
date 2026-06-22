@@ -33,7 +33,7 @@ class NotificationReportFixtureTestCase(unittest.TestCase):
             content = path.read_text(encoding="utf-8")
 
             self.assertIn("##", content)
-            self.assertTrue("风险" in content or "操作" in content or "观察" in content)
+            self.assertTrue("風險" in content or "操作" in content or "觀察" in content)
             if "|" in content:
                 self.assertRegex(content, r"\|[^\n]+\|")
 

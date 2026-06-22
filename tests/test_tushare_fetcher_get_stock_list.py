@@ -66,9 +66,9 @@ class TestTushareFetcherGetStockList(unittest.TestCase):
         fetcher._api.stock_basic.return_value = pd.DataFrame(
             {
                 "ts_code": ["600519.SH", "000001.SZ"],
-                "name": ["贵州茅台", "平安银行"],
-                "industry": ["白酒", "银行"],
-                "area": ["贵州", "深圳"],
+                "name": ["貴州茅臺", "平安銀行"],
+                "industry": ["白酒", "銀行"],
+                "area": ["貴州", "深圳"],
                 "market": ["主板", "主板"],
             }
         )
@@ -84,7 +84,7 @@ class TestTushareFetcherGetStockList(unittest.TestCase):
         )
         self.assertEqual(len(df), 2)
         self.assertEqual(set(df["code"].tolist()), {"600519", "000001"})
-        self.assertEqual(fetcher._stock_name_cache.get("600519"), "贵州茅台")
+        self.assertEqual(fetcher._stock_name_cache.get("600519"), "貴州茅臺")
 
         fetcher._api.stock_basic.assert_called_once()
         self.assertFalse(fetcher._api.hk_basic.called)

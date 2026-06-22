@@ -19,7 +19,7 @@ class FakeRow:
     hit_take_profit: bool | None = False
     first_hit: str | None = "neither"
     first_hit_trading_days: int | None = None
-    operation_advice: str | None = "买入"
+    operation_advice: str | None = "買入"
 
 
 class BacktestSummaryTestCase(unittest.TestCase):

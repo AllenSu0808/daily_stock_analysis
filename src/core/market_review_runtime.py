@@ -1,7 +1,7 @@
 """Reusable market review runtime assembly helpers.
 
 Centralize the analyzer/search/notification construction so API, CLI and Bot
-entrypoints share one initialization path for 大盘复盘.
+entrypoints share one initialization path for 大盤復盤.
 """
 
 from __future__ import annotations
@@ -78,9 +78,9 @@ def build_market_review_runtime(
     if has_configured_llm_runtime(config):
         analyzer = GeminiAnalyzer(config=config)
         if not analyzer.is_available():
-            logger.warning("AI 分析器初始化后不可用，请检查 LLM 配置")
+            logger.warning("AI 分析器初始化後不可用，請檢查 LLM 配置")
             analyzer = None
     else:
-        logger.warning("未检测到 LLM 模型配置，将仅使用模板生成报告")
+        logger.warning("未檢測到 LLM 模型配置，將僅使用模板生成報告")
 
     return notifier, analyzer, search_service

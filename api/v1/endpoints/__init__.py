@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-API v1 Endpoints 模块初始化
+API v1 Endpoints 模塊初始化
 ===================================
 
-职责：
-1. 声明所有 endpoint 路由模块
+職責：
+1. 聲明所有 endpoint 路由模塊
 """
 
 from api.v1.endpoints import (

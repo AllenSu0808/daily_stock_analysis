@@ -4,9 +4,9 @@ Ask command - analyze one or more stocks using Agent skills.
 
 Usage:
     /ask 600519                        -> Analyze with default skill
-    /ask 600519 用缠论分析              -> Parse skill from message
+    /ask 600519 用纏論分析              -> Parse skill from message
     /ask 600519 chan_theory             -> Specify skill id directly
-    /ask 600519,000858 波浪理论         -> Multi-stock comparison with skill overlay
+    /ask 600519,000858 波浪理論         -> Multi-stock comparison with skill overlay
 """
 
 import logging
@@ -37,7 +37,7 @@ class AskCommand(BotCommand):
 
     @property
     def aliases(self) -> List[str]:
-        return ["问股"]
+        return ["問股"]
 
     @property
     def description(self) -> str:
@@ -45,7 +45,7 @@ class AskCommand(BotCommand):
 
     @property
     def usage(self) -> str:
-        return "/ask <股票代码[,代码2,...]> [技能名称]"
+        return "/ask <股票代碼[,代碼2,...]> [技能名稱]"
 
     def _merge_code_args(self, args: List[str]) -> tuple[str, List[str]]:
         """Merge stock code arguments separated by commas or explicit ``vs`` markers."""
@@ -98,18 +98,18 @@ class AskCommand(BotCommand):
         is_us_stock = re.match(r"^[A-Z]{1,5}(\.[A-Z]{1,2})?$", normalized)
 
         if not (is_a_stock or is_hk_stock or is_us_stock):
-            return f"无效的股票代码: {normalized}（A股6位数字 / 港股HK+5位数字 / 美股1-5个字母）"
+            return f"無效的股票代碼: {normalized}（A股6位數字 / 港股HK+5位數字 / 美股1-5個字母）"
         return None
 
     def validate_args(self, args: List[str]) -> Optional[str]:
         """Validate arguments."""
         if not args:
-            return "请输入股票代码。用法: /ask <股票代码[,代码2,...]> [技能名称]"
+            return "請輸入股票代碼。用法: /ask <股票代碼[,代碼2,...]> [技能名稱]"
 
         raw_code_str, _ = self._merge_code_args(args)
         codes = self._parse_stock_codes(raw_code_str)
         if not codes:
-            return "请输入至少一个有效的股票代码"
+            return "請輸入至少一個有效的股票代碼"
 
         for code in codes:
             error = self._validate_single_code(code)
@@ -196,11 +196,11 @@ class AskCommand(BotCommand):
 
     @staticmethod
     def _build_user_message(stock_code: str, skill_id: str, skill_text: str) -> str:
-        user_msg = f"请分析股票 {stock_code}"
+        user_msg = f"請分析股票 {stock_code}"
         if skill_id:
-            user_msg = f"请使用 {skill_id} 技能分析股票 {stock_code}"
+            user_msg = f"請使用 {skill_id} 技能分析股票 {stock_code}"
         if skill_text:
-            user_msg = f"请分析股票 {stock_code}，{skill_text}"
+            user_msg = f"請分析股票 {stock_code}，{skill_text}"
         return user_msg
 
     def execute(self, message: BotMessage, args: List[str]) -> BotResponse:
@@ -209,7 +209,7 @@ class AskCommand(BotCommand):
 
         if not config.agent_mode:
             return BotResponse.text_response(
-                "⚠️ Agent 模式未开启，无法使用问股功能。\n请在配置中设置 `AGENT_MODE=true`。"
+                "⚠️ Agent 模式未開啓，無法使用問股功能。\n請在配置中設置 `AGENT_MODE=true`。"
             )
 
         raw_code_str, remaining_args = self._merge_code_args(args)
@@ -249,12 +249,12 @@ class AskCommand(BotCommand):
                 skill_name = self._resolve_skill_name(skill_id)
                 header = f"📊 {code} | 技能: {skill_name}\n{'─' * 30}\n"
                 return BotResponse.text_response(header + result.content)
-            return BotResponse.text_response(f"⚠️ 分析失败: {result.error}")
+            return BotResponse.text_response(f"⚠️ 分析失敗: {result.error}")
 
         except Exception as exc:
             logger.error("Ask command failed: %s", exc)
             logger.exception("Ask error details:")
-            return BotResponse.text_response(f"⚠️ 问股执行出错: {str(exc)}")
+            return BotResponse.text_response(f"⚠️ 問股執行出錯: {str(exc)}")
 
     def _analyze_multi(
         self,
@@ -309,9 +309,9 @@ class AskCommand(BotCommand):
                         None,
                     )
 
-                error_note = f"[分析失败] {result.error or '未知错误'}"
+                error_note = f"[分析失敗] {result.error or '未知錯誤'}"
                 conversation_manager.add_message(session_id, "assistant", error_note)
-                return (stock_code, None, result.error or "未知错误")
+                return (stock_code, None, result.error or "未知錯誤")
             except Exception as exc:
                 return (stock_code, None, str(exc))
 
@@ -326,10 +326,10 @@ class AskCommand(BotCommand):
                     if content is not None:
                         results[code] = content
                     else:
-                        errors[code] = error or "未知错误"
+                        errors[code] = error or "未知錯誤"
                 except Exception as exc:
                     code = future_map[future]
-                    errors[code] = f"执行异常: {exc}"
+                    errors[code] = f"執行異常: {exc}"
         except FutureTimeoutError:
             logger.warning("[AskCommand] Multi-stock analysis hit overall timeout (%.1fs)", overall_timeout_s)
             for future, code in future_map.items():
@@ -341,19 +341,19 @@ class AskCommand(BotCommand):
                         if content is not None:
                             results[code_done] = content
                         else:
-                            errors[code] = error or "未知错误"
+                            errors[code] = error or "未知錯誤"
                     except Exception as exc:
-                        errors[code] = f"执行异常: {exc}"
+                        errors[code] = f"執行異常: {exc}"
                 else:
-                    errors[code] = "分析超时（未在 150 秒内完成）"
+                    errors[code] = "分析超時（未在 150 秒內完成）"
         finally:
             pool.shutdown(wait=False, cancel_futures=True)
 
         for code in codes:
             if code not in results and code not in errors:
-                errors[code] = "分析超时"
+                errors[code] = "分析超時"
 
-        parts = [f"📊 **多股对比分析** | 技能: {skill_name}", f"{'─' * 30}", ""]
+        parts = [f"📊 **多股對比分析** | 技能: {skill_name}", f"{'─' * 30}", ""]
 
         remaining_timeout_s = max(0.0, overall_timeout_s - (time.monotonic() - started_at))
         portfolio_section = self._build_portfolio_section(
@@ -367,7 +367,7 @@ class AskCommand(BotCommand):
             parts.append("")
 
         if len(results) >= 2:
-            parts.append("| 股票 | 信号 | 置信度 | 摘要 |")
+            parts.append("| 股票 | 信號 | 置信度 | 摘要 |")
             parts.append("|------|------|--------|------|")
             for code in codes:
                 if code in results:
@@ -388,7 +388,7 @@ class AskCommand(BotCommand):
                 parts.append("")
             elif code in errors:
                 parts.append(f"### {code}")
-                parts.append(f"⚠️ 分析失败: {errors[code]}")
+                parts.append(f"⚠️ 分析失敗: {errors[code]}")
                 parts.append("")
 
         return BotResponse.markdown_response("\n".join(parts))
@@ -490,14 +490,14 @@ class AskCommand(BotCommand):
             return None
 
         prefixes = (
-            "理想买入点：",
-            "次优买入点：",
-            "止损位：",
-            "目标位：",
-            "理想买入点:",
-            "次优买入点:",
-            "止损位:",
-            "目标位:",
+            "理想買入點：",
+            "次優買入點：",
+            "止損位：",
+            "目標位：",
+            "理想買入點:",
+            "次優買入點:",
+            "止損位:",
+            "目標位:",
         )
         for prefix in prefixes:
             if text.startswith(prefix):
@@ -511,22 +511,22 @@ class AskCommand(BotCommand):
         if not isinstance(dashboard, dict):
             content = raw_content
             if len(content) > 800:
-                content = content[:800] + "\n... (已截断，完整分析请单独查询)"
+                content = content[:800] + "\n... (已截斷，完整分析請單獨查詢)"
             return content
 
         lines = []
         stock_name = dashboard.get("stock_name")
         if isinstance(stock_name, str) and stock_name.strip() and stock_name.strip() != stock_code:
-            lines.append(f"**名称**: {stock_name.strip()}")
+            lines.append(f"**名稱**: {stock_name.strip()}")
 
         decision = dashboard.get("decision_type")
         confidence = AskCommand._extract_confidence(dashboard)
         trend = dashboard.get("trend_prediction")
         if isinstance(decision, str):
             lines.append(
-                f"**结论**: {decision}"
+                f"**結論**: {decision}"
                 + (f" | **置信度**: {confidence:.0%}" if isinstance(confidence, (int, float)) else "")
-                + (f" | **趋势**: {trend}" if isinstance(trend, str) and trend.strip() else "")
+                + (f" | **趨勢**: {trend}" if isinstance(trend, str) and trend.strip() else "")
             )
 
         summary = AskCommand._extract_summary(stock_code, dashboard, raw_content)
@@ -535,11 +535,11 @@ class AskCommand(BotCommand):
 
         operation = dashboard.get("operation_advice")
         if isinstance(operation, str) and operation.strip():
-            lines.append(f"**操作建议**: {operation.strip()}")
+            lines.append(f"**操作建議**: {operation.strip()}")
 
         risk_warning = dashboard.get("risk_warning")
         if isinstance(risk_warning, str) and risk_warning.strip():
-            lines.append(f"**风险提示**: {risk_warning.strip()}")
+            lines.append(f"**風險提示**: {risk_warning.strip()}")
 
         dashboard_block = dashboard.get("dashboard")
         if not isinstance(dashboard_block, dict):
@@ -555,7 +555,7 @@ class AskCommand(BotCommand):
                 if value:
                     price_parts.append(f"{key}={value}")
             if price_parts:
-                lines.append("**关键点位**: " + " | ".join(price_parts))
+                lines.append("**關鍵點位**: " + " | ".join(price_parts))
 
         return "\n\n".join(lines) if lines else raw_content[:800]
 
@@ -613,7 +613,7 @@ class AskCommand(BotCommand):
             if not isinstance(assessment, dict):
                 return ""
 
-            lines = ["## 组合视角", ""]
+            lines = ["## 組合視角", ""]
             summary = assessment.get("summary")
             if isinstance(summary, str) and summary.strip():
                 lines.append(summary.strip())
@@ -621,16 +621,16 @@ class AskCommand(BotCommand):
 
             risk_score = assessment.get("portfolio_risk_score")
             if risk_score is not None:
-                lines.append(f"- 组合风险分: {risk_score}")
+                lines.append(f"- 組合風險分: {risk_score}")
             sector_warnings = assessment.get("sector_warnings") or []
             if sector_warnings:
-                lines.append(f"- 行业集中: {'；'.join(str(item) for item in sector_warnings[:3])}")
+                lines.append(f"- 行業集中: {'；'.join(str(item) for item in sector_warnings[:3])}")
             correlation_warnings = assessment.get("correlation_warnings") or []
             if correlation_warnings:
-                lines.append(f"- 相关性风险: {'；'.join(str(item) for item in correlation_warnings[:3])}")
+                lines.append(f"- 相關性風險: {'；'.join(str(item) for item in correlation_warnings[:3])}")
             rebalance = assessment.get("rebalance_suggestions") or []
             if rebalance:
-                lines.append(f"- 调仓建议: {'；'.join(str(item) for item in rebalance[:3])}")
+                lines.append(f"- 調倉建議: {'；'.join(str(item) for item in rebalance[:3])}")
             positions = assessment.get("positions") or []
             if positions:
                 position_parts = []
@@ -648,7 +648,7 @@ class AskCommand(BotCommand):
                         suffix = f" ({signal})" if signal else ""
                         position_parts.append(f"{code}: {weight_text}{suffix}")
                 if position_parts:
-                    lines.append(f"- 建议仓位: {'；'.join(position_parts)}")
+                    lines.append(f"- 建議倉位: {'；'.join(position_parts)}")
 
             return "\n".join(lines)
 

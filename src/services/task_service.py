@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-异步任务服务层
+異步任務服務層
 ===================================
 
-职责：
-1. 管理异步分析任务（线程池）
-2. 执行股票分析并推送结果
-3. 查询任务状态和历史
+職責：
+1. 管理異步分析任務（線程池）
+2. 執行股票分析並推送結果
+3. 查詢任務狀態和歷史
 
-迁移自 web/services.py 的 AnalysisService 类
+遷移自 web/services.py 的 AnalysisService 類
 """
 
 from __future__ import annotations
@@ -30,12 +30,12 @@ logger = logging.getLogger(__name__)
 
 class TaskService:
     """
-    异步任务服务
+    異步任務服務
 
-    负责：
-    1. 管理异步分析任务
-    2. 执行股票分析
-    3. 触发通知推送
+    負責：
+    1. 管理異步分析任務
+    2. 執行股票分析
+    3. 觸發通知推送
     """
 
     _instance: Optional['TaskService'] = None
@@ -49,7 +49,7 @@ class TaskService:
 
     @classmethod
     def get_instance(cls) -> 'TaskService':
-        """获取单例实例"""
+        """獲取單例實例"""
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
@@ -58,7 +58,7 @@ class TaskService:
 
     @property
     def executor(self) -> ThreadPoolExecutor:
-        """获取或创建线程池"""
+        """獲取或創建線程池"""
         if self._executor is None:
             self._executor = ThreadPoolExecutor(
                 max_workers=self._max_workers,
@@ -75,29 +75,29 @@ class TaskService:
         query_source: str = "bot"
     ) -> Dict[str, Any]:
         """
-        提交异步分析任务
+        提交異步分析任務
 
         Args:
-            code: 股票代码
-            report_type: 报告类型枚举
-            source_message: 来源消息（用于回复）
+            code: 股票代碼
+            report_type: 報告類型枚舉
+            source_message: 來源消息（用於回復）
             save_context_snapshot: 是否保存上下文快照
-            query_source: 任务来源标识（bot/api/cli/system）
+            query_source: 任務來源標識（bot/api/cli/system）
 
         Returns:
-            任务信息字典
+            任務信息字典
         """
-        # 确保 report_type 是枚举类型
+        # 確保 report_type 是枚舉類型
         if isinstance(report_type, str):
             report_type = ReportType.from_str(report_type)
 
         normalized_code = resolve_index_stock_code_for_analysis(code)
         if not normalized_code:
-            raise ValueError("股票代码不能为空或仅包含空白字符")
+            raise ValueError("股票代碼不能爲空或僅包含空白字符")
 
         task_id = f"{normalized_code}_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}"
 
-        # 提交到线程池
+        # 提交到線程池
         self.executor.submit(
             self._run_analysis,
             normalized_code,
@@ -109,28 +109,28 @@ class TaskService:
         )
 
         logger.info(
-            f"[TaskService] 已提交股票 {normalized_code} 的分析任务, "
+            f"[TaskService] 已提交股票 {normalized_code} 的分析任務, "
             f"task_id={task_id}, report_type={report_type.value}"
         )
 
         return {
             "success": True,
-            "message": "分析任务已提交，将异步执行并推送通知",
+            "message": "分析任務已提交，將異步執行並推送通知",
             "code": normalized_code,
             "task_id": task_id,
             "report_type": report_type.value
         }
 
     def get_task_status(self, task_id: str) -> Optional[Dict[str, Any]]:
-        """获取任务状态"""
+        """獲取任務狀態"""
         with self._tasks_lock:
             return self._tasks.get(task_id)
 
     def list_tasks(self, limit: int = 20) -> List[Dict[str, Any]]:
-        """列出最近的任务"""
+        """列出最近的任務"""
         with self._tasks_lock:
             tasks = list(self._tasks.values())
-        # 按开始时间倒序
+        # 按開始時間倒序
         tasks.sort(key=lambda x: x.get('start_time', ''), reverse=True)
         return tasks[:limit]
 
@@ -141,7 +141,7 @@ class TaskService:
         days: int = 30,
         limit: int = 50
     ) -> List[Dict[str, Any]]:
-        """获取分析历史记录"""
+        """獲取分析歷史記錄"""
         db = get_db()
         records = db.get_analysis_history(code=code, query_id=query_id, days=days, limit=limit)
         return [r.to_dict() for r in records]
@@ -156,11 +156,11 @@ class TaskService:
         query_source: str = "bot"
     ) -> Dict[str, Any]:
         """
-        执行单只股票分析
+        執行單只股票分析
 
-        内部方法，在线程池中运行
+        內部方法，在線程池中運行
         """
-        # 初始化任务状态
+        # 初始化任務狀態
         with self._tasks_lock:
             self._tasks[task_id] = {
                 "task_id": task_id,
@@ -173,13 +173,13 @@ class TaskService:
             }
 
         try:
-            # 延迟导入避免循环依赖
+            # 延遲導入避免循環依賴
             from src.config import get_config
             from main import StockAnalysisPipeline
 
-            logger.info(f"[TaskService] 开始分析股票: {code}")
+            logger.info(f"[TaskService] 開始分析股票: {code}")
 
-            # 创建分析管道
+            # 創建分析管道
             config = get_config()
             pipeline = StockAnalysisPipeline(
                 config=config,
@@ -190,7 +190,7 @@ class TaskService:
                 save_context_snapshot=save_context_snapshot
             )
 
-            # 执行单只股票分析（启用单股推送）
+            # 執行單只股票分析（啓用單股推送）
             result = pipeline.process_single_stock(
                 code=code,
                 skip_analysis=False,
@@ -218,7 +218,7 @@ class TaskService:
                 logger.info(f"[TaskService] 股票 {code} 分析完成: {result.operation_advice}")
                 return {"success": True, "task_id": task_id, "result": result_data}
             else:
-                fail_message = "分析返回空结果"
+                fail_message = "分析返回空結果"
                 if result is not None:
                     fail_message = result.error_message or fail_message
                 with self._tasks_lock:
@@ -228,12 +228,12 @@ class TaskService:
                         "error": fail_message
                     })
 
-                logger.warning(f"[TaskService] 股票 {code} 分析失败: {fail_message}")
+                logger.warning(f"[TaskService] 股票 {code} 分析失敗: {fail_message}")
                 return {"success": False, "task_id": task_id, "error": fail_message}
 
         except Exception as e:
             error_msg = str(e)
-            logger.error(f"[TaskService] 股票 {code} 分析异常: {error_msg}")
+            logger.error(f"[TaskService] 股票 {code} 分析異常: {error_msg}")
 
             with self._tasks_lock:
                 self._tasks[task_id].update({
@@ -246,9 +246,9 @@ class TaskService:
 
 
 # ============================================================
-# 便捷函数
+# 便捷函數
 # ============================================================
 
 def get_task_service() -> TaskService:
-    """获取任务服务单例"""
+    """獲取任務服務單例"""
     return TaskService.get_instance()

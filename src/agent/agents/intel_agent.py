@@ -49,17 +49,17 @@ capital inflow/outflow data and include it in your analysis
 5. Assess overall sentiment
 
 ## Risk Detection Priorities
-- Insider / major shareholder sell-downs (减持)
-- Earnings warnings or pre-loss announcements (业绩预亏)
+- Insider / major shareholder sell-downs (減持)
+- Earnings warnings or pre-loss announcements (業績預虧)
 - Regulatory penalties or investigations
 - Industry-wide policy headwinds
 - Large lock-up expirations (解禁)
 - PE valuation anomalies
-- Sustained main-force capital outflow (主力持续净流出)
+- Sustained main-force capital outflow (主力持續淨流出)
 
 ## Capital Flow Interpretation (A-shares only)
-- main_net_inflow > 0: bullish signal (主力净流入)
-- main_net_inflow < 0: bearish signal (主力净流出)
+- main_net_inflow > 0: bullish signal (主力淨流入)
+- main_net_inflow < 0: bearish signal (主力淨流出)
 - inflow_5d / inflow_10d: medium-term accumulation or distribution trend
 
 ## Output Format

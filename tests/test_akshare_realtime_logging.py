@@ -37,7 +37,7 @@ class _DummyResponse:
 
 def _make_sina_payload() -> str:
     fields = [
-        "大秦铁路", "5.100", "5.000", "5.190", "5.200", "5.050", "5.180", "5.190",
+        "大秦鐵路", "5.100", "5.000", "5.190", "5.200", "5.050", "5.180", "5.190",
         "123456", "789012"
     ]
     fields.extend(["0"] * 20)
@@ -56,7 +56,7 @@ def _make_tencent_payload(
     total_mv_yi: str = "1.20",
 ) -> str:
     fields = ["0"] * 50
-    fields[1] = "大秦铁路"
+    fields[1] = "大秦鐵路"
     fields[2] = "601006"
     fields[3] = price
     fields[4] = "5.00"
@@ -98,11 +98,11 @@ def test_sina_realtime_success_logs_endpoint(caplog, monkeypatch, akshare_fetche
         quote = akshare_fetcher._get_stock_realtime_quote_sina("601006")
 
     assert quote is not None
-    assert quote.name == "大秦铁路"
+    assert quote.name == "大秦鐵路"
     assert quote.price == 5.19
     assert breaker.successes == ["akshare_sina"]
     assert f"endpoint={SINA_REALTIME_ENDPOINT}" in caplog.text
-    assert "[实时行情-新浪] 601006 大秦铁路:" in caplog.text
+    assert "[實時行情-新浪] 601006 大秦鐵路:" in caplog.text
 
 
 def test_sina_realtime_remote_disconnect_logs_category(caplog, monkeypatch, akshare_fetcher):
@@ -123,7 +123,7 @@ def test_sina_realtime_remote_disconnect_logs_category(caplog, monkeypatch, aksh
     assert source_key == "akshare_sina"
     assert "category=remote_disconnect" in message
     assert f"endpoint={SINA_REALTIME_ENDPOINT}" in caplog.text
-    assert "新浪 实时行情接口失败:" in caplog.text
+    assert "新浪 實時行情接口失敗:" in caplog.text
 
 
 def test_tencent_realtime_http_status_logs_endpoint(caplog, monkeypatch, akshare_fetcher):
@@ -158,13 +158,13 @@ def test_tencent_realtime_success_logs_endpoint(caplog, monkeypatch, akshare_fet
         quote = akshare_fetcher._get_stock_realtime_quote_tencent("601006")
 
     assert quote is not None
-    assert quote.name == "大秦铁路"
+    assert quote.name == "大秦鐵路"
     assert quote.price == 5.19
     assert quote.volume == 123400
     assert quote.amount == 6404500
     assert breaker.successes == ["akshare_tencent"]
     assert f"endpoint={TENCENT_REALTIME_ENDPOINT}" in caplog.text
-    assert "[实时行情-腾讯] 601006 大秦铁路:" in caplog.text
+    assert "[實時行情-騰訊] 601006 大秦鐵路:" in caplog.text
 
 
 def test_tencent_realtime_volume_keeps_share_unit_when_turnover_matches(monkeypatch, akshare_fetcher):
@@ -226,18 +226,18 @@ def test_hot_stocks_uses_eastmoney_hot_ranking_when_available(monkeypatch, aksha
             {
                 "rank": 1,
                 "code": "SZ000066",
-                "name": "中国长城",
+                "name": "中國長城",
                 "price": 21.8,
                 "change_pct": 9.99,
-                "source": "东方财富人气榜",
+                "source": "東方財富人氣榜",
             }
         ],
     )
 
     result = akshare_fetcher.get_hot_stocks(5)
 
-    assert result[0]["source"] == "东方财富人气榜"
-    assert result[0]["name"] == "中国长城"
+    assert result[0]["source"] == "東方財富人氣榜"
+    assert result[0]["name"] == "中國長城"
 
 
 def test_hot_stocks_falls_back_to_xueqiu_when_primary_sources_empty(monkeypatch, akshare_fetcher):
@@ -257,10 +257,10 @@ def test_hot_stocks_falls_back_to_xueqiu_when_primary_sources_empty(monkeypatch,
             {
                 "rank": 1,
                 "code": "SH600004",
-                "name": "华夏银行",
+                "name": "華夏銀行",
                 "price": 7.21,
                 "change_pct": None,
-                "source": "雪球关注榜",
+                "source": "雪球關注榜",
             }
         ]
 
@@ -275,10 +275,10 @@ def test_hot_stocks_falls_back_to_xueqiu_when_primary_sources_empty(monkeypatch,
         {
             "rank": 1,
             "code": "SH600004",
-            "name": "华夏银行",
+            "name": "華夏銀行",
             "price": 7.21,
             "change_pct": None,
-            "source": "雪球关注榜",
+            "source": "雪球關注榜",
         }
     ]
 
@@ -287,49 +287,49 @@ def test_limit_up_pool_zero_pads_first_seal_times_before_sorting(monkeypatch, ak
     df = pd.DataFrame(
         [
             {
-                "代码": "000002",
-                "名称": "午后股",
-                "涨跌幅": 10.0,
-                "最新价": 12.3,
-                "成交额": 1,
-                "换手率": 2,
-                "封板资金": 3,
-                "首次封板时间": 141354,
-                "最后封板时间": 141500,
-                "炸板次数": 0,
-                "涨停统计": "1/1",
-                "连板数": 1,
-                "所属行业": "地产",
+                "代碼": "000002",
+                "名稱": "午後股",
+                "漲跌幅": 10.0,
+                "最新價": 12.3,
+                "成交額": 1,
+                "換手率": 2,
+                "封板資金": 3,
+                "首次封板時間": 141354,
+                "最後封板時間": 141500,
+                "炸板次數": 0,
+                "漲停統計": "1/1",
+                "連板數": 1,
+                "所屬行業": "地產",
             },
             {
-                "代码": "000001",
-                "名称": "竞价股",
-                "涨跌幅": 10.0,
-                "最新价": 10.0,
-                "成交额": 1,
-                "换手率": 2,
-                "封板资金": 3,
-                "首次封板时间": 92500,
-                "最后封板时间": 93000,
-                "炸板次数": 0,
-                "涨停统计": "1/1",
-                "连板数": 1,
-                "所属行业": "计算机",
+                "代碼": "000001",
+                "名稱": "競價股",
+                "漲跌幅": 10.0,
+                "最新價": 10.0,
+                "成交額": 1,
+                "換手率": 2,
+                "封板資金": 3,
+                "首次封板時間": 92500,
+                "最後封板時間": 93000,
+                "炸板次數": 0,
+                "漲停統計": "1/1",
+                "連板數": 1,
+                "所屬行業": "計算機",
             },
             {
-                "代码": "000003",
-                "名称": "早盘股",
-                "涨跌幅": 10.0,
-                "最新价": 11.0,
-                "成交额": 1,
-                "换手率": 2,
-                "封板资金": 3,
-                "首次封板时间": 101500,
-                "最后封板时间": 102000,
-                "炸板次数": 0,
-                "涨停统计": "1/1",
-                "连板数": 1,
-                "所属行业": "电子",
+                "代碼": "000003",
+                "名稱": "早盤股",
+                "漲跌幅": 10.0,
+                "最新價": 11.0,
+                "成交額": 1,
+                "換手率": 2,
+                "封板資金": 3,
+                "首次封板時間": 101500,
+                "最後封板時間": 102000,
+                "炸板次數": 0,
+                "漲停統計": "1/1",
+                "連板數": 1,
+                "所屬行業": "電子",
             },
         ]
     )

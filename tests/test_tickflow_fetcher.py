@@ -106,7 +106,7 @@ class TestTickFlowFetcher(unittest.TestCase):
                         last_price=3200.0,
                         prev_close=3180.0,
                         amount=1.2e11,
-                        name="忽略远端名称",
+                        name="忽略遠端名稱",
                         change_pct=0.0063,
                         change_amount=20.0,
                         amplitude=0.014,
@@ -176,7 +176,7 @@ class TestTickFlowFetcher(unittest.TestCase):
         )
         self.assertEqual(fetcher._client.quotes.calls[1]["symbols"], ["000300.SH"])
         self.assertEqual(data[0]["code"], "000001")
-        self.assertEqual(data[0]["name"], "上证指数")
+        self.assertEqual(data[0]["name"], "上證指數")
         self.assertAlmostEqual(data[0]["change_pct"], 0.63)
         self.assertAlmostEqual(data[0]["amplitude"], 1.4)
         self.assertEqual(data[1]["code"], "399001")
@@ -203,13 +203,13 @@ class TestTickFlowFetcher(unittest.TestCase):
         fetcher = TickFlowFetcher(api_key="sk-test")
         fetcher._client = _FakeClient(
             universe_data=[
-                _quote("600000.SH", last_price=11.0, prev_close=10.0, amount=1e8, name="浦发银行"),
-                _quote("300750.SZ", last_price=12.0, prev_close=10.0, amount=1e8, name="宁德时代"),
-                _quote("688001.SH", last_price=8.0, prev_close=10.0, amount=1e8, name="科创测试"),
-                _quote("920001.BJ", last_price=13.0, prev_close=10.0, amount=1e8, name="北交测试"),
+                _quote("600000.SH", last_price=11.0, prev_close=10.0, amount=1e8, name="浦發銀行"),
+                _quote("300750.SZ", last_price=12.0, prev_close=10.0, amount=1e8, name="寧德時代"),
+                _quote("688001.SH", last_price=8.0, prev_close=10.0, amount=1e8, name="科創測試"),
+                _quote("920001.BJ", last_price=13.0, prev_close=10.0, amount=1e8, name="北交測試"),
                 _quote("600001.SH", last_price=10.5, prev_close=10.0, amount=1e8, name="*ST示例"),
-                _quote("600002.SH", last_price=10.0, prev_close=10.0, amount=1e8, name="平盘示例"),
-                _quote("600003.SH", last_price=11.0, prev_close=10.0, amount=0.0, name="零成交额"),
+                _quote("600002.SH", last_price=10.0, prev_close=10.0, amount=1e8, name="平盤示例"),
+                _quote("600003.SH", last_price=11.0, prev_close=10.0, amount=0.0, name="零成交額"),
                 _quote("600004.SH", last_price=11.0, prev_close=None, amount=1e8, name="缺昨收"),
             ]
         )
@@ -228,7 +228,7 @@ class TestTickFlowFetcher(unittest.TestCase):
         fetcher = TickFlowFetcher(api_key="sk-test")
         fetcher._client = _FakeClient(
             universe_data=[
-                _quote("600000.SH", last_price=11.0, prev_close=10.0, amount=1e8, name="浦发银行"),
+                _quote("600000.SH", last_price=11.0, prev_close=10.0, amount=1e8, name="浦發銀行"),
                 _quote("600004.SH", last_price=11.0, prev_close=None, amount=1e8, name="缺昨收"),
             ]
         )
@@ -249,7 +249,7 @@ class TestTickFlowFetcher(unittest.TestCase):
     def test_get_market_stats_returns_none_when_universe_query_not_supported(self):
         fetcher = TickFlowFetcher(api_key="sk-test")
         fetcher._client = _FakeClient(
-            universe_data=RuntimeError("当前套餐不支持标的池查询，请升级或使用 symbols 参数")
+            universe_data=RuntimeError("當前套餐不支持標的池查詢，請升級或使用 symbols 參數")
         )
 
         self.assertIsNone(fetcher.get_market_stats())

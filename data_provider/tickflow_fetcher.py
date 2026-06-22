@@ -35,12 +35,12 @@ from .base import (
 logger = logging.getLogger(__name__)
 
 _CN_MAIN_INDEX_QUOTES = (
-    ("000001.SH", "000001", "上证指数"),
-    ("399001.SZ", "399001", "深证成指"),
-    ("399006.SZ", "399006", "创业板指"),
-    ("000688.SH", "000688", "科创50"),
-    ("000016.SH", "000016", "上证50"),
-    ("000300.SH", "000300", "沪深300"),
+    ("000001.SH", "000001", "上證指數"),
+    ("399001.SZ", "399001", "深證成指"),
+    ("399006.SZ", "399006", "創業板指"),
+    ("000688.SH", "000688", "科創50"),
+    ("000016.SH", "000016", "上證50"),
+    ("000300.SH", "000300", "滬深300"),
 )
 _MAX_SYMBOLS_PER_QUOTE_REQUEST = 5
 _UNIVERSE_PERMISSION_NEGATIVE_CACHE_TTL_SECONDS = 900
@@ -71,7 +71,7 @@ class TickFlowFetcher(BaseFetcher):
             try:
                 client.close()
             except Exception as exc:
-                logger.debug("[TickFlowFetcher] 关闭客户端失败: %s", exc)
+                logger.debug("[TickFlowFetcher] 關閉客戶端失敗: %s", exc)
 
     def __del__(self) -> None:
         try:
@@ -145,7 +145,7 @@ class TickFlowFetcher(BaseFetcher):
         return any(
             keyword in message
             for keyword in (
-                "标的池查询",
+                "標的池查詢",
                 "universe",
                 "permission",
                 "forbidden",
@@ -193,7 +193,7 @@ class TickFlowFetcher(BaseFetcher):
             if batch_quotes:
                 quotes.extend(batch_quotes)
         if not quotes:
-            logger.warning("[TickFlowFetcher] 指数行情为空")
+            logger.warning("[TickFlowFetcher] 指數行情爲空")
             return None
 
         quotes_by_symbol = {
@@ -237,7 +237,7 @@ class TickFlowFetcher(BaseFetcher):
 
         if len(results) != len(_CN_MAIN_INDEX_QUOTES):
             logger.warning(
-                "[TickFlowFetcher] 指数行情不完整: %s/%s",
+                "[TickFlowFetcher] 指數行情不完整: %s/%s",
                 len(results),
                 len(_CN_MAIN_INDEX_QUOTES),
             )
@@ -271,12 +271,12 @@ class TickFlowFetcher(BaseFetcher):
                 self._universe_query_supported = False
                 self._universe_query_checked_at = now
                 logger.info(
-                    "[TickFlowFetcher] 当前套餐不支持标的池查询，市场统计回退到现有数据源"
+                    "[TickFlowFetcher] 當前套餐不支持標的池查詢，市場統計回退到現有數據源"
                 )
                 return None
             raise
         if not quotes:
-            logger.warning("[TickFlowFetcher] 市场统计行情为空")
+            logger.warning("[TickFlowFetcher] 市場統計行情爲空")
             return None
 
         stats = {
@@ -310,7 +310,7 @@ class TickFlowFetcher(BaseFetcher):
 
             name = self._extract_name(quote)
             if not name:
-                logger.debug("[TickFlowFetcher] 缺少股票名称，按非 ST 处理: %s", symbol)
+                logger.debug("[TickFlowFetcher] 缺少股票名稱，按非 ST 處理: %s", symbol)
 
             ratio = self._get_limit_ratio(pure_code, name)
             limit_up = self._round_limit_price(prev_close, ratio)
@@ -335,7 +335,7 @@ class TickFlowFetcher(BaseFetcher):
                 stats["flat_count"] += 1
 
         if valid_rows == 0:
-            logger.warning("[TickFlowFetcher] 市场统计未命中有效 A 股行情")
+            logger.warning("[TickFlowFetcher] 市場統計未命中有效 A 股行情")
             return None
 
         return stats

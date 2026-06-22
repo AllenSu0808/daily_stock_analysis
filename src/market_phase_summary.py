@@ -37,10 +37,10 @@ _INTRADAY_BUCKET_PHASES = {"intraday", "lunch_break", "closing_auction"}
 _SUPPORTED_MANUAL_ANALYSIS_PHASES = {"premarket", "intraday", "postmarket"}
 _SUPPORTED_ANALYSIS_INTENTS = {"auto", *_SUPPORTED_MANUAL_ANALYSIS_PHASES}
 _PUBLIC_SOURCE_LABELS_ZH = {
-    "alert_trigger_market_context": "告警触发上下文",
+    "alert_trigger_market_context": "告警觸發上下文",
     "analysis_history_snapshot": "最近分析快照",
-    "evaluator_snapshot": "评估器快照",
-    "legacy_text": "历史文本",
+    "evaluator_snapshot": "評估器快照",
+    "legacy_text": "歷史文本",
 }
 _PUBLIC_SOURCE_LABELS_EN = {
     "alert_trigger_market_context": "alert trigger context",
@@ -49,7 +49,7 @@ _PUBLIC_SOURCE_LABELS_EN = {
     "legacy_text": "legacy text",
 }
 _MARKET_STATUS_PREFIX = {
-    "zh": "市场状态",
+    "zh": "市場狀態",
     "en": "Market status",
 }
 _MARKET_LABELS_ZH = {
@@ -63,13 +63,13 @@ _MARKET_LABELS_EN = {
     "us": "US",
 }
 _PHASE_LABELS_ZH = {
-    "premarket": "盘前",
-    "intraday": "盘中",
-    "lunch_break": "午间休市",
-    "closing_auction": "临近收盘",
-    "postmarket": "盘后",
+    "premarket": "盤前",
+    "intraday": "盤中",
+    "lunch_break": "午間休市",
+    "closing_auction": "臨近收盤",
+    "postmarket": "盤後",
     "non_trading": "非交易日",
-    "unknown": "阶段未知",
+    "unknown": "階段未知",
 }
 _PHASE_LABELS_EN = {
     "premarket": "Pre-market",
@@ -208,22 +208,22 @@ def format_public_phase_pack_excerpt(
             if phase_summary.get("is_partial_bar") is True:
                 lines.append("- partial-bar warning: intraday data may be incomplete")
         else:
-            parts = [f"阶段：{phase}"]
+            parts = [f"階段：{phase}"]
             if market:
-                parts.append(f"市场：{market}")
+                parts.append(f"市場：{market}")
             if trigger_source:
-                parts.append(f"触发来源：{trigger_source}")
+                parts.append(f"觸發來源：{trigger_source}")
             if source_label:
-                parts.append(f"摘要来源：{source_label}")
+                parts.append(f"摘要來源：{source_label}")
             lines.append("- " + " | ".join(parts))
             if phase_summary.get("is_partial_bar") is True:
-                lines.append("- 盘中数据提示：当前 K 线可能未完结")
+                lines.append("- 盤中數據提示：當前 K 線可能未完結")
 
     quality = overview.get("data_quality") if isinstance(overview, Mapping) else None
     if isinstance(quality, Mapping):
         level = _safe_text(quality.get("level"))
         if level:
-            lines.append(f"- {'data quality' if lang == 'en' else '数据质量'}: {level}")
+            lines.append(f"- {'data quality' if lang == 'en' else '數據質量'}: {level}")
         limitations = _list_strings(quality.get("limitations"), limit=2)
         for item in limitations:
             lines.append(f"- {'limitation' if lang == 'en' else '限制'}: {item}")

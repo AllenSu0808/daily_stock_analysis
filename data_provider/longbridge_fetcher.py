@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-LongbridgeFetcher - 长桥兜底数据源 (Priority 5)
+LongbridgeFetcher - 長橋兜底數據源 (Priority 5)
 ===================================
 
-数据来源：长桥 OpenAPI (https://open.longbridge.com)
-特点：覆盖美股 + 港股，可计算量比/换手率/PE 等 yfinance 缺失字段
-定位：美股/港股最后兜底数据源
+數據來源：長橋 OpenAPI (https://open.longbridge.com)
+特點：覆蓋美股 + 港股，可計算量比/換手率/PE 等 yfinance 缺失字段
+定位：美股/港股最後兜底數據源
 
-关键策略：
-1. 组合 quote + static_info 接口计算 turnover_rate / pe_ratio / total_mv
-2. 通过 history_candlesticks 计算 volume_ratio（近5日均量比）
-3. 懒加载 QuoteContext，首次调用时才建立连接
-4. static_info 进程内短缓存，减少重复请求（默认 24h，可调；见 LONGBRIDGE_STATIC_INFO_TTL_SECONDS）
+關鍵策略：
+1. 組合 quote + static_info 接口計算 turnover_rate / pe_ratio / total_mv
+2. 通過 history_candlesticks 計算 volume_ratio（近5日均量比）
+3. 懶加載 QuoteContext，首次調用時才建立連接
+4. static_info 進程內短緩存，減少重複請求（默認 24h，可調；見 LONGBRIDGE_STATIC_INFO_TTL_SECONDS）
 
-凭证：优先使用 `LONGBRIDGE_OAUTH_CLIENT_ID` + SDK token 缓存（OAuth 2.0）；
+憑證：優先使用 `LONGBRIDGE_OAUTH_CLIENT_ID` + SDK token 緩存（OAuth 2.0）；
 Legacy API Key 三件套（`LONGBRIDGE_APP_KEY` / `LONGBRIDGE_APP_SECRET` / `LONGBRIDGE_ACCESS_TOKEN`）仍兼容。
-可选：`LONGBRIDGE_STATIC_INFO_TTL_SECONDS`；SDK `language` 取自 `REPORT_LANGUAGE`，`log_path` 为 `{LOG_DIR}/longbridge_sdk.log`；
-`LONGBRIDGE_HTTP_URL` / `LONGBRIDGE_QUOTE_WS_URL` / `LONGBRIDGE_TRADE_WS_URL` / `LONGBRIDGE_REGION` （见官方文档默认值）。
+可選：`LONGBRIDGE_STATIC_INFO_TTL_SECONDS`；SDK `language` 取自 `REPORT_LANGUAGE`，`log_path` 爲 `{LOG_DIR}/longbridge_sdk.log`；
+`LONGBRIDGE_HTTP_URL` / `LONGBRIDGE_QUOTE_WS_URL` / `LONGBRIDGE_TRADE_WS_URL` / `LONGBRIDGE_REGION` （見官方文檔默認值）。
 """
 
 import base64
@@ -107,7 +107,7 @@ def _sanitize_longbridge_env() -> None:
         val = os.environ.get(key)
         if val is not None and val.strip() == "":
             del os.environ[key]
-            logger.debug("[Longbridge] 删除空环境变量 %s", key)
+            logger.debug("[Longbridge] 刪除空環境變量 %s", key)
 
     # App default: quiet (false). Matches README / docs/full-guide / .env.example; SDK alone may default verbose.
     if "LONGBRIDGE_PRINT_QUOTE_PACKAGES" not in os.environ:
@@ -119,7 +119,7 @@ def _sanitize_longbridge_env() -> None:
             p = Path(log_dir).expanduser()
             p.mkdir(parents=True, exist_ok=True)
             os.environ["LONGBRIDGE_LOG_PATH"] = str(p / "longbridge_sdk.log")
-            logger.debug("[Longbridge] 设置 LONGBRIDGE_LOG_PATH=%s",
+            logger.debug("[Longbridge] 設置 LONGBRIDGE_LOG_PATH=%s",
                          os.environ["LONGBRIDGE_LOG_PATH"])
         except Exception:
             pass
@@ -138,7 +138,7 @@ def _sanitize_longbridge_env() -> None:
         ):
             if default_url and not os.environ.get(env_name):
                 os.environ[env_name] = default_url
-                logger.debug("[Longbridge] 根据 REGION=%s 设置 %s=%s",
+                logger.debug("[Longbridge] 根據 REGION=%s 設置 %s=%s",
                              region, env_name, default_url)
 
 
@@ -243,30 +243,30 @@ def _restore_oauth_token_cache_from_env(client_id: str) -> bool:
     try:
         payload = base64.b64decode("".join(raw.split()), validate=True)
     except (binascii.Error, ValueError) as exc:
-        logger.warning("[Longbridge] OAuth token cache base64 解码失败: %s", exc)
+        logger.warning("[Longbridge] OAuth token cache base64 解碼失敗: %s", exc)
         return False
 
     if not payload:
-        logger.warning("[Longbridge] OAuth token cache base64 为空，跳过恢复")
+        logger.warning("[Longbridge] OAuth token cache base64 爲空，跳過恢復")
         return False
 
     token_cache = _oauth_token_cache_path(client_id)
     if token_cache.exists():
         try:
             if token_cache.read_bytes() == payload:
-                logger.debug("[Longbridge] OAuth token 缓存已与 env secret 一致，跳过恢复: %s", token_cache)
+                logger.debug("[Longbridge] OAuth token 緩存已與 env secret 一致，跳過恢復: %s", token_cache)
                 return False
         except OSError as exc:
-            logger.warning("[Longbridge] 读取现有 OAuth token 缓存失败，将尝试用 env secret 覆盖: %s", exc)
+            logger.warning("[Longbridge] 讀取現有 OAuth token 緩存失敗，將嘗試用 env secret 覆蓋: %s", exc)
 
     try:
         token_cache.parent.mkdir(parents=True, exist_ok=True)
         token_cache.write_bytes(payload)
         token_cache.chmod(0o600)
-        logger.info("[Longbridge] 已从 LONGBRIDGE_OAUTH_TOKEN_CACHE_B64 恢复 OAuth token 缓存")
+        logger.info("[Longbridge] 已從 LONGBRIDGE_OAUTH_TOKEN_CACHE_B64 恢復 OAuth token 緩存")
         return True
     except Exception as exc:
-        logger.warning("[Longbridge] 写入 OAuth token 缓存失败: %s", exc)
+        logger.warning("[Longbridge] 寫入 OAuth token 緩存失敗: %s", exc)
         return False
 
 
@@ -283,27 +283,27 @@ def _is_valid_oauth_cache_file(token_cache: Path) -> bool:
     try:
         raw = token_cache.read_bytes()
     except OSError as exc:
-        logger.warning("[Longbridge] 读取 OAuth token 缓存失败: %s", exc)
+        logger.warning("[Longbridge] 讀取 OAuth token 緩存失敗: %s", exc)
         return False
 
     if not raw.strip():
-        logger.warning("[Longbridge] OAuth token 缓存为空文件: %s", token_cache)
+        logger.warning("[Longbridge] OAuth token 緩存爲空文件: %s", token_cache)
         return False
 
     try:
         payload = raw.decode("utf-8").strip()
     except UnicodeDecodeError as exc:
-        logger.warning("[Longbridge] OAuth token 缓存不是 UTF-8 文本: %s", exc)
+        logger.warning("[Longbridge] OAuth token 緩存不是 UTF-8 文本: %s", exc)
         return False
 
     try:
         data = json.loads(payload)
     except json.JSONDecodeError as exc:
-        logger.warning("[Longbridge] OAuth token 缓存不是合法 JSON: %s", exc)
+        logger.warning("[Longbridge] OAuth token 緩存不是合法 JSON: %s", exc)
         return False
 
     if not isinstance(data, dict) or not data:
-        logger.warning("[Longbridge] OAuth token 缓存内容为空或格式不符合预期: %s", token_cache)
+        logger.warning("[Longbridge] OAuth token 緩存內容爲空或格式不符合預期: %s", token_cache)
         return False
 
     return True
@@ -311,14 +311,14 @@ def _is_valid_oauth_cache_file(token_cache: Path) -> bool:
 
 def _oauth_reauth_not_supported(url: str) -> None:
     raise RuntimeError(
-        f"OAuth token 缓存已失效或缺失，当前为无头运行不支持打开授权页面，请重建 LONGBRIDGE_OAUTH_TOKEN_CACHE_B64: {url}"
+        f"OAuth token 緩存已失效或缺失，當前爲無頭運行不支持打開授權頁面，請重建 LONGBRIDGE_OAUTH_TOKEN_CACHE_B64: {url}"
     )
 
 
 def _oauth_sdk_unavailable_error() -> RuntimeError:
     return RuntimeError(
-        "当前安装的 longbridge SDK 不支持 OAuth 2.0（缺少 OAuthBuilder/Config.from_oauth）。"
-        "请在支持该 SDK 版本的平台安装 longbridge>=4.0.0，或继续使用 Legacy 三件套。"
+        "當前安裝的 longbridge SDK 不支持 OAuth 2.0（缺少 OAuthBuilder/Config.from_oauth）。"
+        "請在支持該 SDK 版本的平臺安裝 longbridge>=4.0.0，或繼續使用 Legacy 三件套。"
     )
 
 
@@ -405,12 +405,12 @@ def _to_longbridge_symbol(stock_code: str) -> Optional[str]:
 
 class LongbridgeFetcher(BaseFetcher):
     """
-    长桥 OpenAPI 数据源实现
+    長橋 OpenAPI 數據源實現
 
-    优先级: 5（最低，作为美股/港股最后兜底）
-    数据来源: Longbridge OpenAPI
+    優先級: 5（最低，作爲美股/港股最後兜底）
+    數據來源: Longbridge OpenAPI
 
-    通过组合多个 API 计算 yfinance 缺失的指标:
+    通過組合多個 API 計算 yfinance 缺失的指標:
     - turnover_rate = volume / circulating_shares * 100
     - volume_ratio = today_volume / avg_5day_volume
     - pe_ratio = price / eps_ttm
@@ -448,7 +448,7 @@ class LongbridgeFetcher(BaseFetcher):
             return
         self._cooldown_until = time.time() + cooldown_seconds
         logger.warning(
-            "[Longbridge] 检测到连接异常，进入 %ss 冷却期以避免频繁重连: %s",
+            "[Longbridge] 檢測到連接異常，進入 %ss 冷卻期以避免頻繁重連: %s",
             cooldown_seconds,
             exc,
         )
@@ -459,7 +459,7 @@ class LongbridgeFetcher(BaseFetcher):
             return False
         if self._cooldown_until > time.time():
             logger.debug(
-                "[Longbridge] %s 冷却中，暂时跳过请求，剩余 %.1fs",
+                "[Longbridge] %s 冷卻中，暫時跳過請求，剩餘 %.1fs",
                 capability or "request",
                 self._cooldown_until - time.time(),
             )
@@ -545,23 +545,23 @@ class LongbridgeFetcher(BaseFetcher):
                             if from_oauth is None:
                                 raise AttributeError("Config.from_oauth")
                             lb_config = from_oauth(oauth)
-                            logger.info("[Longbridge] Config.from_oauth() 创建成功")
+                            logger.info("[Longbridge] Config.from_oauth() 創建成功")
                         except (ImportError, AttributeError):
                             oauth_error = _oauth_sdk_unavailable_error()
                             logger.warning("[Longbridge] OAuth SDK 不可用: %s", oauth_error)
                         except Exception as exc:
                             oauth_error = exc
-                            logger.warning("[Longbridge] OAuth 初始化失败: %s", exc)
+                            logger.warning("[Longbridge] OAuth 初始化失敗: %s", exc)
                     elif token_cache.exists():
                         logger.warning(
-                            "[Longbridge] OAuth token 缓存内容异常，已拒绝交互式续期: %s。"
-                            "请先执行 scripts/generate_longbridge_oauth_token.py 重建缓存。",
+                            "[Longbridge] OAuth token 緩存內容異常，已拒絕交互式續期: %s。"
+                            "請先執行 scripts/generate_longbridge_oauth_token.py 重建緩存。",
                             token_cache,
                         )
                     else:
                         logger.warning(
-                            "[Longbridge] OAuth client 已配置，但 token 缓存不存在: %s。"
-                            "请先执行 scripts/generate_longbridge_oauth_token.py 生成缓存；"
+                            "[Longbridge] OAuth client 已配置，但 token 緩存不存在: %s。"
+                            "請先執行 scripts/generate_longbridge_oauth_token.py 生成緩存；"
                             "GitHub Actions/Docker 可提供 LONGBRIDGE_OAUTH_TOKEN_CACHE_B64。",
                             token_cache,
                         )
@@ -580,7 +580,7 @@ class LongbridgeFetcher(BaseFetcher):
                             break
                         except Exception as e:
                             logger.debug(
-                                "[Longbridge] Config.%s() 失败: %s", factory_name, e
+                                "[Longbridge] Config.%s() 失敗: %s", factory_name, e
                             )
 
                 if lb_config is None and has_legacy:
@@ -590,14 +590,14 @@ class LongbridgeFetcher(BaseFetcher):
                         access_token,
                         **extra_kw,
                     )
-                    logger.info("[Longbridge] Config.from_apikey() 创建成功")
+                    logger.info("[Longbridge] Config.from_apikey() 創建成功")
                 elif lb_config is None:
                     reason = (
-                        f"OAuth 初始化失败: {oauth_error}"
+                        f"OAuth 初始化失敗: {oauth_error}"
                         if oauth_error
-                        else "未找到可用 OAuth token 缓存且未配置完整 Legacy 三件套"
+                        else "未找到可用 OAuth token 緩存且未配置完整 Legacy 三件套"
                     )
-                    logger.warning("[Longbridge] 未建立认证配置: %s", reason)
+                    logger.warning("[Longbridge] 未建立認證配置: %s", reason)
                     self._available = False
                     return None
 
@@ -615,7 +615,7 @@ class LongbridgeFetcher(BaseFetcher):
                 logger.info("[Longbridge] QuoteContext 初始化成功")
                 return self._ctx
             except Exception as e:
-                logger.warning("[Longbridge] QuoteContext 初始化失败: %s", e)
+                logger.warning("[Longbridge] QuoteContext 初始化失敗: %s", e)
                 self._available = False
                 return None
 
@@ -645,7 +645,7 @@ class LongbridgeFetcher(BaseFetcher):
                         self._static_cache[symbol] = (info, now)
                 return info
         except Exception as e:
-            logger.debug(f"[Longbridge] static_info({symbol}) 失败: {e}")
+            logger.debug(f"[Longbridge] static_info({symbol}) 失敗: {e}")
             if self._is_connection_error(e):
                 self._mark_connection_cooldown(e)
         return None
@@ -720,7 +720,7 @@ class LongbridgeFetcher(BaseFetcher):
 
             return round(today_volume / avg_vol, 2)
         except Exception as e:
-            logger.debug(f"[Longbridge] 计算量比失败({symbol}): {e}")
+            logger.debug(f"[Longbridge] 計算量比失敗({symbol}): {e}")
             return None
 
     # ------------------------------------------------------------------
@@ -734,7 +734,7 @@ class LongbridgeFetcher(BaseFetcher):
 
         symbol = _to_longbridge_symbol(stock_code)
         if symbol is None:
-            logger.debug(f"[Longbridge] 无法转换代码: {stock_code}")
+            logger.debug(f"[Longbridge] 無法轉換代碼: {stock_code}")
             return None
 
         ctx = self._get_ctx()
@@ -747,7 +747,7 @@ class LongbridgeFetcher(BaseFetcher):
                 return None
             q = quotes[0]
         except Exception as e:
-            logger.info(f"[Longbridge] quote({symbol}) 失败: {e}")
+            logger.info(f"[Longbridge] quote({symbol}) 失敗: {e}")
             if self._is_connection_error(e):
                 self._mark_connection_cooldown(e)
             return None
@@ -796,7 +796,7 @@ class LongbridgeFetcher(BaseFetcher):
                 turnover_rate = round(volume / shares_for_turnover * 100, 4)
             elif volume > 0:
                 logger.debug(
-                    "[Longbridge] %s 无法计算换手率: volume=%s circulating=%s total_shares=%s",
+                    "[Longbridge] %s 無法計算換手率: volume=%s circulating=%s total_shares=%s",
                     symbol,
                     volume,
                     circulating,
@@ -843,8 +843,8 @@ class LongbridgeFetcher(BaseFetcher):
         )
 
         logger.info(
-            f"[Longbridge] {symbol} 行情获取成功: "
-            f"价格={price}, 量比={volume_ratio}, 换手率={turnover_rate}"
+            f"[Longbridge] {symbol} 行情獲取成功: "
+            f"價格={price}, 量比={volume_ratio}, 換手率={turnover_rate}"
         )
         return quote
 

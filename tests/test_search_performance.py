@@ -20,7 +20,7 @@ class TestSearchPerformance:
         """Benchmark the common fast paths without typo/fuzzy fallbacks dominating runtime."""
         inputs = [
             "600519", "00700", "AAPL", "TSLA",
-            "贵州茅台", "腾讯控股", "阿里巴巴",
+            "貴州茅臺", "騰訊控股", "阿里巴巴",
             "aaaaaaa", "1234567",
         ]
 
@@ -45,8 +45,8 @@ class TestSearchPerformance:
     def test_resolve_name_to_code_typo_fallback_budget(self, mock_akshare):
         """Benchmark typo/fuzzy fallback separately with a smaller iteration budget."""
         typo_inputs = [
-            "贵州茅苔",
-            "平安银形",
+            "貴州茅苔",
+            "平安銀形",
         ]
 
         for s in typo_inputs:

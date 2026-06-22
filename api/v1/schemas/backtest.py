@@ -12,19 +12,19 @@ from src.schemas.decision_action import DecisionAction
 
 
 class BacktestRunRequest(BaseModel):
-    code: Optional[str] = Field(None, description="仅回测指定股票")
-    force: bool = Field(False, description="强制重新计算")
-    eval_window_days: Optional[int] = Field(None, ge=1, le=120, description="评估窗口（交易日数）")
-    min_age_days: Optional[int] = Field(None, ge=0, le=365, description="分析记录最小天龄（0=不限）")
-    limit: int = Field(200, ge=1, le=2000, description="最多处理的分析记录数")
+    code: Optional[str] = Field(None, description="僅回測指定股票")
+    force: bool = Field(False, description="強制重新計算")
+    eval_window_days: Optional[int] = Field(None, ge=1, le=120, description="評估窗口（交易日數）")
+    min_age_days: Optional[int] = Field(None, ge=0, le=365, description="分析記錄最小天齡（0=不限）")
+    limit: int = Field(200, ge=1, le=2000, description="最多處理的分析記錄數")
 
 
 class BacktestRunResponse(BaseModel):
-    processed: int = Field(..., description="候选记录数")
-    saved: int = Field(..., description="写入回测结果数")
-    completed: int = Field(..., description="完成回测数")
-    insufficient: int = Field(..., description="数据不足数")
-    errors: int = Field(..., description="错误数")
+    processed: int = Field(..., description="候選記錄數")
+    saved: int = Field(..., description="寫入回測結果數")
+    completed: int = Field(..., description="完成回測數")
+    insufficient: int = Field(..., description="數據不足數")
+    errors: int = Field(..., description="錯誤數")
 
 
 class BacktestResultItem(BaseModel):

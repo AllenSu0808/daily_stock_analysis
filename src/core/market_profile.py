@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-大盘复盘市场区域配置
+大盤復盤市場區域配置
 
-定义各市场区域的指数、新闻搜索词、Prompt 提示等元数据，
-供 MarketAnalyzer 按 region 切换 A 股/美股复盘行为。
+定義各市場區域的指數、新聞搜索詞、Prompt 提示等元數據，
+供 MarketAnalyzer 按 region 切換 A 股/美股復盤行爲。
 """
 
 from dataclasses import dataclass
@@ -12,18 +12,18 @@ from typing import List
 
 @dataclass
 class MarketProfile:
-    """大盘复盘市场区域配置"""
+    """大盤復盤市場區域配置"""
 
     region: str  # "cn" | "us"
-    # 用于判断整体走势的指数代码，cn 用上证 000001，us 用标普 SPX
+    # 用於判斷整體走勢的指數代碼，cn 用上證 000001，us 用標普 SPX
     mood_index_code: str
-    # 新闻搜索关键词
+    # 新聞搜索關鍵詞
     news_queries: List[str]
-    # 指数点评 Prompt 提示语
+    # 指數點評 Prompt 提示語
     prompt_index_hint: str
-    # 市场概况是否包含涨跌家数、涨停跌停（A 股有，美股无）
+    # 市場概況是否包含漲跌家數、漲停跌停（A 股有，美股無）
     has_market_stats: bool
-    # 市场概况是否包含板块涨跌（A 股有，美股暂无）
+    # 市場概況是否包含板塊漲跌（A 股有，美股暫無）
     has_sector_rankings: bool
 
 
@@ -31,11 +31,11 @@ CN_PROFILE = MarketProfile(
     region="cn",
     mood_index_code="000001",
     news_queries=[
-        "A股 大盘 复盘",
+        "A股 大盤 復盤",
         "股市 行情 分析",
-        "A股 市场 热点 板块",
+        "A股 市場 熱點 板塊",
     ],
-    prompt_index_hint="分析上证、深证、创业板等各指数走势特点",
+    prompt_index_hint="分析上證、深證、創業板等各指數走勢特點",
     has_market_stats=True,
     has_sector_rankings=True,
 )
@@ -44,11 +44,11 @@ US_PROFILE = MarketProfile(
     region="us",
     mood_index_code="SPX",
     news_queries=[
-        "美股 大盘",
+        "美股 大盤",
         "US stock market",
         "S&P 500 NASDAQ",
     ],
-    prompt_index_hint="分析标普500、纳斯达克、道指等各指数走势特点",
+    prompt_index_hint="分析標普500、納斯達克、道指等各指數走勢特點",
     has_market_stats=False,
     has_sector_rankings=False,
 )
@@ -57,18 +57,18 @@ HK_PROFILE = MarketProfile(
     region="hk",
     mood_index_code="HSI",
     news_queries=[
-        "港股 大盘 复盘",
+        "港股 大盤 復盤",
         "Hong Kong stock market",
-        "恒生指数 行情",
+        "恒生指數 行情",
     ],
-    prompt_index_hint="分析恒生指数、恒生科技指数、国企指数等各指数走势特点",
+    prompt_index_hint="分析恒生指數、恒生科技指數、國企指數等各指數走勢特點",
     has_market_stats=False,
     has_sector_rankings=False,
 )
 
 
 def get_profile(region: str) -> MarketProfile:
-    """根据 region 返回对应的 MarketProfile"""
+    """根據 region 返回對應的 MarketProfile"""
     if region == "us":
         return US_PROFILE
     if region == "hk":

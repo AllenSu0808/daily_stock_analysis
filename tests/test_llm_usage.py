@@ -1198,14 +1198,14 @@ class TestLegacyMessageStabilityAudit(unittest.TestCase):
             {
                 "role": "user",
                 "content": (
-                    "# 决策仪表盘分析请求\n\n"
-                    "## 📊 股票基础信息\n"
-                    "| 股票代码 | **600519** |\n"
-                    "| 股票名称 | **贵州茅台** |\n"
+                    "# 決策儀錶盤分析請求\n\n"
+                    "## 📊 股票基礎信息\n"
+                    "| 股票代碼 | **600519** |\n"
+                    "| 股票名稱 | **貴州茅臺** |\n"
                     "| 分析日期 | 2026-06-19 |\n\n"
-                    "## 📈 技术面数据\n"
-                    "收盘价 1500 元\n\n"
-                    "## 📰 舆情情报\n"
+                    "## 📈 技術面數據\n"
+                    "收盤價 1500 元\n\n"
+                    "## 📰 輿情情報\n"
                     "IMPORTANT_NEWS_TEXT\n"
                 ),
             },
@@ -1226,9 +1226,9 @@ class TestLegacyMessageStabilityAudit(unittest.TestCase):
             "transport": "litellm",
             "dynamic_markers": [
                 {"marker_name": "stock_code", "message_role": "user", "text": "600519"},
-                {"marker_name": "stock_name", "message_role": "user", "text": "贵州茅台"},
+                {"marker_name": "stock_name", "message_role": "user", "text": "貴州茅臺"},
                 {"marker_name": "analysis_date", "message_role": "user", "text": "2026-06-19"},
-                {"marker_name": "quote", "message_role": "user", "text": "## 📈 技术面数据"},
+                {"marker_name": "quote", "message_role": "user", "text": "## 📈 技術面數據"},
                 {"marker_name": "news_context", "message_role": "user", "text": "IMPORTANT_NEWS_TEXT"},
                 {"marker_name": "raw-header", "message_role": "user", "text": "Authorization: Bearer token"},
             ],
@@ -1270,7 +1270,7 @@ class TestLegacyMessageStabilityAudit(unittest.TestCase):
 
         serialized = json.dumps(usage, ensure_ascii=False, sort_keys=True)
         self.assertNotIn("600519", marker_json)
-        self.assertNotIn("贵州茅台", marker_json)
+        self.assertNotIn("貴州茅臺", marker_json)
         self.assertNotIn("2026-06-19", marker_json)
         self.assertNotIn("IMPORTANT_NEWS_TEXT", marker_json)
         self.assertNotIn("RSI breakout skill raw instructions", serialized)

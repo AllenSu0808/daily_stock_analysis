@@ -19,7 +19,7 @@ without changing downstream consumers. Adds HK/US-specific fields:
   ``info.dividendYield`` is only used as a last-resort fallback and is
   passed through as-is (current yfinance reports it in percent units).
 - ``belong_boards`` — derived from ``info.sector`` + ``info.industry``; the CN
-  pipeline derives it from AkShare 板块名单, this is the HK/US analogue.
+  pipeline derives it from AkShare 板塊名單, this is the HK/US analogue.
 
 This adapter intentionally treats every yfinance call as best-effort and never
 raises to caller. Partial data is allowed; downstream `_infer_block_status` will
@@ -351,7 +351,7 @@ class YfinanceFundamentalAdapter:
         belong_boards: List[Dict[str, Any]] = []
         sector_name = str(info.get("sector") or info.get("sectorDisp") or "").strip()
         if sector_name:
-            belong_boards.append({"name": sector_name, "type": "行业"})
+            belong_boards.append({"name": sector_name, "type": "行業"})
         industry_name = str(info.get("industry") or info.get("industryDisp") or "").strip()
         if industry_name and industry_name != sector_name:
             belong_boards.append({"name": industry_name, "type": "概念"})

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-WebUI 启动脚本
+WebUI 啓動腳本
 ===================================
 
-用于启动 Web 服务界面。
-直接运行 `python webui.py` 将启动 Web 后端服务。
+用於啓動 Web 服務界面。
+直接運行 `python webui.py` 將啓動 Web 後端服務。
 
 等效命令：
     python main.py --webui-only
@@ -25,14 +25,14 @@ logger = logging.getLogger(__name__)
 
 def main() -> int:
     """
-    启动 Web 服务
+    啓動 Web 服務
     """
-    # 兼容旧版环境变量名
+    # 兼容舊版環境變量名
     host = os.getenv("WEBUI_HOST", os.getenv("API_HOST", "127.0.0.1"))
     port = int(os.getenv("WEBUI_PORT", os.getenv("API_PORT", "8000")))
 
-    print(f"正在启动 Web 服务: http://{host}:{port}")
-    print(f"API 文档: http://{host}:{port}/docs")
+    print(f"正在啓動 Web 服務: http://{host}:{port}")
+    print(f"API 文檔: http://{host}:{port}/docs")
     print()
 
     try:

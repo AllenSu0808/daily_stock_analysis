@@ -68,38 +68,38 @@ _BUILTIN_SOURCE_TEMPLATES = [
 _NEWSNOW_DEFAULT_SOURCE_DEFS = [
     {
         "template_id": "newsnow-cls-hot",
-        "name": "NewsNow 财联社热门",
+        "name": "NewsNow 財聯社熱門",
         "source_id": "cls-hot",
         "market": "cn",
-        "description": "NewsNow 财联社热门财经资讯，适合 A 股大盘和题材热点。",
+        "description": "NewsNow 財聯社熱門財經資訊，適合 A 股大盤和題材熱點。",
     },
     {
         "template_id": "newsnow-xueqiu-hotstock",
-        "name": "NewsNow 雪球热门股票",
+        "name": "NewsNow 雪球熱門股票",
         "source_id": "xueqiu-hotstock",
         "market": "cn",
-        "description": "NewsNow 雪球热门股票，适合捕捉 A 股和港美股散户关注度。",
+        "description": "NewsNow 雪球熱門股票，適合捕捉 A 股和港美股散戶關注度。",
     },
     {
         "template_id": "newsnow-wallstreetcn-quick",
-        "name": "NewsNow 华尔街见闻快讯",
+        "name": "NewsNow 華爾街見聞快訊",
         "source_id": "wallstreetcn-quick",
         "market": "cn",
-        "description": "NewsNow 华尔街见闻快讯，适合宏观、商品和市场事件上下文。",
+        "description": "NewsNow 華爾街見聞快訊，適合宏觀、商品和市場事件上下文。",
     },
     {
         "template_id": "newsnow-jin10",
-        "name": "NewsNow 金十数据",
+        "name": "NewsNow 金十數據",
         "source_id": "jin10",
         "market": "global",
-        "description": "NewsNow 金十数据实时财经消息，适合全球宏观和外盘事件。",
+        "description": "NewsNow 金十數據實時財經消息，適合全球宏觀和外盤事件。",
     },
     {
         "template_id": "newsnow-gelonghui",
-        "name": "NewsNow 格隆汇事件",
+        "name": "NewsNow 格隆匯事件",
         "source_id": "gelonghui",
         "market": "hk",
-        "description": "NewsNow 格隆汇事件资讯，适合港股和中概股市场上下文。",
+        "description": "NewsNow 格隆匯事件資訊，適合港股和中概股市場上下文。",
     },
 ]
 

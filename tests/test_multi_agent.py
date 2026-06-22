@@ -57,10 +57,10 @@ class TestExtractStockCode(unittest.TestCase):
         self.assertEqual(_extract_stock_code("分析600519"), "600519")
 
     def test_a_share_chinese_suffix(self):
-        self.assertEqual(_extract_stock_code("600519怎么样"), "600519")
+        self.assertEqual(_extract_stock_code("600519怎麼樣"), "600519")
 
     def test_a_share_in_sentence(self):
-        self.assertEqual(_extract_stock_code("请帮我看看600519的走势"), "600519")
+        self.assertEqual(_extract_stock_code("請幫我看看600519的走勢"), "600519")
 
     def test_a_share_with_prefix_0(self):
         self.assertEqual(_extract_stock_code("分析000858"), "000858")
@@ -144,8 +144,8 @@ class TestExtractStockCode(unittest.TestCase):
     def test_finance_abbrev_excluded(self):
         for text in [
             "TTM",
-            "市盈率 TTM 怎么看",
-            "PE 怎么看",
+            "市盈率 TTM 怎麼看",
+            "PE 怎麼看",
             "PE TTM",
             "WHAT IS PE",
             "PE IS HIGH",
@@ -160,8 +160,8 @@ class TestExtractStockCode(unittest.TestCase):
                 self.assertEqual(_extract_stock_code(text), "")
 
     def test_finance_abbrev_before_real_ticker(self):
-        self.assertEqual(_extract_stock_code("PE AAPL 怎么看"), "AAPL")
-        self.assertEqual(_extract_stock_code("TTM AAPL 怎么看"), "AAPL")
+        self.assertEqual(_extract_stock_code("PE AAPL 怎麼看"), "AAPL")
+        self.assertEqual(_extract_stock_code("TTM AAPL 怎麼看"), "AAPL")
         self.assertEqual(_extract_stock_code("WHAT IS PE AAPL"), "AAPL")
 
     # --- Priority: A-share > HK > US ---
@@ -205,21 +205,21 @@ class TestStockScopeResolution(unittest.TestCase):
 
     def test_maintain_keeps_current_stock_for_finance_abbrev_followup(self):
         result = resolve_stock_scope(
-            "如果不考虑 TTM 呢",
-            {"stock_code": "600519", "stock_name": "匿名标的"},
+            "如果不考慮 TTM 呢",
+            {"stock_code": "600519", "stock_name": "匿名標的"},
         )
 
         self.assertEqual(result.stock_scope.mode, "maintain")
         self.assertEqual(result.effective_context["stock_code"], "600519")
-        self.assertEqual(result.effective_context["stock_name"], "匿名标的")
+        self.assertEqual(result.effective_context["stock_name"], "匿名標的")
         self.assertEqual(result.stock_scope.allowed_stock_codes, {"600519"})
 
     def test_switch_clears_old_stock_context_fields(self):
         result = resolve_stock_scope(
-            "换成 AAPL 看看",
+            "換成 AAPL 看看",
             {
                 "stock_code": "600519",
-                "stock_name": "匿名标的",
+                "stock_name": "匿名標的",
                 "previous_analysis_summary": {"summary": "old"},
                 "previous_strategy": {"action": "hold"},
                 "previous_price": 1800,
@@ -248,8 +248,8 @@ class TestStockScopeResolution(unittest.TestCase):
 
     def test_switch_allows_single_new_code_when_current_code_is_mentioned(self):
         result = resolve_stock_scope(
-            "换成 AAPL 看看，不考虑 600519",
-            {"stock_code": "600519", "stock_name": "匿名标的"},
+            "換成 AAPL 看看，不考慮 600519",
+            {"stock_code": "600519", "stock_name": "匿名標的"},
         )
 
         self.assertEqual(result.stock_scope.mode, "switch")
@@ -260,49 +260,49 @@ class TestStockScopeResolution(unittest.TestCase):
 
     def test_compare_allows_multiple_codes_without_polluting_current_context(self):
         result = resolve_stock_scope(
-            "比较 600519 和 AAPL",
-            {"stock_code": "600519", "stock_name": "匿名标的"},
+            "比較 600519 和 AAPL",
+            {"stock_code": "600519", "stock_name": "匿名標的"},
         )
 
         self.assertEqual(result.stock_scope.mode, "compare")
         self.assertEqual(result.effective_context["stock_code"], "600519")
-        self.assertEqual(result.effective_context["stock_name"], "匿名标的")
+        self.assertEqual(result.effective_context["stock_name"], "匿名標的")
         self.assertEqual(result.stock_scope.allowed_stock_codes, {"600519", "AAPL"})
 
     def test_compare_allows_plain_five_digit_hk_code(self):
         result = resolve_stock_scope(
-            "比较 01810 和 AAPL",
-            {"stock_code": "600519", "stock_name": "匿名标的"},
+            "比較 01810 和 AAPL",
+            {"stock_code": "600519", "stock_name": "匿名標的"},
         )
 
         self.assertEqual(result.stock_scope.mode, "compare")
         self.assertEqual(result.effective_context["stock_code"], "600519")
-        self.assertEqual(result.effective_context["stock_name"], "匿名标的")
+        self.assertEqual(result.effective_context["stock_name"], "匿名標的")
         self.assertEqual(result.stock_scope.allowed_stock_codes, {"600519", "HK01810", "AAPL"})
 
     def test_compare_hints_allow_multiple_codes_without_switching_context(self):
         cases = [
-            "分析 600519 和 AAPL 的差异",
-            "AAPL 相比 600519 怎么样",
-            "和 AAPL 的差异怎么看",
+            "分析 600519 和 AAPL 的差異",
+            "AAPL 相比 600519 怎麼樣",
+            "和 AAPL 的差異怎麼看",
         ]
 
         for message in cases:
             with self.subTest(message=message):
                 result = resolve_stock_scope(
                     message,
-                    {"stock_code": "600519", "stock_name": "匿名标的"},
+                    {"stock_code": "600519", "stock_name": "匿名標的"},
                 )
 
                 self.assertEqual(result.stock_scope.mode, "compare")
                 self.assertEqual(result.effective_context["stock_code"], "600519")
-                self.assertEqual(result.effective_context["stock_name"], "匿名标的")
+                self.assertEqual(result.effective_context["stock_name"], "匿名標的")
                 self.assertEqual(result.stock_scope.allowed_stock_codes, {"600519", "AAPL"})
 
     def test_multiple_explicit_codes_are_compare_scope(self):
         cases = [
-            ("AAPL 和 TSLA 哪个更值得买", {"600519", "AAPL", "TSLA"}),
-            ("AAPL 和 TSLA 谁更适合", {"600519", "AAPL", "TSLA"}),
+            ("AAPL 和 TSLA 哪個更值得買", {"600519", "AAPL", "TSLA"}),
+            ("AAPL 和 TSLA 誰更適合", {"600519", "AAPL", "TSLA"}),
             ("分析 AAPL 和 TSLA", {"600519", "AAPL", "TSLA"}),
         ]
 
@@ -310,18 +310,18 @@ class TestStockScopeResolution(unittest.TestCase):
             with self.subTest(message=message):
                 result = resolve_stock_scope(
                     message,
-                    {"stock_code": "600519", "stock_name": "匿名标的"},
+                    {"stock_code": "600519", "stock_name": "匿名標的"},
                 )
 
                 self.assertEqual(result.stock_scope.mode, "compare")
                 self.assertEqual(result.effective_context["stock_code"], "600519")
-                self.assertEqual(result.effective_context["stock_name"], "匿名标的")
+                self.assertEqual(result.effective_context["stock_name"], "匿名標的")
                 self.assertEqual(result.stock_scope.allowed_stock_codes, expected_allowed)
 
     def test_multiple_lowercase_explicit_codes_are_compare_scope_with_choice_hint(self):
         result = resolve_stock_scope(
-            "aapl 和 tsla 哪个更值得买",
-            {"stock_code": "600519", "stock_name": "匿名标的"},
+            "aapl 和 tsla 哪個更值得買",
+            {"stock_code": "600519", "stock_name": "匿名標的"},
         )
 
         self.assertEqual(result.stock_scope.mode, "compare")
@@ -330,8 +330,8 @@ class TestStockScopeResolution(unittest.TestCase):
 
     def test_single_stock_difference_phrase_still_switches_context(self):
         result = resolve_stock_scope(
-            "分析 AAPL 的差异化优势",
-            {"stock_code": "600519", "stock_name": "匿名标的"},
+            "分析 AAPL 的差異化優勢",
+            {"stock_code": "600519", "stock_name": "匿名標的"},
         )
 
         self.assertEqual(result.stock_scope.mode, "switch")
@@ -341,17 +341,17 @@ class TestStockScopeResolution(unittest.TestCase):
 
     def test_moving_average_indicator_token_does_not_switch_context(self):
         cases = [
-            "分析 MA 均线",
-            "看看 MA 怎么排列",
-            "分析 KDJ 指标",
-            "KDJ 怎么看",
+            "分析 MA 均線",
+            "看看 MA 怎麼排列",
+            "分析 KDJ 指標",
+            "KDJ 怎麼看",
         ]
 
         for message in cases:
             with self.subTest(message=message):
                 result = resolve_stock_scope(
                     message,
-                    {"stock_code": "600519", "stock_name": "匿名标的"},
+                    {"stock_code": "600519", "stock_name": "匿名標的"},
                 )
 
                 self.assertEqual(result.stock_scope.mode, "maintain")
@@ -361,8 +361,8 @@ class TestStockScopeResolution(unittest.TestCase):
 
     def test_dotted_us_ticker_stays_intact_in_scope_resolution(self):
         result = resolve_stock_scope(
-            "比较 BRK.B 和 AAPL",
-            {"stock_code": "600519", "stock_name": "匿名标的"},
+            "比較 BRK.B 和 AAPL",
+            {"stock_code": "600519", "stock_name": "匿名標的"},
         )
 
         self.assertEqual(result.stock_scope.mode, "compare")
@@ -371,7 +371,7 @@ class TestStockScopeResolution(unittest.TestCase):
 
     def test_invalid_context_exchange_token_is_not_trusted_as_current_stock(self):
         result = resolve_stock_scope(
-            "继续看",
+            "繼續看",
             {"stock_code": "HK", "stock_name": "港股"},
         )
 
@@ -383,30 +383,30 @@ class TestStockScopeResolution(unittest.TestCase):
 
     def test_compare_does_not_treat_exchange_affixes_as_standalone_tickers(self):
         cases = [
-            ("比较 01810 和 AAPL", {"600519", "HK01810", "AAPL"}, set()),
-            ("比较 1810.HK 和 AAPL", {"600519", "HK01810", "AAPL"}, {"HK"}),
-            ("比较 0700.HK 和 600519", {"600519", "HK00700"}, {"HK"}),
-            ("比较 600519.SH 和 AAPL", {"600519", "AAPL"}, {"SH"}),
-            ("比较 000001.SZ 和 AAPL", {"600519", "000001", "AAPL"}, {"SZ"}),
-            ("比较 600519.SS 和 AAPL", {"600519", "AAPL"}, {"SS"}),
-            ("比较 1810.hk 和 tsla", {"600519", "HK01810", "TSLA"}, {"HK"}),
-            ("比较 SH600519 和 AAPL", {"600519", "AAPL"}, {"SH"}),
-            ("比较 SZ000001 和 AAPL", {"600519", "000001", "AAPL"}, {"SZ"}),
-            ("比较 BJ920748 和 AAPL", {"600519", "920748", "AAPL"}, {"BJ"}),
-            ("比较 HK01810 和 AAPL", {"600519", "HK01810", "AAPL"}, {"HK"}),
-            ("比较 hk01810 和 tsla", {"600519", "HK01810", "TSLA"}, {"HK"}),
-            ("比较 600519 SH 和 AAPL", {"600519", "AAPL"}, {"SH"}),
-            ("比较 000001 SZ 和 AAPL", {"600519", "000001", "AAPL"}, {"SZ"}),
-            ("比较 920748 BJ 和 AAPL", {"600519", "920748", "AAPL"}, {"BJ"}),
-            ("比较 01810 HK 和 AAPL", {"600519", "HK01810", "AAPL"}, {"HK"}),
-            ("比较 600519 SS 和 AAPL", {"600519", "AAPL"}, {"SS"}),
+            ("比較 01810 和 AAPL", {"600519", "HK01810", "AAPL"}, set()),
+            ("比較 1810.HK 和 AAPL", {"600519", "HK01810", "AAPL"}, {"HK"}),
+            ("比較 0700.HK 和 600519", {"600519", "HK00700"}, {"HK"}),
+            ("比較 600519.SH 和 AAPL", {"600519", "AAPL"}, {"SH"}),
+            ("比較 000001.SZ 和 AAPL", {"600519", "000001", "AAPL"}, {"SZ"}),
+            ("比較 600519.SS 和 AAPL", {"600519", "AAPL"}, {"SS"}),
+            ("比較 1810.hk 和 tsla", {"600519", "HK01810", "TSLA"}, {"HK"}),
+            ("比較 SH600519 和 AAPL", {"600519", "AAPL"}, {"SH"}),
+            ("比較 SZ000001 和 AAPL", {"600519", "000001", "AAPL"}, {"SZ"}),
+            ("比較 BJ920748 和 AAPL", {"600519", "920748", "AAPL"}, {"BJ"}),
+            ("比較 HK01810 和 AAPL", {"600519", "HK01810", "AAPL"}, {"HK"}),
+            ("比較 hk01810 和 tsla", {"600519", "HK01810", "TSLA"}, {"HK"}),
+            ("比較 600519 SH 和 AAPL", {"600519", "AAPL"}, {"SH"}),
+            ("比較 000001 SZ 和 AAPL", {"600519", "000001", "AAPL"}, {"SZ"}),
+            ("比較 920748 BJ 和 AAPL", {"600519", "920748", "AAPL"}, {"BJ"}),
+            ("比較 01810 HK 和 AAPL", {"600519", "HK01810", "AAPL"}, {"HK"}),
+            ("比較 600519 SS 和 AAPL", {"600519", "AAPL"}, {"SS"}),
         ]
 
         for message, expected_allowed, forbidden_tokens in cases:
             with self.subTest(message=message):
                 result = resolve_stock_scope(
                     message,
-                    {"stock_code": "600519", "stock_name": "匿名标的"},
+                    {"stock_code": "600519", "stock_name": "匿名標的"},
                 )
 
                 self.assertEqual(result.stock_scope.mode, "compare")
@@ -417,7 +417,7 @@ class TestStockScopeResolution(unittest.TestCase):
     def test_switch_recognizes_lowercase_us_ticker_with_explicit_hint(self):
         result = resolve_stock_scope(
             "分析tsla",
-            {"stock_code": "600519", "stock_name": "匿名标的"},
+            {"stock_code": "600519", "stock_name": "匿名標的"},
         )
 
         self.assertEqual(result.stock_scope.mode, "switch")
@@ -427,8 +427,8 @@ class TestStockScopeResolution(unittest.TestCase):
 
     def test_compare_recognizes_lowercase_us_tickers(self):
         result = resolve_stock_scope(
-            "比较 600519 和 tsla",
-            {"stock_code": "600519", "stock_name": "匿名标的"},
+            "比較 600519 和 tsla",
+            {"stock_code": "600519", "stock_name": "匿名標的"},
         )
 
         self.assertEqual(result.stock_scope.mode, "compare")
@@ -691,7 +691,7 @@ class TestDecisionAgentPostProcess(unittest.TestCase):
             "decision_type": "strong_buy",
             "sentiment_score": 88,
             "analysis_summary": "High conviction",
-            "stock_name": "贵州茅台",
+            "stock_name": "貴州茅臺",
         }
 
         opinion = agent.post_process(ctx, json.dumps(dashboard))
@@ -713,9 +713,9 @@ class TestIntelAgentPostProcess(unittest.TestCase):
         {
           "signal": "hold",
           "confidence": 0.72,
-          "reasoning": "情绪中性偏谨慎",
-          "risk_alerts": ["股东减持"],
-          "positive_catalysts": ["行业复苏"],
+          "reasoning": "情緒中性偏謹慎",
+          "risk_alerts": ["股東減持"],
+          "positive_catalysts": ["行業復甦"],
         }
         ```"""
 
@@ -723,8 +723,8 @@ class TestIntelAgentPostProcess(unittest.TestCase):
 
         self.assertIsNotNone(opinion)
         self.assertEqual(opinion.signal, "hold")
-        self.assertEqual(ctx.get_data("intel_opinion")["positive_catalysts"], ["行业复苏"])
-        self.assertEqual(ctx.risk_flags[0]["description"], "股东减持")
+        self.assertEqual(ctx.get_data("intel_opinion")["positive_catalysts"], ["行業復甦"])
+        self.assertEqual(ctx.risk_flags[0]["description"], "股東減持")
 
 
 # ============================================================
@@ -807,22 +807,22 @@ class TestOrchestratorModes(unittest.TestCase):
         orch = self._make_orchestrator()
         ctx = orch._build_context(
             "Analyze 600519",
-            context={"stock_code": "600519", "stock_name": "贵州茅台", "skills": ["bull_trend"]},
+            context={"stock_code": "600519", "stock_name": "貴州茅臺", "skills": ["bull_trend"]},
         )
         self.assertEqual(ctx.stock_code, "600519")
-        self.assertEqual(ctx.stock_name, "贵州茅台")
+        self.assertEqual(ctx.stock_name, "貴州茅臺")
         self.assertEqual(ctx.meta["skills_requested"], ["bull_trend"])
 
     def test_build_context_keeps_market_phase_context_in_meta_not_data(self):
         orch = self._make_orchestrator()
         phase_context = {"phase": "intraday", "is_partial_bar": True}
-        pack_summary = "\n## 分析上下文包摘要\n- 数据块状态：行情 available\n"
+        pack_summary = "\n## 分析上下文包摘要\n- 數據塊狀態：行情 available\n"
 
         ctx = orch._build_context(
             "Analyze 600519",
             context={
                 "stock_code": "600519",
-                "stock_name": "贵州茅台",
+                "stock_name": "貴州茅臺",
                 "market_phase_context": phase_context,
                 "analysis_context_pack_summary": pack_summary,
             },
@@ -835,12 +835,12 @@ class TestOrchestratorModes(unittest.TestCase):
 
     def test_build_context_extracts_code_from_query(self):
         orch = self._make_orchestrator()
-        ctx = orch._build_context("分析600519的走势")
+        ctx = orch._build_context("分析600519的走勢")
         self.assertEqual(ctx.stock_code, "600519")
 
     def test_fallback_summary(self):
         orch = self._make_orchestrator()
-        ctx = AgentContext(query="test", stock_code="600519", stock_name="贵州茅台")
+        ctx = AgentContext(query="test", stock_code="600519", stock_name="貴州茅臺")
         ctx.add_opinion(AgentOpinion(agent_name="tech", signal="buy", confidence=0.8, reasoning="Strong trend"))
         ctx.add_risk_flag("insider", "Minor sell-down", severity="low")
         summary = orch._fallback_summary(ctx)
@@ -942,7 +942,7 @@ class TestOrchestratorExecution(unittest.TestCase):
 
     def test_execute_pipeline_skips_stage_when_remaining_budget_below_minimum(self):
         orch = self._make_orchestrator(config=SimpleNamespace(agent_orchestrator_timeout_s=20))
-        ctx = AgentContext(query="test", stock_code="600519", stock_name="贵州茅台")
+        ctx = AgentContext(query="test", stock_code="600519", stock_name="貴州茅臺")
 
         technical = MagicMock(agent_name="technical")
 
@@ -951,7 +951,7 @@ class TestOrchestratorExecution(unittest.TestCase):
                 agent_name="technical",
                 signal="buy",
                 confidence=0.8,
-                reasoning="技术面结构未出现明显拐点，趋势偏强。",
+                reasoning="技術面結構未出現明顯拐點，趨勢偏強。",
                 raw_data={"ma_alignment": "bullish", "trend_score": 82, "volume_status": "normal"},
             ))
             return self._stage_result("technical")
@@ -972,13 +972,13 @@ class TestOrchestratorExecution(unittest.TestCase):
         self.assertIsNotNone(result.dashboard)
         self.assertIsNotNone(result.content)
         self.assertIn("insufficient budget", (result.error or "").lower())
-        self.assertIn("[降级结果]", result.dashboard["analysis_summary"])
+        self.assertIn("[降級結果]", result.dashboard["analysis_summary"])
         technical.run.assert_called_once()
         intel.run.assert_not_called()
 
     def test_execute_pipeline_skips_toolless_decision_with_low_remaining_budget(self):
         orch = self._make_orchestrator(config=SimpleNamespace(agent_orchestrator_timeout_s=20))
-        ctx = AgentContext(query="test", stock_code="600519", stock_name="贵州茅台")
+        ctx = AgentContext(query="test", stock_code="600519", stock_name="貴州茅臺")
 
         technical = MagicMock(agent_name="technical")
 
@@ -987,7 +987,7 @@ class TestOrchestratorExecution(unittest.TestCase):
                 agent_name="technical",
                 signal="buy",
                 confidence=0.8,
-                reasoning="技术面结构未出现明显拐点，趋势偏强。",
+                reasoning="技術面結構未出現明顯拐點，趨勢偏強。",
                 raw_data={"ma_alignment": "bullish", "trend_score": 82, "volume_status": "normal"},
             ))
             return self._stage_result("technical")
@@ -1000,7 +1000,7 @@ class TestOrchestratorExecution(unittest.TestCase):
                 agent_name="decision",
                 signal="buy",
                 confidence=0.87,
-                reasoning="综合技术与情绪判断，倾向于买入。",
+                reasoning="綜合技術與情緒判斷，傾向於買入。",
             ))
             return self._stage_result("decision")
 
@@ -1023,7 +1023,7 @@ class TestOrchestratorExecution(unittest.TestCase):
 
     def test_execute_pipeline_first_stage_still_runs_when_timeout_short(self):
         orch = self._make_orchestrator(config=SimpleNamespace(agent_orchestrator_timeout_s=10))
-        ctx = AgentContext(query="test", stock_code="600519", stock_name="贵州茅台")
+        ctx = AgentContext(query="test", stock_code="600519", stock_name="貴州茅臺")
 
         technical = MagicMock(agent_name="technical")
         technical.run.side_effect = lambda run_ctx, progress_callback=None: self._stage_result("technical")
@@ -1055,19 +1055,19 @@ class TestOrchestratorExecution(unittest.TestCase):
 
     def test_execute_pipeline_timeout_after_decision_preserves_dashboard(self):
         orch = self._make_orchestrator(config=SimpleNamespace(agent_orchestrator_timeout_s=1, agent_risk_override=True))
-        ctx = AgentContext(query="test", stock_code="600519", stock_name="贵州茅台")
+        ctx = AgentContext(query="test", stock_code="600519", stock_name="貴州茅臺")
         decision = MagicMock(agent_name="decision")
 
         def _run_decision(run_ctx, progress_callback=None):
             dashboard = {
-                "stock_name": "贵州茅台",
+                "stock_name": "貴州茅臺",
                 "decision_type": "strong_buy",
                 "sentiment_score": 88,
                 "operation_advice": {
                     "no_position": "分批布局",
-                    "has_position": "继续持有",
+                    "has_position": "繼續持有",
                 },
-                "analysis_summary": "趋势仍强，回踩可观察。",
+                "analysis_summary": "趨勢仍強，回踩可觀察。",
                 "dashboard": {
                     "key_levels": {
                         "support": 1800,
@@ -1081,7 +1081,7 @@ class TestOrchestratorExecution(unittest.TestCase):
                 agent_name="decision",
                 signal="buy",
                 confidence=0.88,
-                reasoning="趋势仍强，回踩可观察。",
+                reasoning="趨勢仍強，回踩可觀察。",
                 raw_data=dashboard,
             ))
             return self._stage_result("decision")
@@ -1095,7 +1095,7 @@ class TestOrchestratorExecution(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertIn("timed out", result.error)
         self.assertEqual(result.dashboard["decision_type"], "buy")
-        self.assertEqual(result.dashboard["operation_advice"], "买入")
+        self.assertEqual(result.dashboard["operation_advice"], "買入")
         self.assertEqual(
             result.dashboard["dashboard"]["battle_plan"]["sniper_points"]["stop_loss"],
             1760.0,
@@ -1103,7 +1103,7 @@ class TestOrchestratorExecution(unittest.TestCase):
 
     def test_execute_pipeline_timeout_after_intel_synthesizes_dashboard(self):
         orch = self._make_orchestrator(config=SimpleNamespace(agent_orchestrator_timeout_s=1, agent_risk_override=True))
-        ctx = AgentContext(query="test", stock_code="301308", stock_name="江波龙")
+        ctx = AgentContext(query="test", stock_code="301308", stock_name="江波龍")
         ctx.set_data("realtime_quote", {"price": 326.17, "volume_ratio": 1.0, "turnover_rate": 6.77})
         ctx.set_data("chip_distribution", {"profit_ratio": 68.8, "avg_cost": 307.67, "concentration_90": 15.28})
 
@@ -1115,7 +1115,7 @@ class TestOrchestratorExecution(unittest.TestCase):
                 agent_name="technical",
                 signal="buy",
                 confidence=0.75,
-                reasoning="强势多头排列，价格回踩 MA5。",
+                reasoning="強勢多頭排列，價格回踩 MA5。",
                 key_levels={"support": 301.61, "resistance": 340.44, "stop_loss": 295.0},
                 raw_data={"ma_alignment": "bullish", "trend_score": 73, "volume_status": "normal"},
             ))
@@ -1131,7 +1131,7 @@ class TestOrchestratorExecution(unittest.TestCase):
         self.assertTrue(result.success)
         self.assertIn("timed out", result.error)
         self.assertEqual(result.dashboard["decision_type"], "buy")
-        self.assertIn("降级结果", result.dashboard["analysis_summary"])
+        self.assertIn("降級結果", result.dashboard["analysis_summary"])
         self.assertEqual(
             result.dashboard["dashboard"]["battle_plan"]["sniper_points"]["stop_loss"],
             295.0,
@@ -1154,7 +1154,7 @@ class TestOrchestratorExecution(unittest.TestCase):
 
         orch = self._make_orchestrator()
         history = [
-            {"role": "user", "content": "之前的问题"},
+            {"role": "user", "content": "之前的問題"},
             {"role": "assistant", "content": "之前的回答"},
         ]
         captured = {}
@@ -1201,11 +1201,11 @@ class TestOrchestratorExecution(unittest.TestCase):
                 with patch("src.agent.conversation.conversation_manager.get_or_create"):
                     with patch("src.agent.conversation.conversation_manager.add_message"):
                         orch.chat(
-                            "换成 AAPL 看看",
+                            "換成 AAPL 看看",
                             "session-1",
                             context={
                                 "stock_code": "600519",
-                                "stock_name": "匿名标的",
+                                "stock_name": "匿名標的",
                                 "previous_analysis_summary": {"summary": "old"},
                             },
                         )
@@ -1291,7 +1291,7 @@ class TestOrchestratorExecution(unittest.TestCase):
                 result = orch.chat("hello", "session-2")
 
         self.assertFalse(result.success)
-        add_message.assert_any_call("session-2", "assistant", "[分析失败] boom")
+        add_message.assert_any_call("session-2", "assistant", "[分析失敗] boom")
 
     def test_execute_pipeline_fails_when_dashboard_parse_fails(self):
         orch = self._make_orchestrator()
@@ -1312,14 +1312,14 @@ class TestOrchestratorExecution(unittest.TestCase):
 
     def test_execute_pipeline_chat_prefers_free_form_response(self):
         orch = self._make_orchestrator()
-        ctx = AgentContext(query="请总结一下", stock_code="600519")
+        ctx = AgentContext(query="請總結一下", stock_code="600519")
         ctx.meta["response_mode"] = "chat"
         decision = MagicMock(agent_name="decision")
 
         def fake_run(pipeline_ctx, progress_callback=None):
             pipeline_ctx.set_data("final_dashboard", {"decision_type": "buy", "analysis_summary": "json dashboard"})
-            pipeline_ctx.set_data("final_response_text", "这是自然语言回复")
-            return self._stage_result("decision", raw_text="这是自然语言回复")
+            pipeline_ctx.set_data("final_response_text", "這是自然語言回復")
+            return self._stage_result("decision", raw_text="這是自然語言回復")
 
         decision.run.side_effect = fake_run
 
@@ -1327,7 +1327,7 @@ class TestOrchestratorExecution(unittest.TestCase):
             result = orch._execute_pipeline(ctx, parse_dashboard=False)
 
         self.assertTrue(result.success)
-        self.assertEqual(result.content, "这是自然语言回复")
+        self.assertEqual(result.content, "這是自然語言回復")
 
     def test_strategy_agents_are_selected_after_technical_stage(self):
         orch = self._make_orchestrator()
@@ -1392,14 +1392,14 @@ class TestDecisionAgentChatMode(unittest.TestCase):
         from src.agent.agents.decision_agent import DecisionAgent
 
         agent = DecisionAgent(tool_registry=MagicMock(), llm_adapter=MagicMock())
-        ctx = AgentContext(query="帮我总结一下", stock_code="600519")
+        ctx = AgentContext(query="幫我總結一下", stock_code="600519")
         ctx.meta["response_mode"] = "chat"
-        ctx.add_opinion(AgentOpinion(agent_name="technical", signal="buy", confidence=0.8, reasoning="趋势偏强"))
+        ctx.add_opinion(AgentOpinion(agent_name="technical", signal="buy", confidence=0.8, reasoning="趨勢偏強"))
 
-        opinion = agent.post_process(ctx, "建议继续观察量价配合，分批参与。")
+        opinion = agent.post_process(ctx, "建議繼續觀察量價配合，分批參與。")
 
         self.assertIsNotNone(opinion)
-        self.assertEqual(ctx.get_data("final_response_text"), "建议继续观察量价配合，分批参与。")
+        self.assertEqual(ctx.get_data("final_response_text"), "建議繼續觀察量價配合，分批參與。")
         self.assertIsNone(ctx.get_data("final_dashboard"))
         self.assertEqual(opinion.signal, "buy")
 
@@ -1424,13 +1424,13 @@ class TestTechnicalAgentSkillPolicy(unittest.TestCase):
         agent = TechnicalAgent(
             tool_registry=MagicMock(),
             llm_adapter=MagicMock(),
-            skill_instructions="### 技能 1: 缠论",
+            skill_instructions="### 技能 1: 纏論",
             technical_skill_policy="",
         )
         prompt = agent.system_prompt(AgentContext(query="分析 600519", stock_code="600519"))
 
         self.assertNotIn("Bias from MA5 < 2%", prompt)
-        self.assertIn("### 技能 1: 缠论", prompt)
+        self.assertIn("### 技能 1: 纏論", prompt)
 
     def test_prompt_includes_legacy_default_policy_for_implicit_default_run(self):
         from src.agent.agents.technical_agent import TechnicalAgent
@@ -1439,13 +1439,13 @@ class TestTechnicalAgentSkillPolicy(unittest.TestCase):
         agent = TechnicalAgent(
             tool_registry=MagicMock(),
             llm_adapter=MagicMock(),
-            skill_instructions="### 技能 1: 默认多头趋势",
+            skill_instructions="### 技能 1: 默認多頭趨勢",
             technical_skill_policy=TECHNICAL_SKILL_RULES_EN,
         )
         prompt = agent.system_prompt(AgentContext(query="分析 600519", stock_code="600519"))
 
         self.assertIn("Bias from MA5 < 2%", prompt)
-        self.assertIn("### 技能 1: 默认多头趋势", prompt)
+        self.assertIn("### 技能 1: 默認多頭趨勢", prompt)
 
 
 class TestBaseAgentMessageAssembly(unittest.TestCase):
@@ -1491,14 +1491,14 @@ class TestBaseAgentMessageAssembly(unittest.TestCase):
             "is_partial_bar": True,
             "minutes_to_close": 300,
         }
-        ctx.meta["analysis_context_pack_summary"] = "\n## 分析上下文包摘要\n- 数据块状态：行情 available\n"
+        ctx.meta["analysis_context_pack_summary"] = "\n## 分析上下文包摘要\n- 數據塊狀態：行情 available\n"
         ctx.set_data("realtime_quote", {"price": 1880.0})
 
         messages = agent._build_messages(ctx)
 
         phase_indexes = [
             idx for idx, message in enumerate(messages)
-            if "市场阶段上下文" in message.get("content", "")
+            if "市場階段上下文" in message.get("content", "")
         ]
         cached_indexes = [
             idx for idx, message in enumerate(messages)
@@ -1515,8 +1515,8 @@ class TestBaseAgentMessageAssembly(unittest.TestCase):
         self.assertLess(pack_indexes[0], cached_indexes[0])
         phase_message = messages[phase_indexes[0]]
         self.assertEqual(phase_message["role"], "user")
-        self.assertIn("盘中", phase_message["content"])
-        self.assertIn("不得当作完整日线复盘", phase_message["content"])
+        self.assertIn("盤中", phase_message["content"])
+        self.assertIn("不得當作完整日線復盤", phase_message["content"])
         self.assertNotIn("market_phase_context", phase_message["content"])
         self.assertNotIn("is_partial_bar", phase_message["content"])
         pack_message = messages[pack_indexes[0]]
@@ -1896,7 +1896,7 @@ class TestAgentMemory(unittest.TestCase):
             created_at=SimpleNamespace(date=lambda: SimpleNamespace(isoformat=lambda: "2026-03-01")),
             raw_result=json.dumps({"decision_type": "buy", "current_price": 1880.0}),
             sentiment_score=72,
-            operation_advice="买入",
+            operation_advice="買入",
         )
         db = MagicMock()
         db.get_analysis_history.return_value = [record]
@@ -1957,7 +1957,7 @@ class TestBaseAgentMemoryIntegration(unittest.TestCase):
         agent = self._make_agent(memory)
         ctx = AgentContext(query="test", stock_code="600519")
         ctx.meta["market_phase_context"] = {"phase": "intraday"}
-        ctx.meta["analysis_context_pack_summary"] = "\n## 分析上下文包摘要\n- 数据块状态：行情 available\n"
+        ctx.meta["analysis_context_pack_summary"] = "\n## 分析上下文包摘要\n- 數據塊狀態：行情 available\n"
         ctx.set_data("realtime_quote", {"price": 1880.0})
 
         injected = agent._inject_cached_data(ctx)
@@ -2049,16 +2049,16 @@ class TestRiskOverride(unittest.TestCase):
         return {
             "decision_type": "buy",
             "sentiment_score": 76,
-            "operation_advice": "买入",
-            "analysis_summary": "原始结论",
-            "risk_warning": "原风险提示",
+            "operation_advice": "買入",
+            "analysis_summary": "原始結論",
+            "risk_warning": "原風險提示",
             "dashboard": {
                 "core_conclusion": {
-                    "one_sentence": "可以参与",
-                    "signal_type": "🟢买入信号",
+                    "one_sentence": "可以參與",
+                    "signal_type": "🟢買入信號",
                     "position_advice": {
-                        "no_position": "分批买入",
-                        "has_position": "继续持有",
+                        "no_position": "分批買入",
+                        "has_position": "繼續持有",
                     },
                 }
             },
@@ -2074,22 +2074,22 @@ class TestRiskOverride(unittest.TestCase):
         )
         ctx = AgentContext(query="test", stock_code="600519")
         ctx.set_data("final_dashboard", self._make_dashboard())
-        ctx.add_opinion(AgentOpinion(agent_name="decision", signal="buy", confidence=0.8, reasoning="原始结论"))
+        ctx.add_opinion(AgentOpinion(agent_name="decision", signal="buy", confidence=0.8, reasoning="原始結論"))
         ctx.add_opinion(AgentOpinion(
             agent_name="risk",
             signal="strong_sell",
             confidence=0.9,
-            reasoning="重大风险",
-            raw_data={"veto_buy": True, "reasoning": "存在重大减持风险"},
+            reasoning="重大風險",
+            raw_data={"veto_buy": True, "reasoning": "存在重大減持風險"},
         ))
-        ctx.add_risk_flag("insider", "大股东减持", severity="high")
+        ctx.add_risk_flag("insider", "大股東減持", severity="high")
 
         orch._apply_risk_override(ctx)
         dashboard = ctx.get_data("final_dashboard")
 
         self.assertEqual(dashboard["decision_type"], "hold")
         self.assertLessEqual(dashboard["sentiment_score"], 59)
-        self.assertIn("风控接管", dashboard["risk_warning"])
+        self.assertIn("風控接管", dashboard["risk_warning"])
         self.assertEqual(ctx.opinions[0].signal, "hold")
 
     def test_risk_override_normalizes_strong_buy_before_veto(self):
@@ -2105,14 +2105,14 @@ class TestRiskOverride(unittest.TestCase):
         dashboard["decision_type"] = "strong_buy"
         dashboard["sentiment_score"] = 92
         ctx.set_data("final_dashboard", dashboard)
-        ctx.add_opinion(AgentOpinion(agent_name="decision", signal="strong_buy", confidence=0.9, reasoning="原始结论"))
+        ctx.add_opinion(AgentOpinion(agent_name="decision", signal="strong_buy", confidence=0.9, reasoning="原始結論"))
         ctx.add_opinion(AgentOpinion(
             agent_name="risk",
             signal="strong_sell",
             confidence=0.9,
-            raw_data={"veto_buy": True, "reasoning": "存在重大风险"},
+            raw_data={"veto_buy": True, "reasoning": "存在重大風險"},
         ))
-        ctx.add_risk_flag("insider", "大股东减持", severity="high")
+        ctx.add_risk_flag("insider", "大股東減持", severity="high")
 
         orch._apply_risk_override(ctx)
 
@@ -2136,7 +2136,7 @@ class TestRiskOverride(unittest.TestCase):
             confidence=0.9,
             raw_data={"veto_buy": True},
         ))
-        ctx.add_risk_flag("insider", "大股东减持", severity="high")
+        ctx.add_risk_flag("insider", "大股東減持", severity="high")
 
         orch._apply_risk_override(ctx)
 
@@ -2183,7 +2183,7 @@ class TestResearchCommandTimeout(unittest.TestCase):
              )):
             response = cmd.execute(msg, ["600519"])
 
-        self.assertIn("超时", response.text)
+        self.assertIn("超時", response.text)
 
     def test_research_recognizes_five_letter_us_ticker(self):
         from bot.commands.research import ResearchCommand
@@ -2223,7 +2223,7 @@ class TestResearchCommandTimeout(unittest.TestCase):
              patch("src.agent.factory.get_tool_registry", return_value=MagicMock()), \
              patch("src.agent.llm_adapter.LLMToolAdapter", return_value=MagicMock()), \
              patch("src.agent.research.ResearchAgent.research", side_effect=_capture_research):
-            response = cmd.execute(msg, ["googl", "风险"])
+            response = cmd.execute(msg, ["googl", "風險"])
 
         self.assertIn("Deep Research Report", response.text)
         self.assertEqual(captured["context"], {"stock_code": "GOOGL", "stock_name": ""})
@@ -2371,7 +2371,7 @@ class TestAgentResearchEndpoint(unittest.IsolatedAsyncioTestCase):
             patch("src.agent.factory.get_tool_registry", return_value=MagicMock()),
             patch("src.agent.llm_adapter.LLMToolAdapter", return_value=MagicMock()),
         ):
-            response = await agent_research(ResearchRequest(question="600519 风险"))
+            response = await agent_research(ResearchRequest(question="600519 風險"))
 
         self.assertFalse(response.success)
         self.assertIn("timed out", response.error)

@@ -73,9 +73,9 @@ def _make_result(code: str, success: bool = True) -> AnalysisResult:
         sentiment_score=80,
         trend_prediction="看多",
         operation_advice="持有",
-        analysis_summary="测试结果",
+        analysis_summary="測試結果",
         success=success,
-        error_message=None if success else "JSON解析失败",
+        error_message=None if success else "JSON解析失敗",
     )
 
 

@@ -30,7 +30,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         cfg = EvaluationConfig(eval_window_days=3, neutral_band_pct=2.0)
         bars = self._bars(date(2024, 1, 1), [102, 104, 105], highs=[103, 105, 106], lows=[101, 103, 104])
         res = BacktestEngine.evaluate_single(
-            operation_advice="买入",
+            operation_advice="買入",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -46,7 +46,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         cfg = EvaluationConfig(eval_window_days=3, neutral_band_pct=2.0)
         bars = self._bars(date(2024, 1, 1), [98, 97, 96], highs=[99, 98, 97], lows=[97, 96, 95])
         res = BacktestEngine.evaluate_single(
-            operation_advice="卖出",
+            operation_advice="賣出",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -64,7 +64,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         # Stock drops ~5%: AI said wait (neutral), stock moved significantly → loss
         bars = self._bars(date(2024, 1, 1), [98, 96, 95], highs=[99, 97, 96], lows=[97, 95, 94])
         res = BacktestEngine.evaluate_single(
-            operation_advice="观望",
+            operation_advice="觀望",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -78,25 +78,25 @@ class BacktestEngineTestCase(unittest.TestCase):
 
     def test_bearish_like_phrases_match_keyword_substring(self):
         self.assertEqual(
-            BacktestEngine.infer_position_recommendation("建议买入"),
+            BacktestEngine.infer_position_recommendation("建議買入"),
             "long",
         )
         self.assertEqual(
-            BacktestEngine.infer_direction_expected("继续持有"),
+            BacktestEngine.infer_direction_expected("繼續持有"),
             "not_down",
         )
         self.assertEqual(
-            BacktestEngine.infer_position_recommendation("建议持有"),
+            BacktestEngine.infer_position_recommendation("建議持有"),
             "long",
         )
         self.assertEqual(
-            BacktestEngine.infer_position_recommendation("建议洗盘观察"),
+            BacktestEngine.infer_position_recommendation("建議洗盤觀察"),
             "long",
         )
 
     def test_range_bound_watch_is_treated_as_hold_long_path(self):
         self.assertEqual(
-            BacktestEngine.infer_position_recommendation("震荡观望"),
+            BacktestEngine.infer_position_recommendation("震蕩觀望"),
             "long",
         )
         self.assertEqual(
@@ -110,7 +110,7 @@ class BacktestEngineTestCase(unittest.TestCase):
 
     def test_shakeout_watch_is_treated_as_hold_long_path(self):
         self.assertEqual(
-            BacktestEngine.infer_position_recommendation("洗盘观察"),
+            BacktestEngine.infer_position_recommendation("洗盤觀察"),
             "long",
         )
         self.assertEqual(
@@ -240,7 +240,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         cfg = EvaluationConfig(eval_window_days=3, neutral_band_pct=2.0)
         bars = self._bars(date(2024, 1, 1), [99, 98, 97], highs=[101, 100, 99], lows=[94, 97, 96])
         res = BacktestEngine.evaluate_single(
-            operation_advice="买入",
+            operation_advice="買入",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -256,7 +256,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         cfg = EvaluationConfig(eval_window_days=3, neutral_band_pct=2.0)
         bars = self._bars(date(2024, 1, 1), [105, 106, 107], highs=[111, 107, 108], lows=[103, 105, 106])
         res = BacktestEngine.evaluate_single(
-            operation_advice="买入",
+            operation_advice="買入",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -272,7 +272,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         cfg = EvaluationConfig(eval_window_days=2, neutral_band_pct=2.0)
         bars = self._bars(date(2024, 1, 1), [100, 100], highs=[111, 100], lows=[94, 99])
         res = BacktestEngine.evaluate_single(
-            operation_advice="买入",
+            operation_advice="買入",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -287,7 +287,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         cfg = EvaluationConfig(eval_window_days=3, neutral_band_pct=2.0)
         bars = self._bars(date(2024, 1, 1), [98, 96, 95], highs=[99, 97, 96], lows=[97, 95, 94])
         res = BacktestEngine.evaluate_single(
-            operation_advice="买入",
+            operation_advice="買入",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -319,7 +319,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         cfg = EvaluationConfig(eval_window_days=3, neutral_band_pct=2.0)
         bars = self._bars(date(2024, 1, 1), [102, 104, 106], highs=[103, 105, 107], lows=[101, 103, 105])
         res = BacktestEngine.evaluate_single(
-            operation_advice="卖出",
+            operation_advice="賣出",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -336,7 +336,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         cfg = EvaluationConfig(eval_window_days=3, neutral_band_pct=2.0)
         bars = self._bars(date(2024, 1, 1), [100.5, 100.2, 100.8], highs=[101, 101, 101], lows=[100, 100, 100])
         res = BacktestEngine.evaluate_single(
-            operation_advice="买入",
+            operation_advice="買入",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -368,7 +368,7 @@ class BacktestEngineTestCase(unittest.TestCase):
         cfg = EvaluationConfig(eval_window_days=5, neutral_band_pct=2.0)
         bars = self._bars(date(2024, 1, 1), [100, 101])
         res = BacktestEngine.evaluate_single(
-            operation_advice="买入",
+            operation_advice="買入",
             analysis_date=date(2024, 1, 1),
             start_price=100,
             forward_bars=bars,
@@ -405,17 +405,17 @@ class BacktestEngineTestCase(unittest.TestCase):
         self.assertNotEqual(BacktestEngine.infer_direction_expected("do not sell"), "down")
 
     def test_chinese_negated_sell_not_bearish(self):
-        # "不要卖出" = "don't sell" — should NOT be direction=down
-        self.assertNotEqual(BacktestEngine.infer_direction_expected("不要卖出"), "down")
+        # "不要賣出" = "don't sell" — should NOT be direction=down
+        self.assertNotEqual(BacktestEngine.infer_direction_expected("不要賣出"), "down")
 
     def test_conditional_support_phrase_not_negating_hold(self):
-        # "不跌破支撑继续持有" means conditional support hold, not explicit negation of hold.
+        # "不跌破支撐繼續持有" means conditional support hold, not explicit negation of hold.
         self.assertEqual(
-            BacktestEngine.infer_position_recommendation("不跌破支撑继续持有"),
+            BacktestEngine.infer_position_recommendation("不跌破支撐繼續持有"),
             "long",
         )
         self.assertEqual(
-            BacktestEngine.infer_direction_expected("不跌破支撑继续持有"),
+            BacktestEngine.infer_direction_expected("不跌破支撐繼續持有"),
             "not_down",
         )
 
@@ -426,19 +426,19 @@ class BacktestEngineTestCase(unittest.TestCase):
 
     def test_wait_phrase_before_bullish_phrases_stays_wait(self):
         self.assertEqual(
-            BacktestEngine.infer_position_recommendation("先观望再买入"),
+            BacktestEngine.infer_position_recommendation("先觀望再買入"),
             "cash",
         )
         self.assertEqual(
-            BacktestEngine.infer_direction_expected("先观望再买入"),
+            BacktestEngine.infer_direction_expected("先觀望再買入"),
             "flat",
         )
         self.assertEqual(
-            BacktestEngine.infer_position_recommendation("观望后买入"),
+            BacktestEngine.infer_position_recommendation("觀望後買入"),
             "cash",
         )
         self.assertEqual(
-            BacktestEngine.infer_direction_expected("观望后买入"),
+            BacktestEngine.infer_direction_expected("觀望後買入"),
             "flat",
         )
 

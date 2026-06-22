@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-统一导入解析管道
+統一導入解析管道
 ===================================
 
 Parse CSV/Excel/clipboard text into stock items (code, name, confidence).
@@ -22,8 +22,8 @@ from src.services.stock_code_utils import is_code_like, normalize_code
 logger = logging.getLogger(__name__)
 
 # Column name mappings (case-insensitive)
-_CODE_ALIASES = frozenset({"code", "股票代码", "代码", "stock_code", "symbol"})
-_NAME_ALIASES = frozenset({"name", "股票名称", "名称", "stock_name"})
+_CODE_ALIASES = frozenset({"code", "股票代碼", "代碼", "stock_code", "symbol"})
+_NAME_ALIASES = frozenset({"name", "股票名稱", "名稱", "stock_name"})
 
 MAX_FILE_BYTES = 2 * 1024 * 1024  # 2MB
 MAX_TEXT_BYTES = 100 * 1024  # 100KB
@@ -47,7 +47,7 @@ def _should_use_single_column_fast_path(lines: List[str]) -> bool:
     for ln in lines:
         parts = ln.split()
         if len(parts) >= 2 and is_code_like(parts[0]):
-            # Example: "600519 贵州茅台" / "HK00700 腾讯控股"
+            # Example: "600519 貴州茅臺" / "HK00700 騰訊控股"
             # First token is code-like and tail contains non-code token(s).
             if any(not is_code_like(p) for p in parts[1:]):
                 return False
@@ -108,7 +108,7 @@ def _parse_dataframe(df: pd.DataFrame) -> List[Tuple[Optional[str], Optional[str
         if code_val:
             code = normalize_code(code_val)
             # If code_val is not a valid code, treat as name only when name_val is empty
-            # (do not overwrite valid name with dirty code_val, e.g. INVALID,贵州茅台)
+            # (do not overwrite valid name with dirty code_val, e.g. INVALID,貴州茅臺)
             if not code and not is_code_like(code_val):
                 if name_val:
                     code = resolve_name_to_code(name_val)
@@ -119,7 +119,7 @@ def _parse_dataframe(df: pd.DataFrame) -> List[Tuple[Optional[str], Optional[str
         if not code and name_val:
             code = resolve_name_to_code(name_val)
             if not code:
-                logger.debug(f"[ImportParser] 名称解析失败: {name_val}")
+                logger.debug(f"[ImportParser] 名稱解析失敗: {name_val}")
 
         result.append((code, name_val if name_val else None, "medium"))
     return result
@@ -140,12 +140,12 @@ def parse_import_from_bytes(data: bytes, filename: Optional[str] = None) -> List
         ValueError: On parse error or unsupported format.
     """
     if len(data) > MAX_FILE_BYTES:
-        raise ValueError(f"文件超过 {MAX_FILE_BYTES // (1024 * 1024)}MB 限制")
+        raise ValueError(f"文件超過 {MAX_FILE_BYTES // (1024 * 1024)}MB 限制")
 
     ext = ""
     if filename:
         ext = "." + filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-    logger.debug(f"[ImportParser] 开始解析文件: filename={filename or '-'}, ext={ext or '-'}, bytes={len(data)}")
+    logger.debug(f"[ImportParser] 開始解析文件: filename={filename or '-'}, ext={ext or '-'}, bytes={len(data)}")
 
     looks_like_zip = len(data) >= 4 and data[:4] == b"PK\x03\x04"
 
@@ -167,16 +167,16 @@ def parse_import_from_bytes(data: bytes, filename: Optional[str] = None) -> List
             # If bytes strongly indicate xlsx container, treat as real Excel parse failure.
             if looks_like_zip:
                 hint = (
-                    "请确认：(1) 文件为 .xlsx 格式；(2) 工作表不为空；(3) 文件未损坏。"
-                    "若为 .xls 格式，请另存为 .xlsx 后重试。"
+                    "請確認：(1) 文件爲 .xlsx 格式；(2) 工作表不爲空；(3) 文件未損壞。"
+                    "若爲 .xls 格式，請另存爲 .xlsx 後重試。"
                 )
-                raise ValueError(f"Excel 解析失败: {e}。{hint}") from e
+                raise ValueError(f"Excel 解析失敗: {e}。{hint}") from e
             # For extension-only mismatch (e.g. csv named .xlsx), fallback to text parsing.
-            logger.warning(f"扩展名为 .xlsx 但未解析为 Excel，将回退文本解析: {e}")
+            logger.warning(f"擴展名爲 .xlsx 但未解析爲 Excel，將回退文本解析: {e}")
 
     # .xls not supported
     if ext == ".xls":
-        raise ValueError("仅支持 .xlsx 格式，请将 .xls 另存为 .xlsx 后重试")
+        raise ValueError("僅支持 .xlsx 格式，請將 .xls 另存爲 .xlsx 後重試")
 
     # CSV / text
     for encoding in ("utf-8", "gbk"):
@@ -186,7 +186,7 @@ def parse_import_from_bytes(data: bytes, filename: Optional[str] = None) -> List
         except UnicodeDecodeError:
             continue
     else:
-        raise ValueError("无法识别文件编码，请使用 UTF-8 或 GBK")
+        raise ValueError("無法識別文件編碼，請使用 UTF-8 或 GBK")
 
     # Single-column (one value per line): bypass pandas to avoid sep=None inference issues
     # e.g. "00700\n600519" or "code\n00700" - pandas with sep=None can produce wrong results
@@ -212,8 +212,8 @@ def parse_import_from_bytes(data: bytes, filename: Optional[str] = None) -> List
             return _parse_dataframe(df)
     except pd.errors.ParserError as e:
         raise ValueError(
-            f"CSV 解析失败：请检查分隔符是否一致、列数是否匹配。"
-            f"常见原因：引号未闭合、某行列数与其他行不一致。原始错误: {e}"
+            f"CSV 解析失敗：請檢查分隔符是否一致、列數是否匹配。"
+            f"常見原因：引號未閉合、某行列數與其他行不一致。原始錯誤: {e}"
         ) from e
     except Exception:
         pass
@@ -245,8 +245,8 @@ def parse_import_from_text(text: str) -> List[Tuple[Optional[str], Optional[str]
         List of (code, name, confidence).
     """
     if len(text.encode("utf-8")) > MAX_TEXT_BYTES:
-        raise ValueError(f"文本超过 {MAX_TEXT_BYTES // 1024}KB 限制")
+        raise ValueError(f"文本超過 {MAX_TEXT_BYTES // 1024}KB 限制")
 
-    logger.debug(f"[ImportParser] 开始解析粘贴文本: bytes={len(text.encode('utf-8'))}")
+    logger.debug(f"[ImportParser] 開始解析粘貼文本: bytes={len(text.encode('utf-8'))}")
     data = text.encode("utf-8")
     return parse_import_from_bytes(data, filename="paste.txt")

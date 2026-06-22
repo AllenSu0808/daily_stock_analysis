@@ -29,31 +29,31 @@ class TestAnalysisReportSchema(unittest.TestCase):
     def test_valid_dashboard_parses(self) -> None:
         """Valid LLM-like JSON parses successfully."""
         data = {
-            "stock_name": "贵州茅台",
+            "stock_name": "貴州茅臺",
             "sentiment_score": 75,
             "trend_prediction": "看多",
             "operation_advice": "持有",
             "decision_type": "hold",
             "confidence_level": "中",
             "dashboard": {
-                "core_conclusion": {"one_sentence": "持有观望"},
+                "core_conclusion": {"one_sentence": "持有觀望"},
                 "intelligence": {"risk_alerts": []},
                 "battle_plan": {"sniper_points": {"stop_loss": "110元"}},
             },
-            "analysis_summary": "基本面稳健",
+            "analysis_summary": "基本面穩健",
         }
         schema = AnalysisReportSchema.model_validate(data)
-        self.assertEqual(schema.stock_name, "贵州茅台")
+        self.assertEqual(schema.stock_name, "貴州茅臺")
         self.assertEqual(schema.sentiment_score, 75)
         self.assertIsNotNone(schema.dashboard)
 
     def test_schema_allows_optional_fields_missing(self) -> None:
         """Schema accepts minimal valid structure."""
         data = {
-            "stock_name": "测试",
+            "stock_name": "測試",
             "sentiment_score": 50,
-            "trend_prediction": "震荡",
-            "operation_advice": "观望",
+            "trend_prediction": "震蕩",
+            "operation_advice": "觀望",
         }
         schema = AnalysisReportSchema.model_validate(data)
         self.assertIsNone(schema.dashboard)
@@ -62,18 +62,18 @@ class TestAnalysisReportSchema(unittest.TestCase):
     def test_schema_accepts_phase_decision_and_defaults_lists(self) -> None:
         """Dashboard accepts the optional phase_decision contract."""
         data = {
-            "stock_name": "贵州茅台",
+            "stock_name": "貴州茅臺",
             "sentiment_score": 70,
-            "trend_prediction": "震荡",
+            "trend_prediction": "震蕩",
             "operation_advice": "持有",
             "dashboard": {
-                "core_conclusion": {"one_sentence": "等待确认"},
+                "core_conclusion": {"one_sentence": "等待確認"},
                 "phase_decision": {
                     "phase_context": {"phase": "intraday", "market": "cn"},
-                    "action_window": "盘中跟踪",
-                    "immediate_action": "等待确认",
+                    "action_window": "盤中跟蹤",
+                    "immediate_action": "等待確認",
                     "next_check_time": "14:30",
-                    "confidence_reason": "数据质量可用",
+                    "confidence_reason": "數據質量可用",
                 },
             },
         }
@@ -91,10 +91,10 @@ class TestAnalysisReportSchema(unittest.TestCase):
     def test_schema_allows_numeric_strings(self) -> None:
         """Schema accepts string values for numeric fields (LLM may return N/A)."""
         data = {
-            "stock_name": "测试",
+            "stock_name": "測試",
             "sentiment_score": 60,
             "trend_prediction": "看多",
-            "operation_advice": "买入",
+            "operation_advice": "買入",
             "dashboard": {
                 "data_perspective": {
                     "price_position": {
@@ -115,10 +115,10 @@ class TestAnalysisReportSchema(unittest.TestCase):
     def test_schema_fails_on_invalid_sentiment_score(self) -> None:
         """Schema validation fails when sentiment_score out of range."""
         data = {
-            "stock_name": "测试",
+            "stock_name": "測試",
             "sentiment_score": 150,  # out of 0-100
             "trend_prediction": "看多",
-            "operation_advice": "买入",
+            "operation_advice": "買入",
         }
         with self.assertRaises(Exception):
             AnalysisReportSchema.model_validate(data)
@@ -131,13 +131,13 @@ class TestAnalyzerSchemaFallback(unittest.TestCase):
         """When schema validation fails, analyzer continues with raw dict."""
         analyzer = GeminiAnalyzer()
         response = json.dumps({
-            "stock_name": "贵州茅台",
+            "stock_name": "貴州茅臺",
             "sentiment_score": 150,  # invalid for schema
             "trend_prediction": "看多",
             "operation_advice": "持有",
-            "analysis_summary": "测试摘要",
+            "analysis_summary": "測試摘要",
         })
-        result = analyzer._parse_response(response, "600519", "贵州茅台")
+        result = analyzer._parse_response(response, "600519", "貴州茅臺")
         self.assertIsInstance(result, AnalysisResult)
         self.assertEqual(result.code, "600519")
         self.assertEqual(result.sentiment_score, 150)  # from raw dict
@@ -147,66 +147,66 @@ class TestAnalyzerSchemaFallback(unittest.TestCase):
         """Valid JSON produces correct AnalysisResult."""
         analyzer = GeminiAnalyzer()
         response = json.dumps({
-            "stock_name": "贵州茅台",
+            "stock_name": "貴州茅臺",
             "sentiment_score": 72,
             "trend_prediction": "看多",
             "operation_advice": "持有",
             "decision_type": "hold",
             "confidence_level": "高",
-            "analysis_summary": "技术面向好",
+            "analysis_summary": "技術面向好",
         })
         result = analyzer._parse_response(response, "600519", "股票600519")
         self.assertIsInstance(result, AnalysisResult)
-        self.assertEqual(result.name, "贵州茅台")
+        self.assertEqual(result.name, "貴州茅臺")
         self.assertEqual(result.sentiment_score, 72)
-        self.assertEqual(result.analysis_summary, "技术面向好")
+        self.assertEqual(result.analysis_summary, "技術面向好")
         self.assertEqual(result.action, "hold")
         self.assertEqual(result.action_label, "持有")
 
     def test_parse_response_preserves_explicit_action_in_raw_result(self) -> None:
         analyzer = GeminiAnalyzer()
         response = json.dumps({
-            "stock_name": "贵州茅台",
+            "stock_name": "貴州茅臺",
             "sentiment_score": 58,
-            "trend_prediction": "震荡",
-            "operation_advice": "持有观察",
+            "trend_prediction": "震蕩",
+            "operation_advice": "持有觀察",
             "decision_type": "hold",
             "action": "watch",
-            "analysis_summary": "等待确认",
+            "analysis_summary": "等待確認",
         })
 
         result = analyzer._parse_response(response, "600519", "股票600519")
         raw_result = result.to_dict()
 
         self.assertEqual(result.action, "watch")
-        self.assertEqual(result.action_label, "观望")
+        self.assertEqual(result.action_label, "觀望")
         self.assertEqual(result.decision_type, "hold")
         self.assertEqual(raw_result["action"], "watch")
-        self.assertEqual(raw_result["action_label"], "观望")
+        self.assertEqual(raw_result["action_label"], "觀望")
 
     def test_parse_response_keeps_unknown_dashboard_fields(self) -> None:
         analyzer = GeminiAnalyzer()
         response = json.dumps({
-            "stock_name": "贵州茅台",
+            "stock_name": "貴州茅臺",
             "sentiment_score": 72,
             "trend_prediction": "看多",
             "operation_advice": "持有",
             "decision_type": "hold",
-            "analysis_summary": "技术面向好",
+            "analysis_summary": "技術面向好",
             "dashboard": {
                 "core_conclusion": {
-                    "one_sentence": "先观察",
-                    "signal_type": "🟡持有观望",
+                    "one_sentence": "先觀察",
+                    "signal_type": "🟡持有觀望",
                 },
                 "decision_stability": {
                     "applied": True,
-                    "reason": "回测验证",
+                    "reason": "回測驗證",
                 },
             },
         })
         result = analyzer._parse_response(response, "600519", "股票600519")
         self.assertEqual(result.dashboard["decision_stability"]["applied"], True)
-        self.assertEqual(result.dashboard["decision_stability"]["reason"], "回测验证")
+        self.assertEqual(result.dashboard["decision_stability"]["reason"], "回測驗證")
 
     def test_parse_text_response_honors_injected_runtime_report_language(self) -> None:
         """Fallback text parsing should use the analyzer's injected config, not the global singleton."""

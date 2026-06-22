@@ -50,7 +50,7 @@ def _quote(
 ) -> UnifiedRealtimeQuote:
     return UnifiedRealtimeQuote(
         code="600519",
-        name="贵州茅台",
+        name="貴州茅臺",
         source=source,
         price=1880.0,
         change_pct=1.2,
@@ -63,12 +63,12 @@ def _quote(
 def _artifacts(**overrides) -> PipelineAnalysisArtifacts:
     data = {
         "code": "600519",
-        "stock_name": "贵州茅台",
+        "stock_name": "貴州茅臺",
         "market": "cn",
         "phase": {"market": "cn", "phase": "intraday"},
         "base_context": {
             "code": "600519",
-            "stock_name": "贵州茅台",
+            "stock_name": "貴州茅臺",
             "date": "2026-05-24",
             "today": {"date": "2026-05-24", "close": 1880.0},
             "yesterday": {"date": "2026-05-23", "close": 1860.0},
@@ -79,7 +79,7 @@ def _artifacts(**overrides) -> PipelineAnalysisArtifacts:
         "realtime_quote": _quote(),
         "trend_result": _FakeTrend(
             {
-                "trend_status": "多头排列",
+                "trend_status": "多頭排列",
                 "ma5": 1800.0,
                 "ma10": 1780.0,
                 "rsi_6": 66.0,
@@ -99,7 +99,7 @@ def _artifacts(**overrides) -> PipelineAnalysisArtifacts:
             "coverage": {"valuation": "ok"},
             "source_chain": [{"provider": "fundamental_pipeline", "result": "ok"}],
         },
-        "news_context": "公司公告与行业新闻摘要",
+        "news_context": "公司公告與行業新聞摘要",
         "news_result_count": 3,
         "metadata": {"query_id": "q-1", "trigger_source": "api"},
     }
@@ -238,7 +238,7 @@ def test_daily_bars_uses_base_context_and_keeps_dates_out_of_timestamp() -> None
         _artifacts(
             base_context={
                 "code": "600519",
-                "stock_name": "贵州茅台",
+                "stock_name": "貴州茅臺",
                 "date": "2026-05-24",
                 "data_missing": True,
                 "today": {},
@@ -493,8 +493,8 @@ def test_portfolio_block_is_auxiliary_and_does_not_change_quality_score() -> Non
 def test_build_batch_returns_one_pack_per_artifact() -> None:
     packs = AnalysisContextBuilder.build_batch(
         [
-            _artifacts(code="600519", stock_name="贵州茅台"),
-            _artifacts(code="000001", stock_name="平安银行"),
+            _artifacts(code="600519", stock_name="貴州茅臺"),
+            _artifacts(code="000001", stock_name="平安銀行"),
         ]
     )
 

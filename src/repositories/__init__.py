@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 ===================================
-数据访问层模块初始化
+數據訪問層模塊初始化
 ===================================
 
-职责：
-1. 导出所有 Repository 类
+職責：
+1. 導出所有 Repository 類
 """
 
 from src.repositories.analysis_repo import AnalysisRepository

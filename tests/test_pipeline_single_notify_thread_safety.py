@@ -27,7 +27,7 @@ def _make_result(code: str) -> AnalysisResult:
         sentiment_score=80,
         trend_prediction="看多",
         operation_advice="持有",
-        analysis_summary="测试结果",
+        analysis_summary="測試結果",
     )
 
 

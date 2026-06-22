@@ -57,16 +57,16 @@ class StrategiesCommand(BotCommand):
 
             all_skills = sm.list_skills()
             if not all_skills:
-                return BotResponse.text_response("📋 暂无可用策略。请检查 strategies/ 目录。")
+                return BotResponse.text_response("📋 暫無可用策略。請檢查 strategies/ 目錄。")
 
             skills = all_skills
             if show_active_only:
                 skills = [s for s in all_skills if s.name in configured_active]
                 if not skills:
-                    return BotResponse.text_response("📋 当前没有激活的策略。")
+                    return BotResponse.text_response("📋 當前沒有激活的策略。")
 
             # Group by category
-            categories = {"trend": "📈 趋势类", "pattern": "📊 形态类", "reversal": "🔄 反转类", "framework": "🧩 框架类"}
+            categories = {"trend": "📈 趨勢類", "pattern": "📊 形態類", "reversal": "🔄 反轉類", "framework": "🧩 框架類"}
             grouped = {}
             for skill in skills:
                 cat = skill.category or "trend"
@@ -85,19 +85,19 @@ class StrategiesCommand(BotCommand):
                     status = "✅" if s.name in configured_active else "⬜"
                     source_tag = ""
                     if s.source and s.source != "builtin":
-                        source_tag = " (自定义)"
+                        source_tag = " (自定義)"
                     lines.append(f"  {status} `{s.name}` — {s.display_name}{source_tag}")
                     lines.append(f"      {s.description}")
                 lines.append("")
 
             active_count = sum(1 for s in all_skills if s.name in configured_active)
             total_count = len(all_skills)
-            lines.append(f"共 {total_count} 个策略，已激活 {active_count} 个")
-            lines.append(f"\n💡 使用 `/ask <股票代码> <策略名>` 指定策略分析")
+            lines.append(f"共 {total_count} 個策略，已激活 {active_count} 個")
+            lines.append(f"\n💡 使用 `/ask <股票代碼> <策略名>` 指定策略分析")
 
             return BotResponse.markdown_response("\n".join(lines))
 
         except Exception as e:
             logger.error(f"Strategies command failed: {e}")
             logger.exception("Strategies error details:")
-            return BotResponse.text_response(f"⚠️ 获取策略列表失败: {str(e)}")
+            return BotResponse.text_response(f"⚠️ 獲取策略列表失敗: {str(e)}")

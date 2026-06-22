@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-data_provider/yfinance_fetcher 中美股指数获取逻辑的单元测试
+data_provider/yfinance_fetcher 中美股指數獲取邏輯的單元測試
 
-使用 unittest.mock 模拟 yfinance API 响应，覆盖：
-- _fetch_yf_ticker_data 单指数数据解析
-- _get_us_main_indices 美股指数批量获取及异常场景
+使用 unittest.mock 模擬 yfinance API 響應，覆蓋：
+- _fetch_yf_ticker_data 單指數數據解析
+- _get_us_main_indices 美股指數批量獲取及異常場景
 """
 import sys
 import os
@@ -12,16 +12,16 @@ import unittest
 from unittest.mock import MagicMock, patch
 import pandas as pd
 
-# 在导入 data_provider 前 mock 可能缺失的依赖，避免环境差异导致测试无法运行
+# 在導入 data_provider 前 mock 可能缺失的依賴，避免環境差異導致測試無法運行
 if 'fake_useragent' not in sys.modules:
     sys.modules['fake_useragent'] = MagicMock()
 
-# 确保能导入项目模块
+# 確保能導入項目模塊
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 def _make_mock_hist(close: float, prev_close: float, high: float = None, low: float = None) -> pd.DataFrame:
-    """构造模拟的 history DataFrame，包含计算涨跌幅所需字段"""
+    """構造模擬的 history DataFrame，包含計算漲跌幅所需字段"""
     high = high if high is not None else close + 1
     low = low if low is not None else close - 1
     return pd.DataFrame({
@@ -34,7 +34,7 @@ def _make_mock_hist(close: float, prev_close: float, high: float = None, low: fl
 
 
 def _make_mock_yf(hist_df: pd.DataFrame):
-    """构造模拟的 yf 模块，Ticker().history() 返回给定 DataFrame"""
+    """構造模擬的 yf 模塊，Ticker().history() 返回給定 DataFrame"""
     mock_ticker = MagicMock()
     mock_ticker.history.return_value = hist_df
     mock_yf = MagicMock()
@@ -43,22 +43,22 @@ def _make_mock_yf(hist_df: pd.DataFrame):
 
 
 class TestFetchYfTickerData(unittest.TestCase):
-    """_fetch_yf_ticker_data 单指数取数逻辑测试"""
+    """_fetch_yf_ticker_data 單指數取數邏輯測試"""
 
     def setUp(self):
         from data_provider.yfinance_fetcher import YfinanceFetcher
         self.fetcher = YfinanceFetcher()
 
     def test_returns_dict_with_correct_fields(self):
-        """正常数据应返回包含 code/name/current/change_pct 等字段的字典"""
+        """正常數據應返回包含 code/name/current/change_pct 等字段的字典"""
         mock_hist = _make_mock_hist(close=5100.0, prev_close=5000.0)
         mock_yf = _make_mock_yf(mock_hist)
 
-        result = self.fetcher._fetch_yf_ticker_data(mock_yf, '^GSPC', '标普500指数', 'SPX')
+        result = self.fetcher._fetch_yf_ticker_data(mock_yf, '^GSPC', '標普500指數', 'SPX')
 
         self.assertIsNotNone(result)
         self.assertEqual(result['code'], 'SPX')
-        self.assertEqual(result['name'], '标普500指数')
+        self.assertEqual(result['name'], '標普500指數')
         self.assertEqual(result['current'], 5100.0)
         self.assertEqual(result['prev_close'], 5000.0)
         self.assertEqual(result['change'], 100.0)
@@ -71,27 +71,27 @@ class TestFetchYfTickerData(unittest.TestCase):
         self.assertIn('amplitude', result)
 
     def test_returns_none_when_history_empty(self):
-        """history 为空时应返回 None"""
+        """history 爲空時應返回 None"""
         mock_yf = _make_mock_yf(pd.DataFrame())
 
-        result = self.fetcher._fetch_yf_ticker_data(mock_yf, '^GSPC', '标普500指数', 'SPX')
+        result = self.fetcher._fetch_yf_ticker_data(mock_yf, '^GSPC', '標普500指數', 'SPX')
 
         self.assertIsNone(result)
 
     def test_single_row_history_uses_same_as_prev(self):
-        """仅一行数据时 prev_close 等于 current，change_pct 为 0"""
+        """僅一行數據時 prev_close 等於 current，change_pct 爲 0"""
         mock_hist = _make_mock_hist(close=5000.0, prev_close=5000.0)
         mock_hist = mock_hist.iloc[[-1]]
         mock_yf = _make_mock_yf(mock_hist)
 
-        result = self.fetcher._fetch_yf_ticker_data(mock_yf, '^GSPC', '标普500指数', 'SPX')
+        result = self.fetcher._fetch_yf_ticker_data(mock_yf, '^GSPC', '標普500指數', 'SPX')
 
         self.assertIsNotNone(result)
         self.assertEqual(result['change_pct'], 0.0)
 
 
 class TestGetUsMainIndices(unittest.TestCase):
-    """_get_us_main_indices 美股指数批量获取测试"""
+    """_get_us_main_indices 美股指數批量獲取測試"""
 
     def setUp(self):
         from data_provider.yfinance_fetcher import YfinanceFetcher
@@ -99,13 +99,13 @@ class TestGetUsMainIndices(unittest.TestCase):
 
     @patch('data_provider.yfinance_fetcher.get_us_index_yf_symbol')
     def test_returns_list_when_mock_succeeds(self, mock_get_symbol):
-        """当映射与取数均成功时返回指数列表"""
+        """當映射與取數均成功時返回指數列表"""
         def get_symbol(code):
             mapping = {
-                'SPX': ('^GSPC', '标普500指数'),
-                'IXIC': ('^IXIC', '纳斯达克综合指数'),
-                'DJI': ('^DJI', '道琼斯工业指数'),
-                'VIX': ('^VIX', 'VIX恐慌指数'),
+                'SPX': ('^GSPC', '標普500指數'),
+                'IXIC': ('^IXIC', '納斯達克綜合指數'),
+                'DJI': ('^DJI', '道瓊斯工業指數'),
+                'VIX': ('^VIX', 'VIX恐慌指數'),
             }
             return mapping.get(code, (None, None))
 
@@ -126,12 +126,12 @@ class TestGetUsMainIndices(unittest.TestCase):
 
     @patch('data_provider.yfinance_fetcher.get_us_index_yf_symbol')
     def test_handles_empty_history_gracefully(self, mock_get_symbol):
-        """部分指数 history 为空时仍返回能取到数据的指数"""
+        """部分指數 history 爲空時仍返回能取到數據的指數"""
         call_count = [0]
 
         def get_symbol(code):
-            return ('^GSPC', '标普500指数') if code == 'SPX' else (
-                ('^IXIC', '纳斯达克综合指数') if code == 'IXIC' else (None, None)
+            return ('^GSPC', '標普500指數') if code == 'SPX' else (
+                ('^IXIC', '納斯達克綜合指數') if code == 'IXIC' else (None, None)
             )
 
         def history_side_effect(period):
@@ -153,7 +153,7 @@ class TestGetUsMainIndices(unittest.TestCase):
 
     @patch('data_provider.yfinance_fetcher.get_us_index_yf_symbol')
     def test_returns_none_when_all_fail(self, mock_get_symbol):
-        """全部取数失败时返回 None"""
+        """全部取數失敗時返回 None"""
         mock_get_symbol.return_value = (None, None)
         mock_yf = _make_mock_yf(pd.DataFrame())
 
@@ -163,8 +163,8 @@ class TestGetUsMainIndices(unittest.TestCase):
 
     @patch('data_provider.yfinance_fetcher.get_us_index_yf_symbol')
     def test_handles_ticker_exception(self, mock_get_symbol):
-        """Ticker.history 抛异常时跳过该指数，不整体失败"""
-        mock_get_symbol.return_value = ('^GSPC', '标普500指数')
+        """Ticker.history 拋異常時跳過該指數，不整體失敗"""
+        mock_get_symbol.return_value = ('^GSPC', '標普500指數')
         mock_ticker = MagicMock()
         mock_ticker.history.side_effect = Exception("Network error")
         mock_yf = MagicMock()
@@ -176,10 +176,10 @@ class TestGetUsMainIndices(unittest.TestCase):
 
     @patch('data_provider.yfinance_fetcher.get_us_index_yf_symbol')
     def test_skips_unknown_index_code(self, mock_get_symbol):
-        """get_us_index_yf_symbol 返回 (None, None) 的代码应被跳过"""
+        """get_us_index_yf_symbol 返回 (None, None) 的代碼應被跳過"""
         def get_symbol(code):
             if code == 'SPX':
-                return ('^GSPC', '标普500指数')
+                return ('^GSPC', '標普500指數')
             return (None, None)
 
         mock_get_symbol.side_effect = get_symbol

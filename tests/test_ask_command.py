@@ -26,14 +26,14 @@ class AskCommandSkillSelectionTestCase(unittest.TestCase):
         skills = [
             Skill(
                 name="box_oscillation",
-                display_name="箱体震荡",
+                display_name="箱體震蕩",
                 description="box",
                 instructions="box",
                 default_priority=30,
             ),
             Skill(
                 name="wave_theory",
-                display_name="波浪理论",
+                display_name="波浪理論",
                 description="wave",
                 instructions="wave",
                 default_active=True,
@@ -49,25 +49,25 @@ class AskCommandSkillSelectionTestCase(unittest.TestCase):
         skills = [
             Skill(
                 name="bull_trend",
-                display_name="默认多头趋势",
+                display_name="默認多頭趨勢",
                 description="trend",
                 instructions="trend",
-                aliases=["趋势", "趋势分析"],
+                aliases=["趨勢", "趨勢分析"],
                 default_active=True,
                 default_priority=10,
             ),
             Skill(
                 name="chan_theory",
-                display_name="缠论",
+                display_name="纏論",
                 description="chan",
                 instructions="chan",
-                aliases=["缠论", "缠论分析"],
+                aliases=["纏論", "纏論分析"],
                 default_priority=40,
             ),
         ]
 
         with patch.object(AskCommand, "_load_skills", return_value=skills):
-            self.assertEqual(command._parse_skill(["600519", "请", "用缠论分析"]), "chan_theory")
+            self.assertEqual(command._parse_skill(["600519", "請", "用纏論分析"]), "chan_theory")
 
 
 class TestAskCommandMultiStock(unittest.TestCase):
@@ -92,7 +92,7 @@ class TestAskCommandMultiStock(unittest.TestCase):
             "decision_type": "buy",
             "sentiment_score": 72,
             "trend_prediction": "看多",
-            "operation_advice": "买入",
+            "operation_advice": "買入",
             "analysis_summary": f"{code} summary",
             "risk_warning": f"{code} risk",
             "dashboard": {
@@ -120,12 +120,12 @@ class TestAskCommandMultiStock(unittest.TestCase):
                 )
 
         with patch("src.agent.factory.build_agent_executor", return_value=FakeExecutor()):
-            with patch.object(command, "_build_portfolio_section", return_value="## 组合视角\n组合摘要"):
+            with patch.object(command, "_build_portfolio_section", return_value="## 組合視角\n組合摘要"):
                 with patch("src.agent.conversation.conversation_manager"):
                     response = command._analyze_multi(config, message, ["600519", "000858"], None, "")
 
         self.assertTrue(response.markdown)
-        self.assertIn("## 组合视角", response.text)
+        self.assertIn("## 組合視角", response.text)
         self.assertIn("| 600519 | buy | 72% |", response.text)
         self.assertIn("### 000858", response.text)
 
@@ -141,10 +141,10 @@ class TestAskCommandMultiStock(unittest.TestCase):
     def test_merge_code_args_keeps_comma_split_multi_stock_support(self):
         command = AskCommand()
 
-        raw_code_str, remaining_args = command._merge_code_args(["600519,", "000858", "波浪理论"])
+        raw_code_str, remaining_args = command._merge_code_args(["600519,", "000858", "波浪理論"])
 
         self.assertEqual(raw_code_str, "600519,000858")
-        self.assertEqual(remaining_args, ["波浪理论"])
+        self.assertEqual(remaining_args, ["波浪理論"])
 
     def test_build_portfolio_section_reads_assessment(self):
         command = AskCommand()
@@ -152,26 +152,26 @@ class TestAskCommandMultiStock(unittest.TestCase):
             "600519": {
                 "signal": "buy",
                 "confidence": 0.8,
-                "summary": "茅台 summary",
-                "stock_name": "贵州茅台",
+                "summary": "茅臺 summary",
+                "stock_name": "貴州茅臺",
                 "risk_flags": [{"category": "portfolio_input", "description": "估值偏高", "severity": "medium"}],
             },
             "000858": {
                 "signal": "hold",
                 "confidence": 0.6,
-                "summary": "五粮液 summary",
-                "stock_name": "五粮液",
+                "summary": "五糧液 summary",
+                "stock_name": "五糧液",
                 "risk_flags": [],
             },
         }
 
         def fake_run(self, ctx, progress_callback=None):
             ctx.data["portfolio_assessment"] = {
-                "summary": "组合偏消费集中，建议控制仓位。",
+                "summary": "組合偏消費集中，建議控制倉位。",
                 "portfolio_risk_score": 7,
-                "sector_warnings": ["白酒板块集中度过高"],
-                "correlation_warnings": ["600519 与 000858 相关性偏高"],
-                "rebalance_suggestions": ["降低单一行业暴露"],
+                "sector_warnings": ["白酒板塊集中度過高"],
+                "correlation_warnings": ["600519 與 000858 相關性偏高"],
+                "rebalance_suggestions": ["降低單一行業暴露"],
                 "positions": [
                     {"code": "600519", "suggested_weight": 0.4, "signal": "buy"},
                     {"code": "000858", "suggested_weight": 0.2, "signal": "hold"},
@@ -184,9 +184,9 @@ class TestAskCommandMultiStock(unittest.TestCase):
                 with patch("src.agent.agents.portfolio_agent.PortfolioAgent.run", new=fake_run):
                     text = command._build_portfolio_section(SimpleNamespace(), ["600519", "000858"], results)
 
-        self.assertIn("## 组合视角", text)
-        self.assertIn("组合偏消费集中", text)
-        self.assertIn("建议仓位", text)
+        self.assertIn("## 組合視角", text)
+        self.assertIn("組合偏消費集中", text)
+        self.assertIn("建議倉位", text)
 
     def test_build_portfolio_section_returns_quickly_on_timeout(self):
         command = AskCommand()
@@ -194,15 +194,15 @@ class TestAskCommandMultiStock(unittest.TestCase):
             "600519": {
                 "signal": "buy",
                 "confidence": 0.8,
-                "summary": "茅台 summary",
-                "stock_name": "贵州茅台",
+                "summary": "茅臺 summary",
+                "stock_name": "貴州茅臺",
                 "risk_flags": [],
             },
             "000858": {
                 "signal": "hold",
                 "confidence": 0.6,
-                "summary": "五粮液 summary",
-                "stock_name": "五粮液",
+                "summary": "五糧液 summary",
+                "stock_name": "五糧液",
                 "risk_flags": [],
             },
         }
@@ -248,7 +248,7 @@ class TestAskCommandMultiStock(unittest.TestCase):
                     response = command._analyze_multi(config, message, ["600519", "000858"], None, "")
 
         self.assertIn("600519 自由文本分析", response.text)
-        self.assertNotIn("⚠️ 分析失败: Failed to parse dashboard JSON", response.text)
+        self.assertNotIn("⚠️ 分析失敗: Failed to parse dashboard JSON", response.text)
 
     def test_analyze_multi_persists_formatted_history_instead_of_raw_json(self):
         command = AskCommand()
@@ -275,7 +275,7 @@ class TestAskCommandMultiStock(unittest.TestCase):
             if len(call.args) >= 3 and call.args[1] == "assistant"
         ]
         self.assertEqual(len(assistant_messages), 2)
-        self.assertTrue(all("**结论**: buy" in text for text in assistant_messages))
+        self.assertTrue(all("**結論**: buy" in text for text in assistant_messages))
         self.assertTrue(all('{"raw":"json"}' not in text for text in assistant_messages))
 
     def test_analyze_multi_prewarms_db_before_parallel_history_writes(self):
@@ -315,7 +315,7 @@ class TestAskCommandMultiStock(unittest.TestCase):
 
         text = AskCommand._format_stock_result("600519", dashboard, "raw content")
 
-        self.assertIn("**关键点位**", text)
+        self.assertIn("**關鍵點位**", text)
         self.assertIn("ideal_buy=10.0", text)
         self.assertIn("secondary_buy=9.8", text)
         self.assertIn("stop_loss=9.5", text)
@@ -335,7 +335,7 @@ class TestAskCommandMultiStock(unittest.TestCase):
                 return SimpleNamespace(success=True, content="analysis ok")
 
         with patch("src.agent.factory.build_agent_executor", return_value=FakeExecutor()):
-            with patch.object(command, "_resolve_skill_name", return_value="缠论"):
+            with patch.object(command, "_resolve_skill_name", return_value="纏論"):
                 response = command._analyze_single(config, message, "600519", "chan_theory", "")
 
         self.assertIn("analysis ok", response.text)

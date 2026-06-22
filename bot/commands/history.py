@@ -54,11 +54,11 @@ class HistoryCommand(BotCommand):
 
     @property
     def aliases(self) -> List[str]:
-        return ["历史", "会话"]
+        return ["歷史", "會話"]
 
     @property
     def description(self) -> str:
-        return "查看 Agent 对话历史"
+        return "查看 Agent 對話歷史"
 
     @property
     def usage(self) -> str:
@@ -71,7 +71,7 @@ class HistoryCommand(BotCommand):
             db = get_db()
         except Exception as e:
             logger.error(f"History: storage unavailable: {e}")
-            return BotResponse.text_response("⚠️ 存储模块不可用，无法查询对话历史。")
+            return BotResponse.text_response("⚠️ 存儲模塊不可用，無法查詢對話歷史。")
 
         prefix = _user_prefix(message)
         legacy_chat_session_id = _legacy_chat_session_id(message)
@@ -84,24 +84,24 @@ class HistoryCommand(BotCommand):
                 if current_chat_session_id == f"{prefix}chat":
                     deleted += db.delete_conversation_session(legacy_chat_session_id)
                 return BotResponse.text_response(
-                    f"✅ 已清除当前会话 ({deleted} 条消息)"
+                    f"✅ 已清除當前會話 ({deleted} 條消息)"
                 )
             except Exception as e:
                 logger.error(f"History clear failed: {e}")
-                return BotResponse.text_response(f"⚠️ 清除失败: {str(e)}")
+                return BotResponse.text_response(f"⚠️ 清除失敗: {str(e)}")
 
         # /history <session_id> — show messages for a specific session
         # Only allow access if the session belongs to the requesting user.
         if args and not args[0].isdigit():
             session_id = args[0]
             if not (session_id.startswith(prefix) or session_id == legacy_chat_session_id):
-                return BotResponse.text_response("⚠️ 你只能查看自己的会话记录。")
+                return BotResponse.text_response("⚠️ 你只能查看自己的會話記錄。")
             try:
                 messages_list = db.get_conversation_messages(session_id, limit=20)
                 if not messages_list:
-                    return BotResponse.text_response(f"📭 会话 `{session_id}` 无消息记录")
+                    return BotResponse.text_response(f"📭 會話 `{session_id}` 無消息記錄")
 
-                lines = [f"💬 **会话详情**: `{session_id}`", ""]
+                lines = [f"💬 **會話詳情**: `{session_id}`", ""]
                 for msg in messages_list:
                     role_icon = "👤" if msg["role"] == "user" else "🤖"
                     content_preview = msg["content"][:200]
@@ -115,7 +115,7 @@ class HistoryCommand(BotCommand):
                 return BotResponse.markdown_response("\n".join(lines))
             except Exception as e:
                 logger.error(f"History detail failed: {e}")
-                return BotResponse.text_response(f"⚠️ 获取会话详情失败: {str(e)}")
+                return BotResponse.text_response(f"⚠️ 獲取會話詳情失敗: {str(e)}")
 
         # /history [count] — list recent sessions for this user only
         limit = 10
@@ -129,22 +129,22 @@ class HistoryCommand(BotCommand):
                 extra_session_ids=[legacy_chat_session_id],
             )
             if not sessions:
-                return BotResponse.text_response("📭 暂无对话历史记录")
+                return BotResponse.text_response("📭 暫無對話歷史記錄")
 
-            lines = ["📋 **最近对话会话**", ""]
+            lines = ["📋 **最近對話會話**", ""]
             for i, sess in enumerate(sessions, 1):
-                title = sess.get("title", "新对话")
+                title = sess.get("title", "新對話")
                 msg_count = sess.get("message_count", 0)
                 last_active = sess.get("last_active", "")[:16] if sess.get("last_active") else ""
                 sid = sess["session_id"]
                 lines.append(f"**{i}.** {title}")
-                lines.append(f"   💬 {msg_count} 条消息 | 🕐 {last_active}")
+                lines.append(f"   💬 {msg_count} 條消息 | 🕐 {last_active}")
                 lines.append(f"   ID: `{sid}`")
                 lines.append("")
 
-            lines.append(f"💡 使用 `/history <session_id>` 查看具体会话内容")
+            lines.append(f"💡 使用 `/history <session_id>` 查看具體會話內容")
             return BotResponse.markdown_response("\n".join(lines))
 
         except Exception as e:
             logger.error(f"History list failed: {e}")
-            return BotResponse.text_response(f"⚠️ 获取会话列表失败: {str(e)}")
+            return BotResponse.text_response(f"⚠️ 獲取會話列表失敗: {str(e)}")

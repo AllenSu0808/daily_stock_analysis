@@ -210,7 +210,7 @@ class TestFeishuSender(unittest.TestCase):
         cfg = _config(
             feishu_webhook_url="https://feishu.example/hook",
             feishu_webhook_secret="secret-token",
-            feishu_webhook_keyword="股票日报",
+            feishu_webhook_keyword="股票日報",
         )
         sender = FeishuSender(cfg)
 
@@ -229,7 +229,7 @@ class TestFeishuSender(unittest.TestCase):
         self.assertEqual(payload["sign"], expected_sign)
         self.assertEqual(
             payload["card"]["elements"][0]["text"]["content"],
-            "股票日报\nhello",
+            "股票日報\nhello",
         )
 
     @mock.patch("src.notification_sender.feishu_sender.requests.post")
@@ -238,12 +238,12 @@ class TestFeishuSender(unittest.TestCase):
         cfg = _config(feishu_webhook_url="https://feishu.example/hook")
         sender = FeishuSender(cfg)
         content = (
-            "# 日报\n\n"
-            "## 📊 分析结果摘要\n\n"
-            "| 股票 | 信号 |\n"
+            "# 日報\n\n"
+            "## 📊 分析結果摘要\n\n"
+            "| 股票 | 信號 |\n"
             "| --- | --- |\n"
-            "| 600519 | 强势 |\n\n"
-            "[详情](https://example.com/report)"
+            "| 600519 | 強勢 |\n\n"
+            "[詳情](https://example.com/report)"
         )
 
         result = sender.send_to_feishu(content)
@@ -251,10 +251,10 @@ class TestFeishuSender(unittest.TestCase):
         self.assertTrue(result)
         payload = mock_post.call_args.kwargs["json"]
         rendered = payload["card"]["elements"][0]["text"]["content"]
-        self.assertIn("**日报**", rendered)
-        self.assertIn("**📊 分析结果摘要**", rendered)
-        self.assertIn("• 股票：600519 | 信号：强势", rendered)
-        self.assertIn("[详情](https://example.com/report)", rendered)
+        self.assertIn("**日報**", rendered)
+        self.assertIn("**📊 分析結果摘要**", rendered)
+        self.assertIn("• 股票：600519 | 信號：強勢", rendered)
+        self.assertIn("[詳情](https://example.com/report)", rendered)
         self.assertNotIn("| --- |", rendered)
 
     @mock.patch("src.notification_sender.feishu_sender.requests.post")
@@ -450,7 +450,7 @@ class TestFeishuSender(unittest.TestCase):
         call = mock_raw.call_args
         self.assertEqual(call[0][1], "interactive")  # msg_type
         card = json.loads(call[0][2])
-        self.assertEqual(card["header"]["title"]["content"], "股票智能分析报告")
+        self.assertEqual(card["header"]["title"]["content"], "股票智能分析報告")
         self.assertEqual(card["elements"][0]["text"]["tag"], "lark_md")
         self.assertIn("**bold**", card["elements"][0]["text"]["content"])
 
@@ -664,7 +664,7 @@ class TestEmailSender(unittest.TestCase):
         )
         sender = EmailSender(cfg)
 
-        result = sender.send_to_email("body", subject="测试主题")
+        result = sender.send_to_email("body", subject="測試主題")
 
         self.assertTrue(result)
         server = mock_smtp_ssl.return_value
@@ -724,7 +724,7 @@ class TestNtfySender(unittest.TestCase):
         )
         sender = NtfySender(cfg)
 
-        result = sender.send_to_ntfy("正文 **Markdown**", title="中文标题", timeout_seconds=5)
+        result = sender.send_to_ntfy("正文 **Markdown**", title="中文標題", timeout_seconds=5)
 
         self.assertTrue(result)
         mock_post.assert_called_once()
@@ -734,7 +734,7 @@ class TestNtfySender(unittest.TestCase):
             call_kw["json"],
             {
                 "topic": "dsa-topic",
-                "title": "中文标题",
+                "title": "中文標題",
                 "message": "正文 **Markdown**",
                 "markdown": True,
             },
@@ -827,7 +827,7 @@ class TestGotifySender(unittest.TestCase):
         )
         sender = GotifySender(cfg)
 
-        result = sender.send_to_gotify("正文 **Markdown**", title="中文标题", timeout_seconds=5)
+        result = sender.send_to_gotify("正文 **Markdown**", title="中文標題", timeout_seconds=5)
 
         self.assertTrue(result)
         mock_post.assert_called_once()
@@ -836,7 +836,7 @@ class TestGotifySender(unittest.TestCase):
         self.assertEqual(
             call_kw["json"],
             {
-                "title": "中文标题",
+                "title": "中文標題",
                 "message": "正文 **Markdown**",
                 "extras": {
                     "client::display": {
@@ -965,7 +965,7 @@ class TestCustomWebhookSender(unittest.TestCase):
         self.assertEqual(
             payload,
             {
-                "title": "股票分析报告",
+                "title": "股票分析報告",
                 "body": "hello",
                 "group": "stock",
             },
@@ -992,7 +992,7 @@ class TestCustomWebhookSender(unittest.TestCase):
         self.assertEqual(
             payload,
             {
-                "title": "股票分析报告",
+                "title": "股票分析報告",
                 "body": "hello",
                 "sound": "bell",
             },
@@ -1015,7 +1015,7 @@ class TestCustomWebhookSender(unittest.TestCase):
         self.assertEqual(
             payload,
             {
-                "title": "股票分析报告",
+                "title": "股票分析報告",
                 "content": 'line 1\nline "2"',
             },
         )
@@ -1275,12 +1275,12 @@ class TestSlackSender(unittest.TestCase):
         cfg = _config(slack_webhook_url="https://hooks.slack.com/services/T/B/xxx")
         sender = SlackSender(cfg)
 
-        result = sender.send_to_slack("## 日报\n\n[详情](https://example.com/report)")
+        result = sender.send_to_slack("## 日報\n\n[詳情](https://example.com/report)")
 
         self.assertTrue(result)
         payload = json.loads(mock_post.call_args.kwargs["data"].decode("utf-8"))
-        self.assertIn("## 日报", payload["text"])
-        self.assertIn("[详情](https://example.com/report)", payload["text"])
+        self.assertIn("## 日報", payload["text"])
+        self.assertIn("[詳情](https://example.com/report)", payload["text"])
 
     @mock.patch("src.notification_sender.slack_sender.requests.post")
     def test_send_text_prefers_bot_when_both_configured(self, mock_post):
@@ -1358,7 +1358,7 @@ class TestTelegramSender(unittest.TestCase):
 
         cfg = _config(telegram_bot_token="BOT", telegram_chat_id="CHAT")
         sender = TelegramSender(cfg)
-        result = sender.send_to_telegram("*ST宝实")
+        result = sender.send_to_telegram("*ST寶實")
 
         self.assertTrue(result)
         self.assertEqual(mock_post.call_count, 2)
@@ -1366,7 +1366,7 @@ class TestTelegramSender(unittest.TestCase):
         second_payload = mock_post.call_args_list[1][1]["json"]
         self.assertEqual(first_payload["parse_mode"], "Markdown")
         self.assertNotIn("parse_mode", second_payload)
-        self.assertEqual(second_payload["text"], "*ST宝实")
+        self.assertEqual(second_payload["text"], "*ST寶實")
 
     @mock.patch("src.notification_sender.telegram_sender.requests.post")
     def test_send_plain_text_fallback_keeps_original_text_after_legacy_markdown_error(self, mock_post):
@@ -1379,13 +1379,13 @@ class TestTelegramSender(unittest.TestCase):
 
         cfg = _config(telegram_bot_token="BOT", telegram_chat_id="CHAT")
         sender = TelegramSender(cfg)
-        content = "关注 **AAPL** (未闭合)"
+        content = "關注 **AAPL** (未閉合)"
         result = sender.send_to_telegram(content)
 
         self.assertTrue(result)
         first_payload = mock_post.call_args_list[0][1]["json"]
         second_payload = mock_post.call_args_list[1][1]["json"]
-        self.assertEqual(first_payload["text"], "关注 *AAPL* \\(未闭合\\)")
+        self.assertEqual(first_payload["text"], "關注 *AAPL* \\(未閉合\\)")
         self.assertEqual(second_payload["text"], content)
 
     @mock.patch("src.notification_sender.telegram_sender.requests.post")
@@ -1394,12 +1394,12 @@ class TestTelegramSender(unittest.TestCase):
         cfg = _config(telegram_bot_token="BOT", telegram_chat_id="CHAT")
         sender = TelegramSender(cfg)
         content = (
-            "# 日报\n\n"
-            "## 📊 分析结果摘要\n\n"
-            "| 股票 | 信号 |\n"
+            "# 日報\n\n"
+            "## 📊 分析結果摘要\n\n"
+            "| 股票 | 信號 |\n"
             "| --- | --- |\n"
-            "| 600519 | 强势 |\n\n"
-            "[详情](https://example.com/report)"
+            "| 600519 | 強勢 |\n\n"
+            "[詳情](https://example.com/report)"
         )
 
         result = sender.send_to_telegram(content)
@@ -1407,11 +1407,11 @@ class TestTelegramSender(unittest.TestCase):
         self.assertTrue(result)
         payload = mock_post.call_args.kwargs["json"]
         rendered = payload["text"]
-        self.assertIn("日报", rendered)
-        self.assertIn("📊 分析结果摘要", rendered)
-        self.assertIn("| 股票 | 信号 |", rendered)
-        self.assertIn("[详情](https://example.com/report)", rendered)
-        self.assertNotIn("# 日报", rendered)
+        self.assertIn("日報", rendered)
+        self.assertIn("📊 分析結果摘要", rendered)
+        self.assertIn("| 股票 | 信號 |", rendered)
+        self.assertIn("[詳情](https://example.com/report)", rendered)
+        self.assertNotIn("# 日報", rendered)
 
     @mock.patch("src.notification_sender.telegram_sender.requests.post")
     def test_send_plain_text_fallback_handles_non_json_200(self, mock_post):
@@ -1426,7 +1426,7 @@ class TestTelegramSender(unittest.TestCase):
 
         cfg = _config(telegram_bot_token="BOT", telegram_chat_id="CHAT")
         sender = TelegramSender(cfg)
-        result = sender.send_to_telegram("*ST宝实")
+        result = sender.send_to_telegram("*ST寶實")
 
         self.assertFalse(result)
         self.assertEqual(mock_post.call_count, 2)

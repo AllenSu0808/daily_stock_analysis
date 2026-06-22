@@ -11,7 +11,7 @@ class PipelineRelatedBoardsTestCase(unittest.TestCase):
     def test_attach_belong_boards_shallow_copies_context_before_injecting(self) -> None:
         pipeline = StockAnalysisPipeline.__new__(StockAnalysisPipeline)
         pipeline.fetcher_manager = MagicMock()
-        pipeline.fetcher_manager.get_belong_boards.return_value = [{"name": "白酒", "type": "行业"}]
+        pipeline.fetcher_manager.get_belong_boards.return_value = [{"name": "白酒", "type": "行業"}]
 
         cached_context = {
             "market": "cn",
@@ -24,13 +24,13 @@ class PipelineRelatedBoardsTestCase(unittest.TestCase):
 
         self.assertIsNot(enriched, cached_context)
         self.assertNotIn("belong_boards", cached_context)
-        self.assertEqual(enriched["belong_boards"], [{"name": "白酒", "type": "行业"}])
+        self.assertEqual(enriched["belong_boards"], [{"name": "白酒", "type": "行業"}])
 
     def test_attach_belong_boards_copies_existing_board_list(self) -> None:
         pipeline = StockAnalysisPipeline.__new__(StockAnalysisPipeline)
         pipeline.fetcher_manager = MagicMock()
 
-        existing_boards = [{"name": "白酒", "type": "行业"}]
+        existing_boards = [{"name": "白酒", "type": "行業"}]
         context = {
             "market": "cn",
             "status": "ok",
@@ -62,7 +62,7 @@ class PipelineRelatedBoardsTestCase(unittest.TestCase):
         pipeline.fetcher_manager = MagicMock()
 
         existing_boards = [
-            {"name": "Technology", "type": "行业"},
+            {"name": "Technology", "type": "行業"},
             {"name": "Consumer Electronics", "type": "概念"},
         ]
         context = {"market": "us", "status": "ok", "belong_boards": existing_boards}
