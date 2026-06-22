@@ -1798,16 +1798,16 @@ class NotificationService(
 
     # Display name mapping for realtime data sources
     _SOURCE_DISPLAY_NAMES = {
-        "tencent": {"zh": "腾讯财经", "en": "Tencent Finance"},
-        "akshare_em": {"zh": "东方财富", "en": "Eastmoney"},
-        "akshare_sina": {"zh": "新浪财经", "en": "Sina Finance"},
-        "akshare_qq": {"zh": "腾讯财经", "en": "Tencent Finance"},
-        "efinance": {"zh": "东方财富(efinance)", "en": "Eastmoney (efinance)"},
-        "tushare": {"zh": "Tushare Pro", "en": "Tushare Pro"},
-        "sina": {"zh": "新浪财经", "en": "Sina Finance"},
-        "stooq": {"zh": "Stooq", "en": "Stooq"},
-        "longbridge": {"zh": "长桥", "en": "Longbridge"},
-        "fallback": {"zh": "降级兜底", "en": "Fallback"},
+        "tencent": {"zh": "腾讯财经", "en": "Tencent Finance", "zh-tw": "騰訊財經"},
+        "akshare_em": {"zh": "东方财富", "en": "Eastmoney", "zh-tw": "東方財富"},
+        "akshare_sina": {"zh": "新浪财经", "en": "Sina Finance", "zh-tw": "新浪財經"},
+        "akshare_qq": {"zh": "腾讯财经", "en": "Tencent Finance", "zh-tw": "騰訊財經"},
+        "efinance": {"zh": "东方财富(efinance)", "en": "Eastmoney (efinance)", "zh-tw": "東方財富(efinance)"},
+        "tushare": {"zh": "Tushare Pro", "en": "Tushare Pro", "zh-tw": "Tushare Pro"},
+        "sina": {"zh": "新浪财经", "en": "Sina Finance", "zh-tw": "新浪財經"},
+        "stooq": {"zh": "Stooq", "en": "Stooq", "zh-tw": "Stooq"},
+        "longbridge": {"zh": "长桥", "en": "Longbridge", "zh-tw": "長橋"},
+        "fallback": {"zh": "降级兜底", "en": "Fallback", "zh-tw": "降級兜底"},
     }
 
     def _get_source_display_name(self, source: Any, language: Optional[str]) -> str:
