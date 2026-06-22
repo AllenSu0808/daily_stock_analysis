@@ -16,6 +16,9 @@
 /litellm_config.yaml
 /litellm_config.*.yaml
 
+# AI 程式碼理解工具的本機快取与知识图谱产物
+/.understand-anything/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -87,3 +90,4 @@ static/
 /apps/dsa-desktop/dist/
 /apps/dsa-desktop/node_modules/
 docs/specs/
+apps/dsa-web/package-lock.json
